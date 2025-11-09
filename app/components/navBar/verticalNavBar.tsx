@@ -20,7 +20,7 @@ export default function VerticalNavBar({ e, i }: { e: menu; i: number }) {
     }
   };
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full" key={i}>
       <button key={i} onClick={openHandler} >
       <li
         ref={itemRef}
@@ -44,8 +44,8 @@ export default function VerticalNavBar({ e, i }: { e: menu; i: number }) {
       </button>
     {open.opening
         ? open.value &&
-          dropdownMenus[open.value]?.map((e: menu) => (
-            <button key={e.value} className="py-4 px-23 flex items-start w-full hover:bg-gray-800 transition-colors hover:**:text-neutral-100">
+          dropdownMenus[open.value]?.map((e: menu ,index) => (
+            <button key={index} className="py-4 px-23 flex items-start w-full hover:bg-gray-800 transition-colors hover:**:text-neutral-100">
               <p className="text-gray-500 font-medium text-lg capitalize">{e.label}</p>
             </button>
           ))

@@ -1,28 +1,49 @@
 import { useTranslation } from "react-i18next";
 import { CiGift } from "react-icons/ci";
 import { Form } from "react-router";
+import AiMiniChart from "~/components/miniCharts/aiMiniChart";
 import HomeMiniChart from "~/components/miniCharts/homeMiniChart";
-
+import BackgroundSVG from "assets/images/re_1.svg";
+import { reSectionList } from "~/consts/reSectionList";
+import Certifications from "~/screens/home/components/certifications";
+import bgRC from "assets/images/rd_circle.svg"
+import DownloadSections from "./components/download";
+import FAQ from "./components/f&q";
+import FooterSection from "./components/footer";
 const Home = () => {
   const { t } = useTranslation();
+
   return (
-    <div className="bg-gray-900 lg:bg-gray-950 h-dvh flex p-4">
-      <section id="hero" className="flex flex-col w-full">
+    <div className="bg-gray-900 lg:bg-gray-950 ">
+      <section
+        id="hero"
+        className="flex p-4 flex-col w-full lg:flex-row lg:justify-between xl:justify-center xl:gap-x-40 "
+      >
         <article
           id={"hero1"}
-          className="flex flex-col items-center gap-10 my-10 md:my-7 md:items-start md:pl-8"
+          className="flex flex-col items-center gap-10 my-10 md:my-7 md:items-start md:pl-8 lg:px-2"
         >
           <div className="flex flex-col justify-center items-center gap-2 md:items-start md:gap-4">
-            <h2 className="text-gray-50 font-extrabold text-2xl md:text-4xl md:font-bold">
+            <h2 className="text-gray-50 font-extrabold text-2xl md:text-4xl md:font-bold ">
               MORE THAN
             </h2>
-            <h2 className="text-amber-400 font-extrabold text-5xl font-serif md:text-8xl">
+            <h2 className="text-amber-400 font-extrabold text-5xl font-serif md:text-8xl lg:text-7xl">
               25 MILLION
             </h2>
             <h2 className="text-gray-50 font-extrabold text-3xl md:text-8xl md:*:first:block">
               <span>USERS </span>
               <span>TRUST US</span>
             </h2>
+          </div>
+          <div className="flex lg:justify-around justify-center gap-18 items-center w-full my-2 lg:my-6 md:justify-start md:gap-30">
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-amber-400 text-md font-extrabold md:text-lg lg:text-2xl">$85,290,471</p>
+              <p className="text-amber-400 text-sm font-medium md:text-md lg:text-lg">Customer Assets</p>
+            </div>
+            <div className="flex flex-col items-center gap-1">
+              <p  className="text-amber-400 text-md font-extrabold md:text-lg lg:text-2xl">$10,760,109</p>
+              <p className="text-amber-400 text-sm font-medium md:text-md lg:text-lg">Trading Volume</p>
+            </div>
           </div>
           <div className="flex flex-col justify-center items-center gap-2 md:items-start">
             <div className="flex gap-2">
@@ -40,7 +61,7 @@ const Home = () => {
                     borderColor: "rgba(244,244,244,.3)",
                   }}
                   placeholder="Email/Phone number"
-                  className="py-3 rounded-md w-sm px-3 border-amber-50"
+                  className="py-3 rounded-md w-76 px-3 border-amber-50"
                 />
               </Form>
               <button className="bg-amber-300 px-14 py-3 rounded-md">
@@ -49,10 +70,47 @@ const Home = () => {
             </div>
           </div>
         </article>
-        <article id="hero2" className="md:mt-8">
+        <article id="hero2" className="md:mt-8 lg:mt-2 space-y-4">
           <HomeMiniChart />
+          <AiMiniChart />
         </article>
       </section>
+      <Certifications/>
+      <section className="my-6 px-4 md:px-8 lg:px-4 xl:px-0 lg:flex lg:flex-col xl:items-center relative ">
+        <article className="flex flex-col gap-4 lg:gap-y-8 lg:max-w-6xl xl:min-w-6xl ">
+         
+          {reSectionList.map((e) => {
+            const styles = {
+              backgroundImage: `url(${e.bg})`,
+              backgroundPosition: "center center",
+              backgroundSize: "cover", // Or 'contain', or specific values
+            };
+            return <div key={e.id} style={styles} className={`flex flex-col lg:gap-5 lg:max-w-4xl rounded-2xl md:flex-row p-4 lg:p-8 relative ${e.id===2?"lg:self-end lg:flex-row-reverse":"lg:self-start"}`}>
+                <div className={`mb-3 `}>
+                  <p className="text-xl text-amber-400 font-bold md:text-2xl mb-3">{e.title}</p>
+                  <p className="text-lg text-gray-50 font-medium font-serif md:text-xl ">{e.label}</p>
+                  <p className={ `font-thin text-sm hidden md:block`}>{e.description}</p>
+                </div>
+                <div className={`md:hidden flex flex-row justify-between items-center`}>
+                    <p className="font-thin text-sm">{e.description}</p>
+                   <img src={e.image} className="object-fit w-25 h-20 self-end"/>
+                </div>
+               {e.id===2 ? <img src={e.image} className="object-fit w-25 h-20 hidden md:block md:w-45 md:h-40 self-end"/>: <img src={e.image} className="hidden md:block object-fit w-20 h-20 md:w-40 md:h-40"/>}
+            </div>
+          })}
+        </article>
+      </section>
+      <DownloadSections/>
+      <FAQ/>
+      <aside className="flex flex-col gap-4 w-full py-6 lg:bg-gray-900 bg-gray-800 items-center justify-center lg:py-10 lg:gap-6">
+          <p className="text-lg font-extrabold text-neutral-50 lg:text-3xl">
+            Start earning today
+          </p>
+          <button className="h-10 px-8 rounded-lg bg-amber-300 text-neutral-900 text-sm font-bold lg:px-12">
+            Sign Up Now
+          </button>
+        </aside>
+      <FooterSection/>
     </div>
   );
 };

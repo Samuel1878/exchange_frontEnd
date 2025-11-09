@@ -65,8 +65,8 @@ export default function NavBar() {
           </ul>
         </div>
 
-        <div className="flex gap-4">
-          <div className="lg:flex hidden gap-3">
+        <div className="flex gap-4 lg:items-center xl:gap-5">
+          <div className="lg:flex hidden gap-3 ">
             <button className="bg-gray-800 p-1 px-4 rounded-md">
               <p className="text-gray-50 font-medium text-md">Log In</p>
             </button>
@@ -74,6 +74,7 @@ export default function NavBar() {
               <p className="text-gray-950 font-medium text-md">Sign Up</p>
             </button>
           </div>
+          <div className="h-5 w-0.5 hidden xl:block  bg-gray-600 mx-2"/>
           <button
             onClick={() => navigate("#download")}
             className="hidden xl:flex items-center justify-center"
@@ -84,7 +85,8 @@ export default function NavBar() {
             // onClick={() => navigate("#download")}
             className="hidden xl:flex items-center justify-center"
           >
-            <RiGlobalFill size={30}/>
+            {/* <RiGlobalFill size={30}/> */}
+            <img src="assets/icons/lang.svg" className="w-8 h-8"/>
           </button>
           <div className="flex-row flex gap-2 items-center lg:hidden">
             <Hamburger
@@ -97,15 +99,12 @@ export default function NavBar() {
           </div>
         </div>
 
-         
-       
-
         <ul
           id="toggleNav"
           ref={menuRef}
-          className="z-30 pb-5 pt-2 hidden h-dvh flex-col absolute left-0 right-0 top-10 bg-gray-900 opacity-0"
+          className="z-30 pb-20 pt-2 hidden h-fit md:h-screen flex-col overflow-hidden absolute left-0 right-0 top-10 bg-gray-900 opacity-0"
         >
-          <div className="flex-row px-7 flex gap-5 my-8 justify-around items-center w-full">
+          <div className="flex-row px-7 flex gap-4 my-8 justify-around items-center w-full">
             <button className="flex justify-center items-center rounded-lg bg-gray-700 w-full h-12">
               <p className="text-neutral-50 text-lg font-medium">Log In</p>
             </button>

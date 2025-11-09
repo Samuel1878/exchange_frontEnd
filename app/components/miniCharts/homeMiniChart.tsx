@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router";
 import { miniCoinList } from "~/consts/miniLists";
+import { IoIosArrowForward } from "react-icons/io";
+
 enum lists {
   coin = "coin",
   nft = "nft",
@@ -10,9 +12,10 @@ enum lists {
 export default function HomeMiniChart() {
   const [focus, setFocus] = useState<lists>(lists.coin);
   return (
-    <div className="bg-gray-900 flex flex-col items-center md:bg-gray-800 md:rounded-2xl md:p-4 md:px-8 md:mx-8">
-      <div className="w-full flex justify-center gap-4 md:justify-start">
-        <button
+    <div className="bg-gray-900 flex flex-col lg:min-w-md items-center xl:min-w-lg md:bg-gray-800 md:rounded-2xl md:p-4 md:px-8 md:mx-8 lg:mx-4">
+      <div className="w-full flex items-center justify-center gap-4 md:justify-between">
+        <div className="flex items-center justify-center gap-4 md:justify-start">
+          <button
           onClick={() => setFocus(lists.coin)}
           className={`p-2 ${focus === lists.coin ? "border-b-2 border-b-amber-300" : "border-0"}`}
         >
@@ -32,12 +35,18 @@ export default function HomeMiniChart() {
             NFTs
           </p>
         </button>
+        </div>
+       
+        <Link to={"market"} className="text-md font-thin md:flex items-center gap-2 hidden">
+          View more <IoIosArrowForward size={14} color="rgba(140,140,140,.7)"/>
+
+        </Link>
       </div>
       {lists.coin === focus ? (
         <div className="w-full">
           {miniCoinList.map((e) => {
             return (
-              <div className="flex flex-row w-full my-5 ">
+              <div key={e.id} className="flex flex-row w-full my-5 ">
                 <div className="flex flex-row flex-4 justify-between">
                   <div className="flex gap-2 items-center">
                     {e.icon}
@@ -56,8 +65,9 @@ export default function HomeMiniChart() {
       ) : (
         <div></div>
       )}
-      <Link to={"market"} className="font-thin text-sm md:hidden">
-        View More
+      <Link to={"market"} className="font-thin flex items-center text-sm md:hidden">
+        View More <IoIosArrowForward size={14} color="rgba(140,140,140,.7)"/>
+
       </Link>
     </div>
   );
