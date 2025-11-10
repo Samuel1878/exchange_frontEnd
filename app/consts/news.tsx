@@ -1,0 +1,118 @@
+export const newsList = [
+        {
+            "article_id": "4990ae310cea5798a3455a997a92ed3b",
+            "link": "https://menafn.com/1110317617/Crypto-Market-Trends-Mirroring-Early-2000S-Stock-Boom-Expert-Analysis",
+            "title": "Crypto Market Trends Mirroring Early 2000S Stock Boom - Expert Analysis",
+            "description": "(MENAFN - Crypto Breaking) Recent market trends indicate that major Bitcoin and cryptocurrency investors are withdrawing their holdings, exerting sustained selling pressure that keeps crypto prices ...",
+            "content": "ONLY AVAILABLE IN PAID PLANS",
+            "keywords": null,
+            "creator": [
+                "marketing@menafn.com (MENAFN)"
+            ],
+            "language": "english",
+            "country": [
+                "montenegro",
+ 
+            ],
+            "category": [
+                "top",
+                "business"
+            ],
+            "pubDate": "2025-11-09 19:00:12",
+            "pubDateTZ": "UTC",
+            "image_url": "https://menafn.com/updates/pr/2025-11/09/CB_43e7dimage_story.jpg",
+            "video_url": null,
+            "source_id": "menafn",
+            "source_name": "Menafn",
+            "source_priority": 28392,
+            "source_url": "https://menafn.com",
+            "source_icon": "https://n.bytvi.com/menafn.png",
+            "sentiment": "ONLY AVAILABLE IN PROFESSIONAL AND CORPORATE PLANS",
+            "sentiment_stats": "ONLY AVAILABLE IN PROFESSIONAL AND CORPORATE PLANS",
+            "ai_tag": "ONLY AVAILABLE IN PROFESSIONAL AND CORPORATE PLANS",
+            "ai_region": "ONLY AVAILABLE IN CORPORATE PLANS",
+            "ai_org": "ONLY AVAILABLE IN CORPORATE PLANS",
+            "ai_summary": "ONLY AVAILABLE IN PAID PLANS",
+            "duplicate": false
+        },
+        {
+            "article_id": "194d880a15441ab15aee1b5ba120dc08",
+            "link": "https://economictimes.indiatimes.com/nri/invest/some-dollars-to-india-tethered-to-stablecoins/articleshow/125207800.cms",
+            "title": "Some dollars to India 'tethered' to Stablecoins",
+            "description": "A growing share of Indian remittances is quietly shifting to stablecoins like USDT to exploit a 4–5% premium in India. Money changers route funds via crypto wallets, enabling quicker, cheaper transfers and higher payouts, though regulatory concerns remain. Rising USDT demand sustains this trend, now 3–4% of total flows.",
+            "content": "ONLY AVAILABLE IN PAID PLANS",
+            "keywords": [
+                "crypto remittance advantages",
+                "cryptocurrency money transfers",
+                "foreign exchange rates usdt",
+                "usdt in india",
+                "rbi cbdc",
+                "india remittances stablecoins",
+                "stablecoin remittances",
+                "arbitrage opportunities in finance"
+            ],
+            "creator": [
+                "Sugata Ghosh"
+            ],
+            "language": "english",
+            "country": [
+                "india"
+            ],
+            "category": [
+                "business"
+            ],
+            "pubDate": "2025-11-09 19:11:45",
+            "pubDateTZ": "UTC",
+            "image_url": "https://img.etimg.com/thumb/width-1200,height-900,imgsize-115758,resizemode-75,msid-125207800/nri/invest/some-dollars-to-india-tethered-to-stablecoins.jpg",
+            "video_url": null,
+            "source_id": "economictimes_indiatimes",
+            "source_name": "The Economic Times",
+            "source_priority": 231,
+            "source_url": "https://economictimes.indiatimes.com",
+            "source_icon": "https://n.bytvi.com/economictimes_indiatimes.png",
+            "sentiment": "ONLY AVAILABLE IN PROFESSIONAL AND CORPORATE PLANS",
+            "sentiment_stats": "ONLY AVAILABLE IN PROFESSIONAL AND CORPORATE PLANS",
+            "ai_tag": "ONLY AVAILABLE IN PROFESSIONAL AND CORPORATE PLANS",
+            "ai_region": "ONLY AVAILABLE IN CORPORATE PLANS",
+            "ai_org": "ONLY AVAILABLE IN CORPORATE PLANS",
+            "ai_summary": "ONLY AVAILABLE IN PAID PLANS",
+            "duplicate": false
+        },
+        {
+            "article_id": "ae805abeef889f82b7e0db28ea248794",
+            "link": "https://www.analyticsinsight.net/cryptocurrency-analytics-insight/xrp-bulls-target-5-but-ozak-ais-forecast-suggests-a-much-bigger-move",
+            "title": "XRP Bulls Target $5, But Ozak AI’s Forecast Suggests a Much Bigger Move",
+            "description": "XRP eyes $5 as Ozak AI’s presale gains momentum with AI-blockchain innovation, partnerships, and 100x growth potential in 2025.",
+            "content": "ONLY AVAILABLE IN PAID PLANS",
+            "keywords": [
+                "xrp price prediction, ozak ai presale, ai crypto projects 2025, blockchain automation, crypto market forecast"
+            ],
+            "creator": [
+                "analyticsinsight"
+            ],
+            "language": "english",
+            "country": [
+                "united states of america"
+            ],
+            "category": [
+                "technology",
+                "business"
+            ],
+            "pubDate": "2025-11-09 22:50:00",
+            "pubDateTZ": "UTC",
+            "image_url": "https://media.assettype.com/analyticsinsight%2F2025-11-09%2Ftetukotb%2FOzak-AI%E2%80%99s-Forecast-Suggests-a-Much-Bigger-Move?ar=40%3A21&auto=format%2Ccompress&enlarge=true&mode=crop&ogImage=true&overlay=false&overlay_position=bottom&overlay_width=100&w=1200",
+            "video_url": null,
+            "source_id": "analyticsinsight",
+            "source_name": "Analytics And Insight",
+            "source_priority": 24556,
+            "source_url": "https://www.analyticsinsight.net",
+            // "source_icon": "https://n.bytvi.com/analyticsinsight.png",
+             "source_icon": "https://n.bytvi.com/investing_vn.jpg",
+            "sentiment": "ONLY AVAILABLE IN PROFESSIONAL AND CORPORATE PLANS",
+            "sentiment_stats": "ONLY AVAILABLE IN PROFESSIONAL AND CORPORATE PLANS",
+            "ai_tag": "ONLY AVAILABLE IN PROFESSIONAL AND CORPORATE PLANS",
+            "ai_region": "ONLY AVAILABLE IN CORPORATE PLANS",
+            "ai_org": "ONLY AVAILABLE IN CORPORATE PLANS",
+            "ai_summary": "ONLY AVAILABLE IN PAID PLANS",
+            "duplicate": false
+        },]

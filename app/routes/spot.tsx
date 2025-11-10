@@ -1,5 +1,5 @@
-import SpotScreen from "~/screens/spot";
-import type { Route } from "./+types/home";
+import SpotScreen from "~/screens/trade/spot";
+import type { Route } from "./+types/spot";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -8,6 +8,6 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
+export default function Sport() {
   return <SpotScreen />;
 }

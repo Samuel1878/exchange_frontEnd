@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@number-flow/react": "^0.5.10",
     "@react-router/node": "^7.9.2",
     "@react-router/serve": "^7.9.2",
     "@reduxjs/toolkit": "^2.10.1",
