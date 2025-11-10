@@ -19,132 +19,128 @@ import { FaHandHoldingHeart } from "react-icons/fa";
 export type menu = {
   value: string;
   label: string;
-  description?:string;
-  icon?:JSX.Element;
-  hasMore?:boolean | false;
-
+  description?: string;
+  icon?: JSX.Element;
+  hasMore?: boolean | false;
 };
 
 export const topNavMenu: menu[] = [
   {
     value: "deposit",
     label: "deposit",
-    icon:<GiWallet size={23}  color="rgba(120,130,150,1)"/>
-
+    icon: <GiWallet size={23} color="rgba(120,130,150,1)" />,
   },
-   {
+  {
     value: "market",
     label: "market",
-     icon:<RiBarChart2Fill size={26}  color="rgba(120,130,150,1)"/>
-
-
+    icon: <RiBarChart2Fill size={26} color="rgba(120,130,150,1)" />,
   },
   {
     value: "ai",
     label: "ai",
-     icon:<FaLightbulb size={23} color="rgba(120,130,150,1)"/>
-
-
+    icon: <FaLightbulb size={23} color="rgba(120,130,150,1)" />,
   },
- 
+
   {
     value: "trade",
     label: "trade",
-    hasMore:true,
-    icon:<BsCurrencyExchange size={23}  color="rgba(120,130,150,1)"/>
-   
-
+    hasMore: true,
+    icon: <BsCurrencyExchange size={23} color="rgba(120,130,150,1)" />,
   },
   {
     value: "earn",
     label: "earn",
-    hasMore:true,
-    icon:<GiReceiveMoney size={23}  color="rgba(120,130,150,1)"/>
+    hasMore: true,
+    icon: <GiReceiveMoney size={23} color="rgba(120,130,150,1)" />,
   },
   {
     value: "more",
     label: "more",
-    hasMore:true,
-    icon:<IoGrid size={23}  color="rgba(120,130,150,1)"/>
+    hasMore: true,
+    icon: <IoGrid size={23} color="rgba(120,130,150,1)" />,
   },
 ];
 
 export const verticalNavMenu: menu[] = [
   ...topNavMenu,
   {
-    value:"f&q",
-    label:"f&q",
-    icon:<AiFillQuestionCircle size={23}  color="rgba(120,130,150,1)"/>
-
+    value: "f&q",
+    label: "f&q",
+    icon: <AiFillQuestionCircle size={23} color="rgba(120,130,150,1)" />,
   },
   {
     value: "support",
     label: "24/7 chat support",
-    icon:<BiSupport size={23}  color="rgba(120,130,150,1)"/>
-
+    icon: <BiSupport size={23} color="rgba(120,130,150,1)" />,
   },
   {
     value: "download",
     label: "download",
-    icon:<BiDownload size={23}  color="rgba(120,130,150,1)"/>
+    icon: <BiDownload size={23} color="rgba(120,130,150,1)" />,
   },
   {
     value: "language",
     label: "language",
 
-    icon:<RiGlobalFill size={23}  color="rgba(120,130,150,1)"/>
+    icon: <RiGlobalFill size={23} color="rgba(120,130,150,1)" />,
   },
 ];
 
-export const tradeMenuList :menu[]= [{
-  value: "event",
-  label: "Event Contract",
-  description: "Short cycle, quick returns",
-  icon:<GiTimeTrap size={26}  color="rgba(120,130,150,1)"/>
-
-},
+export const tradeMenuList: menu[] = [
   {
-    value:"spot",
-    label:"Spot",
-    description:"Buy and sell on the spot market with advanced tools",
-    icon:<BsCurrencyExchange size={26}  color="rgba(120,130,150,1)"/>
+    value: "event",
+    label: "Event Contract",
+    description: "Short cycle, quick returns",
+    icon: <GiTimeTrap size={26} color="rgba(120,130,150,1)" />,
   },
   {
-    value:"contract",
-    label:"Contract",
-    description:"Increase your profits with leverage",
-    icon:<FaFileContract size={26} color="rgba(120,130,150,1)"/>
+    value: "spot",
+    label: "Spot",
+    description: "Buy and sell on the spot market with advanced tools",
+    icon: <BsCurrencyExchange size={26} color="rgba(120,130,150,1)" />,
+  },
+  {
+    value: "contract",
+    label: "Contract",
+    description: "Increase your profits with leverage",
+    icon: <FaFileContract size={26} color="rgba(120,130,150,1)" />,
+  },
+];
 
-  }
-]
+export const earnMenuList: menu[] = [
+  {
+    value: "loans",
+    label: "Loans",
+    description: "Access quick and easy loans with competitive rates",
+    icon: <GrMoney size={26} color="rgb(120,130,150)" />,
+  },
+  {
+    value: "earn",
+    icon: <GiReceiveMoney size={26} color="rgba(120,130,150,1)" />,
+    label: "Advanced Earn",
+    description:
+      "Maximize your returns with our advanced yield investment products",
+  },
+];
 
-export const earnMenuList :menu[]= [{
-  value:"loans",
-  label:"Loans",
-  description:"Access quick and easy loans with competitive rates",
-  icon:<GrMoney size={26} color="rgb(120,130,150)"/>
-
-},{
-  value:"earn",
-  icon:<GiReceiveMoney size={26}  color="rgba(120,130,150,1)"/>,
-  label:"Advanced Earn",
-  description:"Maximize your returns with our advanced yield investment products"
-}]
-
-export const moreMenuList :menu[] = [{
-  value:"trends",
-  icon:<RiBarChart2Fill size={26}  color="rgba(120,130,150,1)"/>,
-  label:"Market Trends",
-  description:"Expand your knowledge and get the latest insights"
-}, {
-  value:"charity",
-  label:"Charity",
-  icon:<FaHandHoldingHeart size={26}  color="rgba(120,130,150,1)"/>,
-  description:"Blockchain empowers charity to be more transparent, efficient, and traceable"
-}]
+export const moreMenuList: menu[] = [
+  {
+    value: "trends",
+    icon: <RiBarChart2Fill size={26} color="rgba(120,130,150,1)" />,
+    label: "Market Trends",
+    description: "Expand your knowledge and get the latest insights",
+  },
+  {
+    value: "charity",
+    label: "Charity",
+    icon: <FaHandHoldingHeart size={26} color="rgba(120,130,150,1)" />,
+    description:
+      "Blockchain empowers charity to be more transparent, efficient, and traceable",
+  },
+];
 
 export const dropdownMenus = {
-  "trade":tradeMenuList,
-  "earn":earnMenuList,
-  "more":moreMenuList
-}
+  trade: tradeMenuList,
+  earn: earnMenuList,
+  more: moreMenuList,
+};

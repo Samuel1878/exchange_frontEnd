@@ -25,7 +25,8 @@
     "react-i18next": "^16.2.4",
     "react-icons": "^5.5.0",
     "react-redux": "^9.2.0",
-    "react-router": "^7.9.2"
+    "react-router": "^7.9.2",
+    "react-slot-counter": "^3.3.1"
   },
   "devDependencies": {
     "@react-router/dev": "^7.9.2",

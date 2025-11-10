@@ -7,7 +7,6 @@ import whatsapp from "assets/images/whatsapp.png";
 import facebook from "assets/images/facebook.png";
 import messenger from "assets/images/messenger.png";
 
-
 export const contacts = [
   {
     name: "telegram",
@@ -40,16 +39,16 @@ export const contacts = [
   {
     name: "whatsapp",
     icon: whatsapp,
-  }
+  },
 ];
 export const services = [
   {
-    label:"deposit",
-    value:"deposit"
+    label: "deposit",
+    value: "deposit",
   },
   {
-    label:"market",
-    value:"market"
+    label: "market",
+    value: "market",
   },
   {
     label: "ai",
@@ -63,25 +62,24 @@ export const services = [
     label: "spot",
     value: "spot",
   },
-    {
+  {
     label: "contract",
     value: "contract",
   },
-    {
+  {
     label: "loan",
     value: "loan",
   },
-    {
+  {
     label: "earn",
     value: "earn",
   },
-  
 ];
 export const help = [
-      {
-            label:"download",
-            value:"#download"
-      },
+  {
+    label: "download",
+    value: "#download",
+  },
   {
     label: "24/7 Support",
     value: "support",
@@ -89,8 +87,7 @@ export const help = [
   {
     label: "FAQ",
     value: "#faq",
-  }
-  
+  },
 ];
 export const company = [
   {
@@ -104,5 +101,5 @@ export const company = [
   {
     label: "Privacy Policy",
     value: "privacy",
-  }
+  },
 ];

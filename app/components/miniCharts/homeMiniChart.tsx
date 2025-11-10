@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 import { miniCoinList } from "~/consts/miniLists";
 import { IoIosArrowForward } from "react-icons/io";
-
+import SlotCounter from "react-slot-counter"
 enum lists {
   coin = "coin",
   nft = "nft",
@@ -53,7 +53,7 @@ export default function HomeMiniChart() {
                     <p className="text-md text-gray-50 font-bold">{e.symbol}</p>
                     <p className="text-sm font-thin capitalize">{e.name}</p>
                   </div>
-                  <p>$14050050</p>
+                  <SlotCounter value={"$1309920"}/>
                 </div>
                 <div className="flex-1 flex justify-end">
                   <p className="text-green-400">+0.24%</p>

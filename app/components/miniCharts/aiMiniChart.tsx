@@ -2,13 +2,16 @@ import { IoIosArrowForward } from "react-icons/io";
 import { Link } from "react-router";
 import { miniAiList } from "~/consts/miniLists";
 import { HiUsers } from "react-icons/hi2";
-
+import SlotCounter from "react-slot-counter";
 export default function AiMiniChart() {
   return (
     <div className="bg-gray-900 flex flex-col lg:min-w-md items-center xl:min-w-lg md:bg-gray-800 md:rounded-2xl md:p-4 md:px-8 md:mx-8 lg:mx-4">
       <div className="w-full flex items-center justify-between">
         <p>Top AI quantitative strategy</p>
-        <Link to={"ai"} className="font-thin hidden md:flex items-center text-sm">
+        <Link
+          to={"ai"}
+          className="font-thin hidden md:flex items-center text-sm"
+        >
           View More <IoIosArrowForward size={14} color="rgba(140,140,140,.7)" />
         </Link>
       </div>
@@ -21,7 +24,10 @@ export default function AiMiniChart() {
                 <p className="text-md text-gray-50 font-bold">{e.symbol}</p>
               </div>
               <div className="flex items-center gap-2 justify-between">
-                <p> {e.users}</p>
+                <p>
+                  {" "}
+                  <SlotCounter value={e.users} />
+                </p>
                 <HiUsers color="#d9d9d9" />
               </div>
             </div>
@@ -32,8 +38,7 @@ export default function AiMiniChart() {
         );
       })}
       <Link to={"ai"} className="font-thin flex items-center text-sm md:hidden">
-        View More <IoIosArrowForward size={14} color="rgba(140,140,140,.7)"/>
-
+        View More <IoIosArrowForward size={14} color="rgba(140,140,140,.7)" />
       </Link>
     </div>
   );
