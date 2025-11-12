@@ -46,13 +46,13 @@ export default function HorizonalNavBar() {
                   <div className="bg-gray-900 p-6 absolute w-md flex flex-col items-start -left-10 rounded-b-xl">
                         {
                           dropdownMenus[e.value]?.map((data:menu, i)=> (
-                              <li  key={i} className="flex my-4 gap-4 hover:**:first:text-amber-300 hover:**:not-first:text-gray-400">
+                              <Link to={data.value}  key={i} className="flex my-4 gap-4 hover:**:first:text-amber-300 hover:**:not-first:text-gray-400">
                                     {data.icon}
                                     <div className="flex flex-col items-start gap-y-1 **:-mt-2">
                                           <p className="text-gray-100 text-lg font-bold">{data.label}</p>
                                           <p className="text-gray-500 text-sm font-medium">{data.description}</p>
                                     </div>
-                              </li>
+                              </Link>
                           ))    
                         }
                   </div>

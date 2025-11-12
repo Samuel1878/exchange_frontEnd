@@ -88,19 +88,19 @@ export const verticalNavMenu: menu[] = [
 
 export const tradeMenuList: menu[] = [
   {
-    value: "event",
+    value: "trade/event",
     label: "Event Contract",
     description: "Short cycle, quick returns",
     icon: <GiTimeTrap size={26} color="rgba(120,130,150,1)" />,
   },
   {
-    value: "spot",
+    value: "trade/spot",
     label: "Spot",
     description: "Buy and sell on the spot market with advanced tools",
     icon: <BsCurrencyExchange size={26} color="rgba(120,130,150,1)" />,
   },
   {
-    value: "contract",
+    value: "trade/contract",
     label: "Contract",
     description: "Increase your profits with leverage",
     icon: <FaFileContract size={26} color="rgba(120,130,150,1)" />,
