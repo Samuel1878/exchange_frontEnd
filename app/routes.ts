@@ -11,8 +11,12 @@ export default [
     index("routes/home.tsx"),
     route("market", "./routes/market.tsx"),
     route("ai", "./routes/ai.tsx"),
+     
     ...prefix("trade", [
       route(":type", "./routes/trade.tsx")
+    ]),
+    ...prefix ("earn", [
+      route("loans", "./routes/loan.tsx"),
     ])
   ]),
 ] satisfies RouteConfig;

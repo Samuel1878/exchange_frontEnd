@@ -23,7 +23,7 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
 
   return (
     <main className="" id={"trade"}>
-      <div className="bg-gray-950 md:hidden">
+      <div className="block md:hidden">
         <MobileChart/>
 
       </div>

@@ -1,32 +1,133 @@
-  import { websocketClient } from "@massive.com/client-js";
+import { websocketClient } from "@massive.com/client-js";
+import { useState } from "react";
+import { FiInfo } from "react-icons/fi";
+import { IoMdArrowDropdown } from "react-icons/io";
+import { Form } from "react-router";
+import { FaMinus, FaPlus } from "react-icons/fa";
+import { GoArrowSwitch } from "react-icons/go";
+import { OrderBookFilterBtn } from "./components/buttons";
+import { BottomDrawerOptions } from "./components/bottomDrawer";
+
 export default function () {
-    
+  const [isBuy, setIsBuy] = useState<boolean>(true);
+  const [isLimit, setIsLimit] = useState(true);
+  const [option, setOptions] = useState("both");
+  const [openDrawer, setOpenDrawer] = useState(false);
+  const [orderBookFilter, setOrderBookFilter] = useState("0.00001")
+  const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
+  const toggleAction = () => {
+    if (option === "both") {
+      setOptions("bid");
+      return;
+    } else if (option === "bid") {
+      setOptions("ask");
+      return;
+    } else {
+      setOptions("both");
+    }
+  };
 
-// create a websocket client using the massive client-js library
-const ws  = websocketClient('Nms5hMpx5pz15EHxU8SY3lpkpwsgZJL0', 'wss://socket.massive.com').crypto();
+  return (
+    <div className="p-2">
+      <header className="flex justify-between items-center">
+        <div className="flex gap-4 items-end">
+          <button className="text-gray-50 font-medium text-xl">
+            BTC/USDT
+            <span></span>
+          </button>
+          <p className="text-green-500 font-semibold text-sm">0.5239 % </p>
+        </div>
+        <button>
+          <img
+            src="../../assets/icons/mini_cs.svg"
+            color={"#f0b90b"}
+            className="w-6"
+          />
+        </button>
+      </header>
+      <div className="flex gap-3 mt-6">
+        <div id="orderBook" className="flex-4 flex flex-col">
+          <div className="flex gap-2">
+            <button onClick={()=>setOpenDrawer(true)} className="flex rounded-lg flex-1 items-center justify-around bg-gray-700">
+             {orderBookFilter}
+              <IoMdArrowDropdown />
+            </button>
+            <OrderBookFilterBtn option={option} toggleAction={toggleAction} />
+          </div>
+        </div>
+        <div id="trde" className="flex-5 flex flex-col gap-4">
+          <div className="flex gap-1">
+            <button
+              onClick={() => setIsBuy(true)}
+              className={`flex-1 h-12 rounded-lg justify-center items-center  ${isBuy ? "bg-green-400" : "bg-gray-800"}`}
+            >
+              Buy
+            </button>
+            <button
+              onClick={() => setIsBuy(false)}
+              className={`flex-1 h-12 rounded-lg justify-center items-center  ${!isBuy ? "bg-red-500" : "bg-gray-800"}`}
+            >
+              Sell
+            </button>
+          </div>
+          <button onClick={()=>setOpenLimitDrawer(true)} className="h-12 flex justify-between bg-gray-800 items-center px-4 rounded-md">
+            <FiInfo />
 
-// register a handler to log errors
-ws.onerror = (err) => console.log('Failed to connect', err);
-
-// register a handler to log info if websocket closes
-ws.onclose = (code, reason) => console.log('Connection closed', code, reason);
-
-// register a handler when messages are received
-ws.onmessage = (msg) => {
- // parse the data from the message
- const parsedMessage = JSON.parse(msg.data);
-
- // wait until the message saying authentication was successful, then subscribe to a channel
- if (parsedMessage[0].ev === 'status' && parsedMessage[0].status === 'auth_success') {
-  console.log('Subscribing to the second aggregates channel for ticker *');
-  ws.send(JSON.stringify({"action":"subscribe", "params":"XAS.*"}));
- }
-
- console.log('Message received:', parsedMessage);
-}
-      return(
-            <div>
-
+            {isLimit ? "Limit" : "Market"}
+            <IoMdArrowDropdown />
+          </button>
+          <input
+            className="outline-gray-700 outline-1 focus:outline-amber-400 rounded-md text-center h-12 w-full"
+            placeholder="Price (USDT)"
+          />
+          <input
+            className="outline-gray-700 outline-1 focus:outline-amber-400 rounded-md text-center h-12 w-full"
+            placeholder="Total (USDT)"
+          />
+          <div className="flex outline-gray-700 outline-1 focus:outline-amber-400 rounded-md p-2 h-14">
+            <button className="bg-gray-800 rounded-sm px-3">
+              <FaMinus />
+            </button>
+            <input
+              className=" text-center focus:outline-0 w-full placeholder:text-sm"
+              placeholder="Amount (BTC)"
+            />
+            <button className="bg-gray-800 rounded-sm px-3">
+              <FaPlus />
+            </button>
+          </div>
+          <div className="flex justify-between gap-2">
+            <button className="py-1 flex-1 items-center bg-gray-800 rounded-sm">
+              25%
+            </button>
+            <button className="py-1 flex-1 items-center bg-gray-800 rounded-sm">
+              50%
+            </button>
+            <button className="py-1 flex-1 items-center bg-gray-800 rounded-sm">
+              75%
+            </button>
+            <button className="py-1 flex-1 items-center bg-gray-800 rounded-sm">
+              100%
+            </button>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-lg text-gray-400">Avilable</p>
+            <div className="flex gap-2">
+              <p>0 USDT</p>
+              <button>
+                <GoArrowSwitch />
+              </button>
             </div>
-      )
+          </div>
+          <button
+            className={`h-12 text-center rounded-lg ${isBuy ? "bg-green-400" : "bg-red-500"}`}
+          >
+            {isBuy ? "Buy" : "Sell"}
+          </button>
+        </div>
+      </div>
+      <BottomDrawerOptions openDrawer={openLimitDrawer} toggle={()=>setIsLimit((prev)=>!prev)} setOpenDrawer={setOpenLimitDrawer} data={[{value:"limit"},{value:"market"}]}/>
+        <BottomDrawerOptions openDrawer={openDrawer} setOrderBookFilter={setOrderBookFilter} setOpenDrawer={setOpenDrawer} data={[{value:"0.000001"},{value:"0.00001"},{value:"0.0001"},{value:"0.001"},{value:"0.01"}, {value:"0.1"}]}/>
+    </div>
+  );
 }

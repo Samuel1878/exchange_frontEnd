@@ -109,13 +109,13 @@ export const tradeMenuList: menu[] = [
 
 export const earnMenuList: menu[] = [
   {
-    value: "loans",
+    value: "earn/loans",
     label: "Loans",
     description: "Access quick and easy loans with competitive rates",
     icon: <GrMoney size={26} color="rgb(120,130,150)" />,
   },
   {
-    value: "earn",
+    value: "earn/earn",
     icon: <GiReceiveMoney size={26} color="rgba(120,130,150,1)" />,
     label: "Advanced Earn",
     description:
