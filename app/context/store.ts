@@ -1,10 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import AuthSlice from "./slices/authSlice";
-// ...
+import orderbookReducer from './slices/orderBook';
 
 const store = configureStore({
   reducer: {
     auth: AuthSlice,
+        orderbook: orderbookReducer,
   },
 });
 export default store;
