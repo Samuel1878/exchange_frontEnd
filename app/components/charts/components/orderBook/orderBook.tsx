@@ -1,5 +1,5 @@
-import React, {  useEffect } from "react";
-import type{FunctionComponent} from "react"
+import React, { useEffect } from "react";
+import type { FunctionComponent } from "react";
 // import useWebSocket from "react-use-websocket";
 
 // import { Container, TableContainer } from "./styles";
@@ -57,7 +57,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
 
   const processMessages = (event: { data: string }) => {
     const response = JSON.parse(event.data);
-
+  
     if (response.numLevels) {
       dispatch(addExistingState(response));
     } else {
@@ -90,15 +90,16 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
   }, [isFeedKilled, productId, sendJsonMessage, getWebSocket]);
 
   const process = (data: Delta) => {
-    if (data?.bids?.length > 0) {
-      currentBids = [...currentBids, ...data.bids];
+  
+      if (data?.bids?.length > 0) {
+        currentBids = [...currentBids, ...data.bids];
 
-      if (currentBids.length > ORDERBOOK_LEVELS) {
-        dispatch(addBids(currentBids));
-        currentBids = [];
-        currentBids.length = 0;
+        if (currentBids.length > ORDERBOOK_LEVELS) {
+          dispatch(addBids(currentBids));
+          currentBids = [];
+          currentBids.length = 0;
+        }
       }
-    }
     if (data?.asks?.length >= 0) {
       currentAsks = [...currentAsks, ...data.asks];
 
@@ -133,7 +134,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
       }
     );
 
-    return sortedLevelsByPrice.map((level, idx) => {
+    return levels.map((level, idx) => {
       const calculatedTotal: number = level[2];
       const total: string = formatNumber(calculatedTotal);
       const depth = level[3];
@@ -153,7 +154,6 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
             total={total}
             size={size}
             price={price}
-          
           />
         </div>
       );
@@ -162,19 +162,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
 
   return (
     <div
-      className={`flex
-        flex-col
-  justify-around
-  bg-gray-900
- relative
-  after:h-full
-  
-    after:p-1
-    after:block
-    
-    after:absolute
-    after:left-0
-    z-0`}
+      className={`flex flex-col justify-around bg-gray-900 relative after:h-full after:p-1 after:block after:absolute after:left-0 z-0`}
     >
       {bids.length && asks.length ? (
         <>
@@ -188,29 +176,18 @@ md:w-1/2
 
 `}
           >
-            <title className="text-green-700">
-                  BID
-            </title>
+            <title className="text-green-700">BID</title>
             <div>{buildPriceLevels(bids, OrderType.BIDS)}</div>
           </table>
           <Spread bids={bids} asks={asks} />
-          <table
-            className={`
-flex
-  w-full
-  flex-col
-  bg-green-300
-md:w-1/2
-
-`}
-          >
+          <table className={`flex w-full flex-col`}>
             {/* <TitleRow windowWidth={windowWidth} reversedFieldsOrder={true} /> */}
             <title>ASK</title>
             <div>{buildPriceLevels(asks, OrderType.ASKS)}</div>
           </table>
         </>
       ) : (
-         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
       )}
     </div>
   );

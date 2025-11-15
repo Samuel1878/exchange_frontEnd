@@ -7,10 +7,10 @@ export default function AiMiniChart() {
   return (
     <div className="bg-gray-900 flex flex-col lg:min-w-md items-center xl:min-w-lg md:bg-gray-800 md:rounded-2xl md:p-4 md:px-8 md:mx-8 lg:mx-4">
       <div className="w-full flex items-center justify-between">
-        <p>Top AI quantitative strategy</p>
+        <p className="text-gray-50">Top AI quantitative strategy</p>
         <Link
           to={"ai"}
-          className="font-thin hidden md:flex items-center text-sm"
+          className="font-thin hidden md:flex items-center text-sm text-gray-400"
         >
           View More <IoIosArrowForward size={14} color="rgba(140,140,140,.7)" />
         </Link>
@@ -37,7 +37,7 @@ export default function AiMiniChart() {
           </div>
         );
       })}
-      <Link to={"ai"} className="font-thin flex items-center text-sm md:hidden">
+      <Link to={"ai"} className="font-thin flex items-center text-sm md:hidden text-gray-400">
         View More <IoIosArrowForward size={14} color="rgba(140,140,140,.7)" />
       </Link>
     </div>

@@ -23,9 +23,9 @@ export default function () {
               src={article_one.image_url}
               className="rounded-xl max-h-40 mb-2 w-full"
             />
-            <p className="text-md font-bold">{article_one.title}</p>
+            <p className="text-md font-bold text-gray-50">{article_one.title}</p>
             <p className="text-amber-400 font-serif">{article_one.content}</p>
-            <p className="font-thin">{article_one.description}</p>
+            <p className="font-thin text-gray-500">{article_one.description}</p>
             <a
               className="underline mt-2 text-amber-300"
               href={article_one.source_url}
@@ -51,9 +51,9 @@ export default function () {
               src={article_two?.image_url}
               className="rounded-xl  max-h-40 mb-2 w-full"
             />
-            <p className="text-md font-bold my-2">{article_two.title}</p>
+            <p className="text-md font-bold my-2 text-gray-50">{article_two.title}</p>
             <p className="text-amber-400 font-serif">{article_two.content}</p>
-            <p className="font-thin">{article_two.description}</p>
+            <p className="font-thin text-gray-500">{article_two.description}</p>
             <a
               className="underline mt-2 text-amber-300"
               href={article_two.source_url}
@@ -79,11 +79,11 @@ export default function () {
               src={article_three?.image_url}
               className="rounded-xl  max-h-40 mb-2 w-full"
             />
-            <p className="text-md font-bold">{article_three.title}</p>
+            <p className="text-md font-bold text-gray-50">{article_three.title}</p>
             <p className="text-amber-400 font-serif my-2">
               {article_three.content}
             </p>
-            <p className="font-thin">{article_three.description}</p>
+            <p className="font-thin text-gray-500">{article_three.description}</p>
             <a
               className="underline mt-2 text-amber-300"
               href={article_three.source_url}

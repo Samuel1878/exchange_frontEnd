@@ -47,9 +47,9 @@ export default function FAQ() {
               }}
             >
               {open.opening && open.value === data.id ? (
-                <FaMinus />
+                <FaMinus color="#fff"/>
               ) : (
-                <FaPlus />
+                <FaPlus color="#fff"/>
               )}
             </button>
           </div>

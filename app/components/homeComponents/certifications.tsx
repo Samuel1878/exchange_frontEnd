@@ -53,7 +53,7 @@ export default function Certifications() {
         {certifiListLg.map((e) => (
           <div className="flex items-center mr-12 gap-4" key={e.id}>
             <img src={e.image} className="w-15 h-15" />
-            <p className="max-w-md whitespace-normal font-thin text-sm">
+            <p className="max-w-md whitespace-normal font-thin text-sm text-gray-500">
               {e.text}
             </p>
           </div>

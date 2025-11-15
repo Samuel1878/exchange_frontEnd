@@ -18,7 +18,7 @@ const PriceLevelRow: FunctionComponent<PriceLevelRowProps> = ({
   bg-gray-900
   relative
   after:bg-center
-   
+   h-6
       after:h-full
       after:p-1
       after:block

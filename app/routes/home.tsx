@@ -97,7 +97,7 @@ export default function Home() {
                     borderColor: "rgba(244,244,244,.3)",
                   }}
                   placeholder="Email/Phone number"
-                  className="py-3 rounded-md w-76 px-3 border-amber-50"
+                  className="py-3 rounded-md w-76 px-3 text-gray-200 border-amber-50 focus:outline-1 focus:outline-amber-400"
                 />
               </Form>
               <button className="bg-amber-300 px-14 py-3 rounded-md">
@@ -124,7 +124,7 @@ export default function Home() {
                   CENTRALIZED TRUST
                 </span>
               </p>
-              <p className="font-thin text-center md:text-start wrap-break-word">
+              <p className="font-thin text-center md:text-start wrap-break-word text-gray-200">
                 Expore the potentials to reshape your financial landscape and
                 seize the future with digital assets. We gurantee the
                 transactions are safe, fast and simple.
@@ -147,7 +147,7 @@ export default function Home() {
                   <p className="text-amber-400 text-md text-center md:text-start">
                     100,000/1s orders
                   </p>
-                  <p className="font-thin text-center md:text-start">
+                  <p className="font-thin text-center md:text-start text-gray-400">
                     Smart contract engine processing
                   </p>
                 </div>
@@ -155,7 +155,7 @@ export default function Home() {
                   <p className="text-amber-400 text-md text-center md:text-start">
                     5 milliseconds
                   </p>
-                  <p className="font-thin text-center md:text-start">
+                  <p className="font-thin text-center md:text-start text-gray-400">
                     Minimum delay for per transaction
                   </p>
                 </div>
@@ -185,7 +185,7 @@ export default function Home() {
                   <p className="text-lg text-gray-50 font-medium font-serif md:text-xl ">
                     {e.label}
                   </p>
-                  <p className={`font-thin text-sm hidden md:block`}>
+                  <p className={`font-thin text-sm hidden md:block text-gray-400`}>
                     {e.description}
                   </p>
                   <button className="bg-amber-300 p-1 rounded-md w-30 hidden md:block text-gray-950 mt-6 text-md font-medium">

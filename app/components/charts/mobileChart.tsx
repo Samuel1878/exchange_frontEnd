@@ -12,6 +12,7 @@ import { getOptions } from "./configs/miniOrderConfig";
 import { colorGreen, colorGreenOpacity, colorRed, colorRedOpacity, priceFormatter, ProductIds } from "./util";
 import ReactECharts from 'echarts-for-react';
 import OrderBook from "./components/orderBook/orderBook";
+import App from "./components/ordeBookTest";
 
 export default function () {
   const [isBuy, setIsBuy] = useState<boolean>(true);
@@ -61,18 +62,24 @@ export default function () {
           />
         </button>
       </header>
-      <div className="flex gap-3 mt-6">
-        <div id="orderBook" className="flex-4 flex flex-col">
+      <div className="flex gap-3 mt-6 ">
+        <div id="orderBook" className="flex-4 flex flex-col max-h-100">
+          <OrderBook
+            windowWidth={80}
+            productId={productId}
+            isFeedKilled={isFeedKilled}
+          />
+          {/* <App/> */}
           <div className="flex gap-2">
-            <button onClick={()=>setOpenDrawer(true)} className="flex rounded-lg text-gray-50 flex-1 items-center justify-around bg-gray-700">
-             {orderBookFilter}
+            <button
+              onClick={() => setOpenDrawer(true)}
+              className="flex rounded-lg text-gray-50 flex-1 items-center justify-around bg-gray-700"
+            >
+              {orderBookFilter}
               <IoMdArrowDropdown />
             </button>
             <OrderBookFilterBtn option={option} toggleAction={toggleAction} />
           </div>
-          <OrderBook windowWidth={80} productId={productId} isFeedKilled={isFeedKilled}/>
-        
-
         </div>
         <div id="trde" className="flex-5 flex flex-col gap-4">
           <div className="flex gap-1">
@@ -89,7 +96,10 @@ export default function () {
               Sell
             </button>
           </div>
-          <button onClick={()=>setOpenLimitDrawer(true)} className="h-12 flex justify-between text-gray-50 bg-gray-800 items-center px-4 rounded-md">
+          <button
+            onClick={() => setOpenLimitDrawer(true)}
+            className="h-12 flex justify-between text-gray-50 bg-gray-800 items-center px-4 rounded-md"
+          >
             <FiInfo />
 
             {isLimit ? "Limit" : "Market"}
@@ -105,14 +115,14 @@ export default function () {
           />
           <div className="flex outline-gray-700 outline-1 focus:outline-amber-400 rounded-md p-2 h-14 ">
             <button className="bg-gray-800 rounded-sm px-3">
-              <FaMinus color="#fff"/>
+              <FaMinus color="#fff" />
             </button>
             <input
               className=" text-center focus:outline-0 w-full placeholder:text-sm text-gray-50"
               placeholder="Amount (BTC)"
             />
             <button className="bg-gray-800 rounded-sm px-3">
-              <FaPlus color="#fff"/>
+              <FaPlus color="#fff" />
             </button>
           </div>
           <div className="flex justify-between gap-2">
@@ -145,8 +155,25 @@ export default function () {
           </button>
         </div>
       </div>
-      <BottomDrawerOptions openDrawer={openLimitDrawer} toggle={()=>setIsLimit((prev)=>!prev)} setOpenDrawer={setOpenLimitDrawer} data={[{value:"limit"},{value:"market"}]}/>
-        <BottomDrawerOptions openDrawer={openDrawer} setOrderBookFilter={setOrderBookFilter} setOpenDrawer={setOpenDrawer} data={[{value:"0.000001"},{value:"0.00001"},{value:"0.0001"},{value:"0.001"},{value:"0.01"}, {value:"0.1"}]}/>
+      <BottomDrawerOptions
+        openDrawer={openLimitDrawer}
+        toggle={() => setIsLimit((prev) => !prev)}
+        setOpenDrawer={setOpenLimitDrawer}
+        data={[{ value: "limit" }, { value: "market" }]}
+      />
+      <BottomDrawerOptions
+        openDrawer={openDrawer}
+        setOrderBookFilter={setOrderBookFilter}
+        setOpenDrawer={setOpenDrawer}
+        data={[
+          { value: "0.000001" },
+          { value: "0.00001" },
+          { value: "0.0001" },
+          { value: "0.001" },
+          { value: "0.01" },
+          { value: "0.1" },
+        ]}
+      />
     </div>
   );
 }

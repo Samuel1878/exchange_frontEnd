@@ -10,11 +10,11 @@ interface DepthVisualizerProps {
 
 const DepthVisualizerColors = {
   BIDS: "green",
-  ASKS: "red"
+  ASKS: "rgba(255,30,30,.6)"
 };
 
 const DepthVisualizer: FunctionComponent<DepthVisualizerProps> = ({windowWidth, depth, orderType }) => {
-  return <div data-testid="depth-visualizer" style={{
+  return <div className='py-4' data-testid="depth-visualizer" style={{
     backgroundColor: `${orderType === OrderType.BIDS ? DepthVisualizerColors.BIDS : DepthVisualizerColors.ASKS}`,
     height: "1.250em",
     opacity:.4,
@@ -22,7 +22,7 @@ const DepthVisualizer: FunctionComponent<DepthVisualizerProps> = ({windowWidth, 
     position: "relative",
     top: 21,
     left: `${100 - depth}%`,
-    marginTop: -24,
+    marginTop: -28,
     zIndex: 1,
   }} />;
 };

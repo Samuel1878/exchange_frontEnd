@@ -35,7 +35,7 @@ export default function Dashboard() {
     const tokens = allTokensData[activeTab] || [];
 
     return (
-        <main className="bg-gray-900 lg:bg-gray-950 ">
+        <main className="bg-gray-900 lg:bg-gray-950 overflow-x-hidden">
             <section
                 id="hero"
                 className="flex flex-col lg:items-center"
@@ -81,7 +81,7 @@ export default function Dashboard() {
                                             <tr
                                                 key={e.id}
                                                 className="cursor-pointer border-t border-gray-700 even:bg-gray-800 hover:bg-gray-700"
-                                                onClick={() => navigate(`/price/${e.symbol}`)}
+                                                onClick={() => navigate(`price/${e.symbol}`)}
                                             >
                                                 <td className="flex items-center space-x-2 px-4 py-3">
                                                     <FaRegStar className="w-9 h-6" />

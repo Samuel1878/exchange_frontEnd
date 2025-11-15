@@ -37,7 +37,7 @@ export default function HomeMiniChart() {
         </button>
         </div>
        
-        <Link to={"market"} className="text-md font-thin md:flex items-center gap-2 hidden">
+        <Link to={"market"} className="text-md font-thin md:flex items-center gap-2 hidden text-gray-500">
           View more <IoIosArrowForward size={14} color="rgba(140,140,140,.7)"/>
 
         </Link>

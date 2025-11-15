@@ -10,6 +10,20 @@ import FooterSection from "~/components/footer";
 import { BiTimer } from "react-icons/bi";
 import { GrTransaction } from "react-icons/gr";
 import { FaSackDollar } from "react-icons/fa6";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from "~/components/ui/dialog";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "~/components/ui/select";
+import { Checkbox } from "~/components/ui/checkbox";
+
 const allTokensData = {
     Favorites: [
         { symbol: "BTC", name: "Bitcoin", price: "$103,592.27", change: "-1.49%", high: "$605,400", low: "$ 102,476.09", vol: "22.38K", turnover: "$2,322,487.86K", icon: <img src="../../assets/coins/miniBtc.png" width={32} /> },
@@ -31,10 +45,27 @@ export default function LoanTab() {
     const [showModal, setShowModal] = useState(false);
     const [activeTab, setActiveTab] = useState("Borrowing_Order");
     const Borrowtokens = allTokensData[activeTab] || [];
+    const [selectedToken, setSelectedToken] = useState(null);
+    const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [days, setDays] = useState(90);
+    const [agree, setAgree] = useState(true);
+
+    const borrowingPeriods = [7, 15, 30, 45, 60, 90, 180];
+    const handleRowClick = (token) => {
+        setSelectedToken(token);
+        setOpen(true);
+    };
+    const handleConfirm = () => {
+        setOpen(false);
+        navigate(`/token/${selectedToken.symbol}`);
+    };
+    const onCheckedChange = () => {
+        setOpen(false);
+    }
     return (
 
-        <main className="bg-gray-900 lg:bg-gray-950 ">
+        <main className="bg-gray-900 lg:bg-gray-950 overflow-x-hidden">
             <section
                 id="hero"
                 className="flex flex-col lg:items-center"
@@ -97,7 +128,7 @@ export default function LoanTab() {
                                             <tr
                                                 key={e.symbol}
                                                 className="cursor-pointer border-t border-gray-700 even:bg-gray-800 hover:bg-gray-700"
-                                                onClick={() => setShowModal(true)}
+                                                onClick={() => handleRowClick(e)}
                                             >
                                                 <td className="flex items-center space-x-2 px-4 py-3">
                                                     <span>{e.icon}</span>
@@ -119,6 +150,99 @@ export default function LoanTab() {
                                         ))}
                                     </tbody>
                                 </table>
+                                {/* Shadcn Dialog */}
+                                <Dialog open={open} onOpenChange={setOpen}>
+                                    <DialogContent className="max-w-lg text-white bg-gray-900 border border-gray-800 rounded-2xl">
+                                        <DialogHeader>
+                                            <DialogTitle className="text-xl font-semibold">Collateralized Borrowing</DialogTitle>
+                                            <DialogDescription className="text-gray-400">
+                                                Synchronous borrowing limit based on personal asset situation
+                                            </DialogDescription>
+                                        </DialogHeader>
+
+                                        {/* Verification Quantity */}
+                                        <div className="space-y-3 mt-4">
+                                            <Label className="text-sm text-gray-300">Verification Quantity</Label>
+                                            <div className="flex items-center gap-2">
+                                                <Input type="number" placeholder="0" className="flex-1 bg-gray-800 border border-gray-700 focus:border-0 focus:outline-none focus:ring-2 rounded:md" />
+
+                                                {/* Token Select */}
+                                                <Select value={selectedToken?.symbol} onValueChange={setSelectedToken}>
+                                                    <SelectTrigger className="w-[150px] bg-gray-800 border-gray-700">
+                                                        <SelectValue placeholder="Select Token" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {tokens.Favorites.map((e) => (
+                                                            <SelectItem value={e.symbol}>{e.icon}{e.symbol}</SelectItem>
+                                                        ))}
+
+
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            <div className="text-xs text-gray-400 flex justify-between">
+                                                <span>Verifiable Amount: 0 {selectedToken?.symbol}</span>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3 mt-4">
+                                            <Label>Evaluate after entering the amount of capital verification</Label>
+                                            <Input type="number" className="bg-gray-800 border-gray-700" placeholder="Available Quantity" disabled/>
+                                        </div>
+
+                                        {/* Borrowing Period */}
+                                        <div className="mt-6 space-y-2">
+                                            <Label className="text-sm text-gray-300">Borrowing Period</Label>
+                                            <div className="flex flex-wrap gap-2">
+                                                {borrowingPeriods.map((d) => (
+                                                    <Button
+                                                        key={d}
+                                                        variant={days === d ? "default" : "outline"}
+                                                        onClick={() => setDays(d)}
+                                                        className={days === d ? "bg-yellow-400 text-black hover:text-gray-950 hover:bg-yellow-500 cursor-pointer" : "bg-gray-800 border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-gray-50 cursor-pointer"}
+                                                    >
+                                                        {d}Days
+                                                    </Button>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Interest Details */}
+                                        <div className="mt-6 space-y-1 text-sm text-gray-300">
+                                            <div className="flex justify-between">
+                                                <span>Daily Interest Rate</span>
+                                                <span>0.00%</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Total Coin Interest</span>
+                                                <span>0 {selectedToken?.symbol}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span>Total Service Charge</span>
+                                                <span>0 {selectedToken?.symbol}</span>
+                                            </div>
+                                            <div className="flex justify-between font-semibold text-white">
+                                                <span>Estimated Amount Due</span>
+                                                <span>0 {selectedToken?.symbol}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Agreement */}
+                                        <div className="mt-4 flex items-center space-x-2">
+                                            <Checkbox checked={agree} id="agree" />
+                                            <Label htmlFor="agree" className="text-sm text-gray-400">
+                                                I have read and agree to{" "}
+                                                <a href="#" className="text-blue-400 underline">Borrowing Service Agreement</a>
+                                            </Label>
+                                        </div>
+
+                                        <DialogFooter className="mt-4">
+                                            <Button disabled={!agree} className="w-full bg-yellow-400 text-black hover:bg-yellow-300 cursor-pointer">
+                                                Confirm Borrow
+                                            </Button>
+                                        </DialogFooter>
+                                    </DialogContent>
+                                </Dialog>
                             </div>
                             <div className="overflow-x-auto">
                                 <div className="flex flex-2 gap-4">
@@ -162,13 +286,13 @@ export default function LoanTab() {
                                                     </linearGradient>
                                                 </defs>
                                             </svg>
-                                        ):(
-                                        <>
-                                            <div className="flex flex-col items-center justify-center my-4">
-                                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
-                                                <span className="mt-3 text-gray-600">Loading content...</span>
-                                            </div>
-                                        </>
+                                        ) : (
+                                            <>
+                                                <div className="flex flex-col items-center justify-center my-4">
+                                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
+                                                    <span className="mt-3 text-gray-600">Loading content...</span>
+                                                </div>
+                                            </>
                                         )}
 
                                     </div>
