@@ -22,6 +22,11 @@ const allTokensData = {
         { symbol: "XRP", name: "XRP", price: "$150.10", change: "+0.55%", high: "$5,3000", low: "$ 102,476.09", vol: "22.38K", turnover: "$2,322,487.86K", icon: <img src="../../assets/coins/miniXrp.png" width={32} /> },
         { symbol: "LTC", name: "lightcoin", price: "$150.10", change: "+0.55%", high: "$53,400", low: "$ 102,476.09", vol: "22.38K", turnover: "$2,322,487.86K", icon: <img src="../../assets/coins/miniLtc.png" width={32} /> },
         { symbol: "TRX", name: "tron", price: "$150.10", change: "+0.55%", high: "$5,4000", low: "$ 102,476.09", vol: "22.38K", turnover: "$2,322,487.86K", icon: <img src="../../assets/coins/miniTrx.png" width={32} /> },
+        { symbol: "BTC", name: "Bitcoin", price: "$103,592.27", change: "-1.49%", high: "$605,400", low: "$ 102,476.09", vol: "22.38K", turnover: "$2,322,487.86K", icon: <img src="../../assets/coins/miniBtc.png" width={32} /> },
+        { symbol: "ETH", name: "Ethereum", price: "$3,453.40", change: "-2.75%", high: "$34,300", low: "$ 102,476.09", vol: "22.38K", turnover: "$2,322,487.86K", icon: <img src="../../assets/coins/miniEth.png" width={32} /> },
+        { symbol: "XRP", name: "XRP", price: "$150.10", change: "+0.55%", high: "$5,3000", low: "$ 102,476.09", vol: "22.38K", turnover: "$2,322,487.86K", icon: <img src="../../assets/coins/miniXrp.png" width={32} /> },
+        { symbol: "LTC", name: "lightcoin", price: "$150.10", change: "+0.55%", high: "$53,400", low: "$ 102,476.09", vol: "22.38K", turnover: "$2,322,487.86K", icon: <img src="../../assets/coins/miniLtc.png" width={32} /> },
+        { symbol: "TRX", name: "tron", price: "$150.10", change: "+0.55%", high: "$5,4000", low: "$ 102,476.09", vol: "22.38K", turnover: "$2,322,487.86K", icon: <img src="../../assets/coins/miniTrx.png" width={32} /> },
     ],
     US_stocks: [
         { symbol: "TRX", name: "tron", price: "$150.10", change: "+0.55%", high: "$5951.33", low: "$ 102,476.09", vol: "22.38K", turnover: "$2,322,487.86K", icon: <img src="../../assets/coins/miniTrx.png" width={32} /> },
@@ -35,10 +40,10 @@ export default function Dashboard() {
     const tokens = allTokensData[activeTab] || [];
 
     return (
-        <main className="bg-gray-900 lg:bg-gray-950 overflow-x-hidden">
+        <main className="bg-gray-900 lg:bg-gray-950 flex flex-col min-h-svh overflow-hidden justify-between">
             <section
                 id="hero"
-                className="flex flex-col lg:items-center"
+                className="flex flex-col lg:items-center flex-1 " 
             >
                 <article id="hero1" className="flex flex-col gap-4 lg:gap-y-8 lg:max-w-6xl xl:min-w-6xl">
                     <div className="lg:max-w-6xl md:max-w-7xl">

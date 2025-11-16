@@ -9,12 +9,16 @@ import {
 export default [
   layout("routes/layout/navBarLayout.tsx", [
     index("routes/home.tsx"),
-    route("market", "./routes/market.tsx"),
+    route("market", "./routes/market/market.tsx"),
+    ...prefix("market/price", [
+      route(":type", "./routes/market/price/[type].tsx")
+    ]),
     route("ai", "./routes/ai.tsx"),
      
     ...prefix("trade", [
       route(":type", "./routes/trade.tsx")
     ]),
+    route("charity", "./routes/charity.tsx"),
     ...prefix ("earn", [
       route("loans", "./routes/loan.tsx"),
     ])

@@ -746,7 +746,7 @@ function finalizeBids(levels: number[][]): number[][] {
   return (
     addDepth(addTotals(levels
       // Sort descending for bids
-      .sort((a, b) => b[0] - a[0])
+      // .sort((a, b) => b[0] - a[0])
       .slice(0, ORDERBOOK_LEVELS)
   )))
 }
@@ -756,7 +756,7 @@ function finalizeAsks(levels: number[][]): number[][] {
   return addDepth(addTotals(
     levels
       // Sort ascending for asks
-      .sort((a, b) => a[0] - b[0])
+      // .sort((a, b) => a[0] - b[0])
       .slice(0, ORDERBOOK_LEVELS)
   ))
 }

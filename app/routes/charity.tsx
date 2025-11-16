@@ -1,5 +1,5 @@
 import FooterSection from "~/components/footer";
-import CharittyImage from "assets/images/charity.png";
+// import CharittyImage from "assets/images/charity.png";
 import React, { useEffect, useRef, useState } from "react";
 const FeaturedProjects = [
   {
@@ -136,7 +136,7 @@ export default function CharityRoute() {
             <div className=" text-gray-300 p-6 md:p-5 space-y-10">
               <div className="flex flex-col lg:flex-row lg:items-center md:items-start lg:justify-between lg:gap-6 space-y-7 lg:space-y-2 lg:space-x-10">
                 <div className="space-y-7 mb-4 lg:mb-0 lg:w-1/2">
-                  <img src={CharittyImage} alt="" className="lg:w-full" />
+                  {/* <img src={CharittyImage} alt="" className="lg:w-full" /> */}
                 </div>
                 <div className="space-y-7 mb-4">
                   <h1 className="text-4xl font-bold lg:text-4xl">Web3 Solutions for Social Change</h1>

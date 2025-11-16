@@ -3,7 +3,7 @@ import type { Route } from "./+types/[type]";
 import { ArrowUpDown } from "lucide-react";
 import React from "react";
 
-import { Progress } from "~/components/ui/progress"
+
 export async function clientLoader({ params }: Route.LoaderArgs) {
     const CryptoName = params.type;
     if (!CryptoName) {
