@@ -16,8 +16,8 @@ export const priceFormatter = (value) => {
 };
 
 export const ProductIds = {
-  XBTUSD: 'PI_XBTUSD',
-  ETHUSD: 'PI_ETHUSD'
+  btcusdt: 'btcusdt',
+  ethusdt: 'ethusdt'
 };
 
 const options: any = {

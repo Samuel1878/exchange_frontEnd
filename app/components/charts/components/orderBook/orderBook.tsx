@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import type { FunctionComponent } from "react";
 // import useWebSocket from "react-use-websocket";
 
@@ -12,6 +12,7 @@ import {
   addExistingState,
   selectAsks,
   selectBids,
+  type LevelType,
 } from "~/context/slices/orderBook";
 import { MOBILE_WIDTH, ORDERBOOK_LEVELS } from "~/consts";
 import DepthVisualizer from "./depthVisulizer";
@@ -19,7 +20,8 @@ import DepthVisualizer from "./depthVisulizer";
 import { ProductsMap } from "../../util/index";
 import { formatNumber } from "~/utils/helpers";
 import useWebSocket from "react-use-websocket";
-const WSS_FEED_URL: string = "wss://www.cryptofacilities.com/ws/v1";
+import { orderBookSnapAPI } from "~/api/chartAPI";
+// const WSS_FEED_URL: string = "wss://www.cryptofacilities.com/ws/v1";
 
 export enum OrderType {
   BIDS,
@@ -33,22 +35,19 @@ interface OrderBookProps {
 }
 
 interface Delta {
-  bids: number[][];
-  asks: number[][];
+  bids: string[][];
+  asks: string[][];
 }
-
-let currentBids: number[][] = [];
-let currentAsks: number[][] = [];
 
 const OrderBook: FunctionComponent<OrderBookProps> = ({
   windowWidth,
   productId,
   isFeedKilled,
 }) => {
-  const bids: number[][] = useAppSelector(selectBids);
-  const asks: number[][] = useAppSelector(selectAsks);
+  const bids:LevelType[]= useAppSelector(selectBids);
+  const asks: LevelType[] = useAppSelector(selectAsks);
   const dispatch = useAppDispatch();
-  const { sendJsonMessage, getWebSocket } = useWebSocket(WSS_FEED_URL, {
+  const { sendJsonMessage, getWebSocket } = useWebSocket(`wss://stream.binance.com:9443/ws/${productId}@depth5`, {
     onOpen: () => console.log("WebSocket connection opened."),
     onClose: () => console.log("WebSocket connection closed."),
     shouldReconnect: (closeEvent) => true,
@@ -57,13 +56,37 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
 
   const processMessages = (event: { data: string }) => {
     const response = JSON.parse(event.data);
-  
-    if (response.numLevels) {
-      dispatch(addExistingState(response));
-    } else {
       process(response);
-    }
+    
   };
+  const getSnapOrderBook = async () => {
+    const response = await orderBookSnapAPI(productId)
+    const data = response?.data 
+    console.log(data)
+      let bidMap = [];
+        if (data && data.bids && data.bids.length) {
+       
+          for (let [price, qty] of data.bids) {
+            if (Number(qty) >= 0) {
+              bidMap.push([price, qty]);
+            }
+          }
+        }
+            let askMap = []
+              if (data.asks && data.asks.length) {
+  
+      for (let [price, qty] of data.asks) {
+        if (Number(qty) >= 0) {
+          askMap.push([price, qty])
+        }
+      }
+    }
+
+         dispatch(addExistingState({product_id:productId, bids:bidMap, asks:askMap}));
+  }
+  useEffect(()=>{
+    getSnapOrderBook()
+  },[])
 
   useEffect(() => {
     function connect(product: string) {
@@ -90,24 +113,23 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
   }, [isFeedKilled, productId, sendJsonMessage, getWebSocket]);
 
   const process = (data: Delta) => {
-  
-      if (data?.bids?.length > 0) {
-        currentBids = [...currentBids, ...data.bids];
-
-        if (currentBids.length > ORDERBOOK_LEVELS) {
-          dispatch(addBids(currentBids));
-          currentBids = [];
-          currentBids.length = 0;
+    if (data.bids && data.bids.length) {
+      let bidMap = []
+      for (let [price, qty] of data.bids) {
+        if (Number(qty) >= 0) {
+          bidMap.push([price, qty])
         }
       }
-    if (data?.asks?.length >= 0) {
-      currentAsks = [...currentAsks, ...data.asks];
-
-      if (currentAsks.length > ORDERBOOK_LEVELS) {
-        dispatch(addAsks(currentAsks));
-        currentAsks = [];
-        currentAsks.length = 0;
+      dispatch(addBids(bidMap))
+    }
+      if (data.asks && data.asks.length) {
+      let askMap = []
+      for (let [price, qty] of data.asks) {
+        if (Number(qty) >= 0) {
+          askMap.push([price, qty])
+        }
       }
+      dispatch(addAsks(askMap))
     }
   };
 
@@ -119,76 +141,59 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
   };
 
   const buildPriceLevels = (
-    levels: number[][],
+    levels: LevelType[],
     orderType: OrderType = OrderType.BIDS
   ): React.ReactNode => {
-    const sortedLevelsByPrice: number[][] = [...levels].sort(
-      (currentLevel: number[], nextLevel: number[]): number => {
+    const sortedLevelsByPrice: LevelType[] = [...levels].sort(
+      (currentLevel: LevelType, nextLevel: LevelType): number => {
         let result: number = 0;
-        if (orderType === OrderType.BIDS) {
-          result = nextLevel[0] - currentLevel[0];
-        } else {
-          result = currentLevel[0] - nextLevel[0];
-        }
-        return result;
+          return result = nextLevel.price - currentLevel.price;
       }
     );
-
-    return levels.map((level, idx) => {
-      const calculatedTotal: number = level[2];
-      const total: string = formatNumber(calculatedTotal);
-      const depth = level[3];
-      const size: string = formatNumber(level[1]);
-      const price: string = formatPrice(level[0]);
-
+    return sortedLevelsByPrice.map((level, idx) => {
       return (
-        <div key={idx + depth} className="m-1">
+        <div key={level.depth + idx} className="m-1">
           <DepthVisualizer
-            key={depth}
+            key={level.depth}
             windowWidth={windowWidth}
-            depth={depth}
+            depth={Number(level.depth)}
             orderType={orderType}
           />
           <PriceLevelRow
-            key={size + total}
-            total={total}
-            size={size}
-            price={price}
+            key={level.amount + level.total}
+            total={level.total.toString()}
+            size={level.amount.toString()}
+            price={formatPrice(level.price)}
+            type={orderType}
           />
         </div>
       );
     });
-  };
+  }
 
   return (
     <div
-      className={`flex flex-col justify-around bg-gray-900 relative after:h-full after:p-1 after:block after:absolute after:left-0 z-0`}
+      className={`flex flex-col justify-between h-full bg-gray-900 relative  after:h-full after:block after:absolute after:left-0 z-0 `}
     >
-      {bids.length && asks.length ? (
-        <>
-          <table
-            className={`
-flex
-  w-full
-  flex-col
-  bg-gray-900
-md:w-1/2
-
-`}
-          >
-            <title className="text-green-700">BID</title>
-            <div>{buildPriceLevels(bids, OrderType.BIDS)}</div>
-          </table>
-          <Spread bids={bids} asks={asks} />
-          <table className={`flex w-full flex-col`}>
-            {/* <TitleRow windowWidth={windowWidth} reversedFieldsOrder={true} /> */}
-            <title>ASK</title>
-            <div>{buildPriceLevels(asks, OrderType.ASKS)}</div>
-          </table>
-        </>
-      ) : (
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
-      )}
+  
+     
+        <table className={`flex w-full flex-col bg-gray-900`}>
+          <div className="flex justify-between pb-1">
+            <p className=" text-gray-500 text-sm">Price(USDT)</p>
+            <p className=" text-gray-500 text-sm">Amount(BTC)</p>
+          </div>
+          <div>{buildPriceLevels(asks, OrderType.ASKS)}</div>
+        </table>
+       <div className="flex gap-2 items-baseline">
+        <p className="text-2xl font-semibold text-red-500">83,829.22 </p>
+        <p className="text-xs text-gray-500">$92,829.22</p>
+       </div>
+        <table className={`flex w-full flex-col`}>
+          {/* <TitleRow windowWidth={windowWidth} reversedFieldsOrder={true} /> */}
+          <title>ASK</title>
+          <div>{buildPriceLevels(bids, OrderType.BIDS)}</div>
+        </table>
+   
     </div>
   );
 };
