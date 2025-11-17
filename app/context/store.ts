@@ -1,11 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import AuthSlice from "./slices/authSlice";
 import orderbookReducer from './slices/orderBook';
+import tickerSlice from "./slices/IndividualMiniTicker";
+import  aggTradeSlice  from "./slices/tradeSlice";
 
 const store = configureStore({
   reducer: {
     auth: AuthSlice,
-        orderbook: orderbookReducer,
+    orderbook: orderbookReducer,
+    tickerStreamsPerDay:tickerSlice,
+    aggTrade:aggTradeSlice
   },
 });
 export default store;

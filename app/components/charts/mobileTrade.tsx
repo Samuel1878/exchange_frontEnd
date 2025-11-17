@@ -9,19 +9,16 @@ import { OrderBookFilterBtn } from "./components/buttons";
 import { BottomDrawerOptions } from "./components/bottomDrawer";
 import * as echarts from "echarts";
 import { getOptions } from "./configs/miniOrderConfig";
-import {
-  colorGreen,
-  colorGreenOpacity,
-  colorRed,
-  colorRedOpacity,
-  priceFormatter,
-  ProductIds,
-} from "./util";
+
 import ReactECharts from "echarts-for-react";
 import OrderBook from "./components/orderBook/orderBook";
 import App from "./components/ordeBookTest";
+import { useAppDispatch, useAppSelector } from "~/utils/redux";
+import { selectTicker } from "~/context/slices/IndividualMiniTicker";
+import { changeTotalLevel } from "~/context/slices/orderBook";
 
-export default function () {
+export default function ({product_id, openMobileTrade, closeMobileTrade}) {
+     const ticker = useAppSelector(selectTicker);
   const [isBuy, setIsBuy] = useState<boolean>(true);
   const [isLimit, setIsLimit] = useState(true);
   const [option, setOptions] = useState("both");
@@ -29,16 +26,20 @@ export default function () {
   const orderBookRef = useRef(null);
   const [orderBookFilter, setOrderBookFilter] = useState("0.00001");
   const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
-  const [productId, setProductId] = useState(ProductIds.btcusdt);
+  // const [productId, setProductId] = useState(ProductIds.btcusdt);
   const [isFeedKilled, setIsFeedKilled] = useState(false);
+   const dispatch = useAppDispatch();
   const toggleAction = () => {
     if (option === "both") {
       setOptions("bid");
+      // dispatch(changeTotalLevel(7))
       return;
     } else if (option === "bid") {
       setOptions("ask");
+      //  dispatch(changeTotalLevel(14));
       return;
     } else {
+      // dispatch(changeTotalLevel(14))
       setOptions("both");
     }
   };
@@ -55,9 +56,13 @@ export default function () {
             BTC/USDT
             <span></span>
           </button>
-          <p className="text-green-500 font-semibold text-sm">0.5239 % </p>
+          <p
+            className={`font-semibold text-sm ${ticker?.priceChangePercent?.startsWith("+", 0) ? "text-green-500" : "text-red-500"}`}
+          >
+            {ticker?.priceChangePercent || "0"} %
+          </p>
         </div>
-        <button>
+        <button onClick={closeMobileTrade}>
           <img
             src="../../assets/icons/mini_cs.svg"
             color={"#f0b90b"}
@@ -69,8 +74,9 @@ export default function () {
         <div id="orderBook" className="flex-4 flex flex-col  justify-between">
           <OrderBook
             windowWidth={80}
-            productId={productId}
+            productId={product_id}
             isFeedKilled={isFeedKilled}
+            option={option}
           />
           {/* <App/> */}
           <div className="flex gap-2 mt-2 items-center px-1">

@@ -17,10 +17,12 @@ import {
 import { MOBILE_WIDTH, ORDERBOOK_LEVELS } from "~/consts";
 import DepthVisualizer from "./depthVisulizer";
 
-import { ProductsMap } from "../../util/index";
+import { formatPrice, ProductsMap } from "../../util/index";
 import { formatNumber } from "~/utils/helpers";
 import useWebSocket from "react-use-websocket";
 import { orderBookSnapAPI } from "~/api/chartAPI";
+import { selectTicker } from "~/context/slices/IndividualMiniTicker";
+import type { aggTradeStreams } from "~/context/slices/tradeSlice";
 // const WSS_FEED_URL: string = "wss://www.cryptofacilities.com/ws/v1";
 
 export enum OrderType {
@@ -32,6 +34,7 @@ interface OrderBookProps {
   windowWidth: number;
   productId: string;
   isFeedKilled: boolean;
+  option
 }
 
 interface Delta {
@@ -43,22 +46,27 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
   windowWidth,
   productId,
   isFeedKilled,
+  option
 }) => {
   const bids:LevelType[]= useAppSelector(selectBids);
   const asks: LevelType[] = useAppSelector(selectAsks);
+   const ticker = useAppSelector(selectTicker);
   const dispatch = useAppDispatch();
+    const aggTrade:aggTradeStreams[] = useAppSelector((state)=>state.aggTrade.aggTrade);
   const { sendJsonMessage, getWebSocket } = useWebSocket(`wss://stream.binance.com:9443/ws/${productId}@depth5`, {
-    onOpen: () => console.log("WebSocket connection opened."),
-    onClose: () => console.log("WebSocket connection closed."),
+    onOpen: () => console.log("OrderBook WebSocket connection opened."),
+    onClose: () => console.log("OrderBook WebSocket connection closed."),
     shouldReconnect: (closeEvent) => true,
     onMessage: (event: WebSocketEventMap["message"]) => processMessages(event),
   });
+
 
   const processMessages = (event: { data: string }) => {
     const response = JSON.parse(event.data);
       process(response);
     
   };
+
   const getSnapOrderBook = async () => {
     const response = await orderBookSnapAPI(productId)
     const data = response?.data 
@@ -81,8 +89,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
         }
       }
     }
-
-         dispatch(addExistingState({product_id:productId, bids:bidMap, asks:askMap}));
+    dispatch(addExistingState({product_id:productId, bids:bidMap, asks:askMap}));
   }
   useEffect(()=>{
     getSnapOrderBook()
@@ -133,12 +140,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
     }
   };
 
-  const formatPrice = (arg: number): string => {
-    return arg.toLocaleString("en", {
-      useGrouping: true,
-      minimumFractionDigits: 2,
-    });
-  };
+
 
   const buildPriceLevels = (
     levels: LevelType[],
@@ -175,25 +177,36 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
     <div
       className={`flex flex-col justify-between h-full bg-gray-900 relative  after:h-full after:block after:absolute after:left-0 z-0 `}
     >
-  
-     
-        <table className={`flex w-full flex-col bg-gray-900`}>
-          <div className="flex justify-between pb-1">
-            <p className=" text-gray-500 text-sm">Price(USDT)</p>
-            <p className=" text-gray-500 text-sm">Amount(BTC)</p>
-          </div>
-          <div>{buildPriceLevels(asks, OrderType.ASKS)}</div>
-        </table>
-       <div className="flex gap-2 items-baseline">
-        <p className="text-2xl font-semibold text-red-500">83,829.22 </p>
-        <p className="text-xs text-gray-500">$92,829.22</p>
-       </div>
-        <table className={`flex w-full flex-col`}>
-          {/* <TitleRow windowWidth={windowWidth} reversedFieldsOrder={true} /> */}
-          <title>ASK</title>
-          <div>{buildPriceLevels(bids, OrderType.BIDS)}</div>
-        </table>
-   
+      <table className={`flex w-full flex-col bg-gray-900`}>
+        <div className="flex justify-between pb-1">
+          <p className=" text-gray-500 text-sm">Price(USDT)</p>
+          <p className=" text-gray-500 text-sm">Amount(BTC)</p>
+        </div>
+        <div>
+          {option === "both" || option === "ask"
+            ? buildPriceLevels(asks, OrderType.ASKS)
+            : null}
+        </div>
+      </table>
+      <div className="flex gap-1 items-baseline-last">
+        <p
+          className={`text-xl font-semibold ${aggTrade[aggTrade.length - 1]?.isBuyerMarket ? "text-green-400" : "text-red-500"}`}
+        >
+          {formatPrice(Number(aggTrade[aggTrade.length - 1]?.price) || 0)}
+        </p>
+        <p className="text-xs text-gray-500">
+          ${formatPrice(Number(aggTrade[aggTrade.length - 1]?.price) || 0)}
+        </p>
+      </div>
+      <table className={`flex w-full flex-col`}>
+        {/* <TitleRow windowWidth={windowWidth} reversedFieldsOrder={true} /> */}
+        <title>ASK</title>
+        <div>
+          {option === "both" || option === "bid"
+            ? buildPriceLevels(bids, OrderType.BIDS)
+            : null}
+        </div>
+      </table>
     </div>
   );
 };

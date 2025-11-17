@@ -689,7 +689,8 @@ export interface OrderbookState {
   bids: LevelType[];
   asks: LevelType[];
   groupingSize: number;
-  totalLevel:number
+  totalLevel:number,
+  lastUpdateId:number
 }
 
 const initialState: OrderbookState = {
@@ -697,7 +698,8 @@ const initialState: OrderbookState = {
   bids: [],
   asks: [],
   groupingSize:5,
-  totalLevel:7
+  totalLevel:7,
+  lastUpdateId:null
 };
 
 /** Apply delta updates Binance style */
@@ -749,9 +751,13 @@ export const orderbookSlice = createSlice({
         updated.length - state.totalLevel,
         updated.length
       );
-   
     },
-
+    changeTotalLevel (state, {payload}){
+      state.totalLevel = payload
+    },
+    addLastUpdatedId (state, {payload}){
+      state.lastUpdateId = payload
+    },
     /** Initial snapshot load */
     addExistingState(state,  {payload}) {
       state.market = payload.product_id;
@@ -766,7 +772,7 @@ export const orderbookSlice = createSlice({
   },
 });
 
-export const { addBids, addAsks, addExistingState, clearOrdersState } =
+export const { addBids, addAsks,changeTotalLevel, addExistingState, clearOrdersState ,addLastUpdatedId} =
   orderbookSlice.actions;
 
 export const selectBids = (state: RootState) => state.orderbook.bids;
