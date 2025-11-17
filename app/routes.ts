@@ -14,12 +14,19 @@ export default [
       route(":type", "./routes/market/price/[type].tsx")
     ]),
     route("ai", "./routes/ai.tsx"),
-     
+
     ...prefix("trade", [
       route(":type", "./routes/trade.tsx")
     ]),
-    route("charity", "./routes/charity.tsx"),
-    ...prefix ("earn", [
+    route("charity", "./routes/charity/charity.tsx"),
+
+    ...prefix("charity/", [
+
+      route("projects", "./routes/charity/projects/index.tsx"),
+      route("projects/:id", "./routes/charity/projects/[type].tsx"),
+    ]),
+    route("asset", "./routes/wallet.tsx"),
+    ...prefix("earn", [
       route("loans", "./routes/loan.tsx"),
     ])
   ]),
