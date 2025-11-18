@@ -66,7 +66,7 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
       {isMobile && isMobileTrade ? (
         <MobileChart product_id={pair} openMobileTrade={openMobileTrade} closeMobileTrade={closeMobileTrade} />
       ) : (
-        <ChartScreen product_id={pair} openMobileTrade={openMobileTrade}/>
+        <ChartScreen product_id={pair} openMobileTrade={openMobileTrade} type={type}/>
       )}
     </main>
   );

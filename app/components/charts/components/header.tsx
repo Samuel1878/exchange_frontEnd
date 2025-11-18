@@ -21,7 +21,7 @@ export default function ({pair}) {
           </div>
         </div>
         <div className="">
-          <p className={`text-3xl font-bold md:text-xl ${aggTrade[aggTrade.length - 1].isBuyerMarket? "text-green-400":"text-red-500"}`}>
+          <p className={`text-3xl font-bold md:text-xl ${aggTrade[aggTrade.length - 1]?.isBuyerMarket? "text-green-400":"text-red-500"}`}>
             {Number(aggTrade[aggTrade.length - 1]?.price).toFixed(2)}
           </p>
 

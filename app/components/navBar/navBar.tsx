@@ -82,7 +82,7 @@ export default function NavBar() {
             className="hidden xl:flex items-center justify-center"
           >
             {/* <RiGlobalFill size={30}/> */}
-            <img src="assets/icons/lang.svg" className="w-8 h-8" />
+            <img src="../assets/icons/lang.svg" className="w-8 h-8" />
           </button>
           <div className="flex-row flex gap-2 items-center lg:hidden">
             <Hamburger
