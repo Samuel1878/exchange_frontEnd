@@ -33,9 +33,15 @@ const PriceLevelRow: FunctionComponent<PriceLevelRowProps> = ({
   `}
     >
       <>
-        <span className={`price text-sm ${type === OrderType.ASKS ? "text-red-500":"text-green-400"}`}>{price}</span>
-        <span className="text-gray-300 text-sm md:flex">{size}</span>
-        <span className="text-gray-50 hidden md:flex">{total}</span>
+        <span
+          className={`flex-1 price text-sm ${type === OrderType.ASKS ? "text-red-500" : "text-green-400"}`}
+        >
+          {price}
+        </span>
+        <div className="flex md:flex-1 justify-between">
+          <span className="text-gray-300 text-sm md:flex">{size}</span>
+          <span className="text-gray-50 hidden md:flex">{total}</span>
+        </div>
       </>
     </div>
   );

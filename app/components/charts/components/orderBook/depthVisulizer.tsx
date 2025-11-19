@@ -5,7 +5,7 @@ import { OrderType } from "./orderBook";
 interface DepthVisualizerProps {
   depth: number;
   orderType: OrderType;
-  windowWidth: number;
+
 }
 
 const DepthVisualizerColors = {
@@ -13,7 +13,7 @@ const DepthVisualizerColors = {
   ASKS: "rgba(255,30,30,1)",
 };
 
-const DepthVisualizer: FunctionComponent<DepthVisualizerProps> = ({windowWidth, depth, orderType }) => {
+const DepthVisualizer: FunctionComponent<DepthVisualizerProps> = ({ depth, orderType }) => {
   return <div className={`py-3`} data-testid="depth-visualizer" style={{
     backgroundColor: `${orderType === OrderType.BIDS ? DepthVisualizerColors.BIDS : DepthVisualizerColors.ASKS}`,
     opacity:.1,

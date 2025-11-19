@@ -11,9 +11,11 @@ import {
   GridComponent,
   LegendComponent,
   DataZoomComponent,
+  type TooltipComponentOption,
+  type GridComponentOption,
 } from "echarts/components";
-
-import { BarChart, CandlestickChart, LineChart } from "echarts/charts";
+type ECOption = echarts.ComposeOption<|BarSeriesOption |TooltipComponentOption | GridComponentOption | LineSeriesOption | CandlestickSeriesOption >
+import { BarChart, CandlestickChart, LineChart, type BarSeriesOption, type CandlestickSeriesOption, type LineSeriesOption } from "echarts/charts";
 import { UniversalTransition } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 
@@ -31,6 +33,8 @@ echarts.use([
   UniversalTransition,
 ]);
 import rawData from "~/consts/testKline.json"
+import EChartsReact from "echarts-for-react";
+import moment from "moment";
 enum Showing {
   chart = "chart",
   trade = "trade",
@@ -47,7 +51,8 @@ enum Period {
 export default function ({product_id , type}) {
   const [showing, setShowing] = useState<Showing>(Showing.chart);
   const [period, setPeriod] = useState(type === "future"? Period.oneSecound : Period.oneDay);
-  const myChart = useRef(null);
+  const myChart = useRef<InstanceType<typeof ReactEChartsCore>>(null);
+
 
   const upColor = "#00c951";
 const downColor = "#fb2c36";
@@ -57,7 +62,7 @@ function splitData(rawData) {
   let values = [];
   let volumes = [];
   for (let i = 0; i < rawData.length; i++) {
-    categoryData.push([new Date(rawData[i][0]).toLocaleDateString()]);
+    categoryData.push([moment(rawData[i][0])]);
     values.push([rawData[i][1],rawData[i][4] , rawData[i][3], rawData[i][2] , rawData[i][5]]);
     volumes.push([i, rawData[i][5], rawData[i][1] > rawData[i][4] ? 1 : -1]);
   }
@@ -67,6 +72,13 @@ function splitData(rawData) {
     volumes: volumes
   };
 }
+const OnEvents = {
+  // 'globalout':()=>{
+  //   console.log("globlOut")
+  //   myChart.current.shouldComponentUpdate
+  // }
+}
+
 const data = splitData(rawData)
 function calculateMA(dayCount, data) {
   var result = [];
@@ -83,7 +95,7 @@ function calculateMA(dayCount, data) {
   }
   return result;
 }
-  const option = {
+  const option :ECOption= {
     animation: false,
     // legend: {
     //   bottom: 10,
@@ -94,15 +106,30 @@ function calculateMA(dayCount, data) {
       trigger: "axis",
       axisPointer: {
         type: "cross",
+        snap:true
       },
-      backgroundColor: "rgba(0,0,0,0)",
-      padding: 10,
-      opacity: 0,
-      textStyle: {
-        color: "#fff",
+    
+      showContent:true,
+      show:true,
+      alwaysShowContent: true,
+      backgroundColor:"rgba(0,0,0,0)",
+      textStyle:{
+        color:"white",
+        fontFamily:"monospce",
+        fontSize:12,
+        
       },
+      position: [5, 5],
+      borderWidth: 0,
+      formatter:"{b0} <br/>{c0}"
+      // formatter:(params, ticket)=>{
+      //   console.log(params[0]?.dataIndex);
+      //   let html = `<p>${params[0]?.name}</p>`
+      //   return html
+      // }
     },
     axisPointer: {
+    
       link: [
         {
           xAxisIndex: "all",
@@ -111,6 +138,8 @@ function calculateMA(dayCount, data) {
       label: {
         backgroundColor: "#555",
       },
+      type:"cross",
+      snap:true
     },
     visualMap: {
       show: false,
@@ -138,11 +167,12 @@ function calculateMA(dayCount, data) {
         left: "0%",
         right: 60,
         top: "75%",
-        height: "20%",
+        height: "25%",
       },
     ],
     xAxis: [
       {
+
         type: "category",
         data: data.categoryData,
         boundaryGap: false,
@@ -168,6 +198,7 @@ function calculateMA(dayCount, data) {
         },
       },
       {
+  
         type: "category",
         gridIndex: 1,
         data: data.categoryData,
@@ -194,13 +225,13 @@ function calculateMA(dayCount, data) {
         splitArea: {
           show: false,
         },
-
         position: "right",
+        splitNumber:5,
         axisTick: { show: false },
         axisLine: { show: true },
         axisLabel: {
-          // margin:10,
           show: true,
+          
         },
         splitLine: {
           show: true,
@@ -213,7 +244,6 @@ function calculateMA(dayCount, data) {
       {
         scale: true,
         gridIndex: 1,
-
         position: "right",
         splitNumber: 2,
         axisLabel: { show: true },
@@ -234,8 +264,8 @@ function calculateMA(dayCount, data) {
         xAxisIndex: [0, 1],
         start: 80,
         end: 100,
-        minSpan:2,
-        maxSpan:70
+        minSpan: 2,
+        maxSpan: 70,
       },
     ],
     series: [
@@ -293,11 +323,14 @@ function calculateMA(dayCount, data) {
         xAxisIndex: 1,
         yAxisIndex: 1,
         data: data.volumes,
-        // barGap:"0%"
         barWidth: "90%",
+        // tooltip:{
+        //   position:[5,5]
+        // }
       },
     ],
   };
+
   return (
     <section className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-lg">
       <nav className="flex w-full p-3 pb-0 gap-4 ">
@@ -306,7 +339,7 @@ function calculateMA(dayCount, data) {
           className="cursor-pointer"
         >
           <p
-            className={`font-medium text-sm ${showing === Showing.chart ? "text-gray-100 border-b-3 border-amber-400" : "text-gray-500 "}`}
+            className={`font-medium text-sm md:text-lg ${showing === Showing.chart ? "text-gray-100 border-b-3 border-amber-400" : "text-gray-500 "}`}
           >
             Chart
           </p>
@@ -326,7 +359,7 @@ function calculateMA(dayCount, data) {
           className="cursor-pointer"
         >
           <p
-            className={`font-medium text-sm  ${showing === Showing.info ? "text-gray-100 border-b-3 border-amber-400" : "text-gray-500 "}`}
+            className={`font-medium text-sm md:text-lg ${showing === Showing.info ? "text-gray-100 border-b-3 border-amber-400" : "text-gray-500 "}`}
           >
             Info
           </p>
@@ -376,7 +409,7 @@ function calculateMA(dayCount, data) {
           <ChartCandlestick color="rgb(110,110,110)" width={16} />
         </div>
       </div>
-      <article className="min-h-130 md:min-h-100" ref={myChart}>
+      <article className="min-h-130 md:min-h-100">
         <ReactEChartsCore
           style={{ height: 520 }}
           opts={{ height: 520 }}
@@ -384,6 +417,9 @@ function calculateMA(dayCount, data) {
           option={option}
           notMerge
           lazyUpdate
+          ref={myChart}
+    
+          onEvents={OnEvents}
           
         />
       </article>

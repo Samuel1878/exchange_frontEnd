@@ -723,7 +723,7 @@ const addSnapData = (levels:string[][]) => {
   let snap :LevelType[]= []
   levels.forEach(([price, size]) => {
     let p = Number(price);
-    let a = Number(Number(size).toFixed(6));
+    let a = Number(Number(size).toFixed(5));
     let t = Number((p*a).toFixed(2));
     let depth  =( (t/p) * 100).toString();
        snap.push({ price: p, amount: a, total: t, depth: depth }); 

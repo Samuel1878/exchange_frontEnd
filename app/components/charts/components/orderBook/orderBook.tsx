@@ -31,9 +31,9 @@ export enum OrderType {
 }
 
 interface OrderBookProps {
-  windowWidth: number;
+
   productId: string;
-  isFeedKilled: boolean;
+ 
   option
 }
 
@@ -43,9 +43,9 @@ interface Delta {
 }
 
 const OrderBook: FunctionComponent<OrderBookProps> = ({
-  windowWidth,
+
   productId,
-  isFeedKilled,
+
   option
 }) => {
   const bids:LevelType[]= useAppSelector(selectBids);
@@ -95,29 +95,29 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
     getSnapOrderBook()
   },[])
 
-  useEffect(() => {
-    function connect(product: string) {
-      const unSubscribeMessage = {
-        event: "unsubscribe",
-        feed: "book_ui_1",
-        product_ids: [ProductsMap[product]],
-      };
-      sendJsonMessage(unSubscribeMessage);
+  // useEffect(() => {
+  //   function connect(product: string) {
+  //     const unSubscribeMessage = {
+  //       event: "unsubscribe",
+  //       feed: "book_ui_1",
+  //       product_ids: [ProductsMap[product]],
+  //     };
+  //     sendJsonMessage(unSubscribeMessage);
 
-      const subscribeMessage = {
-        event: "subscribe",
-        feed: "book_ui_1",
-        product_ids: [product],
-      };
-      sendJsonMessage(subscribeMessage);
-    }
+  //     const subscribeMessage = {
+  //       event: "subscribe",
+  //       feed: "book_ui_1",
+  //       product_ids: [product],
+  //     };
+  //     sendJsonMessage(subscribeMessage);
+  //   }
 
-    if (isFeedKilled) {
-      getWebSocket()?.close();
-    } else {
-      connect(productId);
-    }
-  }, [isFeedKilled, productId, sendJsonMessage, getWebSocket]);
+  //   if (isFeedKilled) {
+  //     getWebSocket()?.close();
+  //   } else {
+  //     connect(productId);
+  //   }
+  // }, [isFeedKilled, productId, sendJsonMessage, getWebSocket]);
 
   const process = (data: Delta) => {
     if (data.bids && data.bids.length) {
@@ -154,10 +154,10 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
     );
     return sortedLevelsByPrice.map((level, idx) => {
       return (
-        <div key={level.depth + idx} className="m-1">
+        <div key={level.depth + idx} className="m-1 overflow-hidden">
           <DepthVisualizer
             key={level.depth}
-            windowWidth={windowWidth}
+       
             depth={Number(level.depth)}
             orderType={orderType}
           />
@@ -180,7 +180,9 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
       <table className={`flex w-full flex-col bg-gray-900`}>
         <div className="flex justify-between pb-1">
           <p className=" text-gray-500 text-sm">Price(USDT)</p>
+          
           <p className=" text-gray-500 text-sm">Amount(BTC)</p>
+          <p className="hidden md:block text-gray-500 text-sm">Total</p>
         </div>
         <div>
           {option === "both" || option === "ask"
@@ -190,12 +192,12 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
       </table>
       <div className="flex gap-1 items-baseline-last">
         <p
-          className={`text-xl font-semibold ${aggTrade[aggTrade.length - 1]?.isBuyerMarket ? "text-green-400" : "text-red-500"}`}
+          className={`text-xl font-semibold ${aggTrade[0]?.isBuyerMarket ? "text-green-400" : "text-red-500"}`}
         >
-          {formatPrice(Number(aggTrade[aggTrade.length - 1]?.price) || 0)}
+          {formatPrice(Number(aggTrade[0]?.price) || 0)}
         </p>
         <p className="text-xs text-gray-500">
-          ${formatPrice(Number(aggTrade[aggTrade.length - 1]?.price) || 0)}
+          ${formatPrice(Number(aggTrade[0]?.price) || 0)}
         </p>
       </div>
       <table className={`flex w-full flex-col`}>

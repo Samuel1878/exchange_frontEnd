@@ -21,21 +21,21 @@ export default function ({pair}) {
           </div>
         </div>
         <div className="">
-          <p className={`text-3xl font-bold md:text-xl ${aggTrade[aggTrade.length - 1]?.isBuyerMarket? "text-green-400":"text-red-500"}`}>
-            {Number(aggTrade[aggTrade.length - 1]?.price).toFixed(2)}
+          <p className={`text-3xl font-bold md:text-xl ${aggTrade[0]?.isBuyerMarket? "text-green-400":"text-red-500"}`}>
+            {Number(aggTrade[0]?.price)?.toFixed(2) || 0.00000}
           </p>
 
           <p className="hidden md:block text-xs text-gray-50">
             ${" "}
             {formatPrice(
-              Number(Number(aggTrade[aggTrade.length - 1]?.price).toFixed(2))
+              Number(Number(aggTrade[0]?.price)?.toFixed(2) || 0.00000)
             )}
           </p>
           <div className="flex md:hidden gap-2 ">
             <p className="text-sm text-gray-50">
               ${" "}
               {formatPrice(
-                Number(Number(aggTrade[aggTrade.length - 1]?.price).toFixed(2))
+                Number(Number(aggTrade[0]?.price).toFixed(2))
               )}
             </p>
             <p
@@ -51,12 +51,12 @@ export default function ({pair}) {
             <p
               className={`font-bold text-xs ${ticker?.priceChange?.startsWith("+", 0) ? "text-green-500" : " text-red-500"}`}
             >
-              {Number(ticker?.priceChange).toFixed(2)}
+              {Number(ticker?.priceChange)?.toFixed(2) || 0.00}
             </p>
             <p
               className={` text-xs ${ticker?.priceChangePercent?.startsWith("+", 0) ? "text-green-500" : " text-red-500"}`}
             >
-              {Number(ticker?.priceChangePercent)}%
+              {Number(ticker?.priceChangePercent) || 0.00}%
             </p>
           </div>
         </div>
@@ -66,13 +66,13 @@ export default function ({pair}) {
           <div>
             <p className="text-gray-500 text-xs">24h High</p>
             <p className="text-xs text-gray-50">
-              {Number(ticker?.highPrice).toFixed(2)}
+              {Number(ticker?.highPrice)?.toFixed(2)|| 0.0000}
             </p>
           </div>
           <div>
             <p className="text-gray-500 text-xs">24h Low</p>
             <p className="text-xs text-gray-50">
-              {Number(ticker?.lowPrice).toFixed(2)}
+              {Number(ticker?.lowPrice)?.toFixed(2) || 0.0000}
             </p>
           </div>
         </div>
@@ -80,13 +80,13 @@ export default function ({pair}) {
           <div>
             <p className="text-gray-500 text-xs">24h Vol(BTC)</p>
             <p className="text-xs text-gray-50">
-              {formatPrice(Number(Number(ticker?.baseVolume).toFixed(2)))}
+              {formatPrice(Number(Number(ticker?.baseVolume)?.toFixed(2))) || 0.0000}
             </p>
           </div>
           <div>
             <p className="text-gray-500 text-xs">24h Vol(USDT)</p>
             <p className="text-xs text-gray-50">
-              {formatPrice(Number(Number(ticker?.quoteVolume).toFixed(2)))}
+              {formatPrice(Number(Number(ticker?.quoteVolume)?.toFixed(2))) || 0.00000000}
             </p>
           </div>
         </div>

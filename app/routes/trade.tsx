@@ -38,8 +38,8 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
   const { sendJsonMessage, getWebSocket } = useWebSocket(
     `wss://stream.binance.com:9443/ws/${pair}@ticker`,
     {
-      onOpen: () => console.log("WebSocket connection opened."),
-      onClose: () => console.log("WebSocket connection closed."),
+      onOpen: () => console.log("Ticker WebSocket connection opened."),
+      onClose: () => console.log("Ticker WebSocket connection closed."),
       shouldReconnect: (closeEvent) => true,
       onMessage: (event: WebSocketEventMap["message"]) =>
         processMessages(event),

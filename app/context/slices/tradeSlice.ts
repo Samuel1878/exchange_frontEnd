@@ -23,12 +23,12 @@ const addData = (state:TradeState, payload) => {
     let data: aggTradeStreams = {
         price :payload.p,
         time :payload.T,
-        amount:payload.q,
+        amount:Number(payload?.q)?.toFixed(5),
         isBuyerMarket:payload.m
     }
-    updated.push(data)
+    updated.unshift(data)
     if (updated.length > 10){
-        return updated.slice(updated.length - 10);
+        return updated.slice(0, 20);
     }
     return updated
 
