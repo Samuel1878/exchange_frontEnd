@@ -31,10 +31,9 @@ export enum OrderType {
 }
 
 interface OrderBookProps {
-
   productId: string;
- 
-  option
+
+  option;
 }
 
 interface Delta {
@@ -43,57 +42,60 @@ interface Delta {
 }
 
 const OrderBook: FunctionComponent<OrderBookProps> = ({
-
   productId,
 
-  option
+  option,
 }) => {
-  const bids:LevelType[]= useAppSelector(selectBids);
+  const bids: LevelType[] = useAppSelector(selectBids);
   const asks: LevelType[] = useAppSelector(selectAsks);
-   const ticker = useAppSelector(selectTicker);
+  const ticker = useAppSelector(selectTicker);
   const dispatch = useAppDispatch();
-    const aggTrade:aggTradeStreams[] = useAppSelector((state)=>state.aggTrade.aggTrade);
-  const { sendJsonMessage, getWebSocket } = useWebSocket(`wss://stream.binance.com:9443/ws/${productId}@depth5`, {
-    onOpen: () => console.log("OrderBook WebSocket connection opened."),
-    onClose: () => console.log("OrderBook WebSocket connection closed."),
-    shouldReconnect: (closeEvent) => true,
-    onMessage: (event: WebSocketEventMap["message"]) => processMessages(event),
-  });
-
+  const aggTrade: aggTradeStreams[] = useAppSelector(
+    (state) => state.aggTrade.aggTrade
+  );
+  const { sendJsonMessage, getWebSocket } = useWebSocket(
+    `wss://stream.binance.com:9443/ws/${productId}@depth5`,
+    {
+      onOpen: () => console.log("OrderBook WebSocket connection opened."),
+      onClose: () => console.log("OrderBook WebSocket connection closed."),
+      shouldReconnect: (closeEvent) => true,
+      onMessage: (event: WebSocketEventMap["message"]) =>
+        processMessages(event),
+    }
+  );
 
   const processMessages = (event: { data: string }) => {
     const response = JSON.parse(event.data);
-      process(response);
-    
+    process(response);
   };
 
   const getSnapOrderBook = async () => {
-    const response = await orderBookSnapAPI(productId)
-    const data = response?.data 
-    console.log(data)
-      let bidMap = [];
-        if (data && data.bids && data.bids.length) {
-       
-          for (let [price, qty] of data.bids) {
-            if (Number(qty) >= 0) {
-              bidMap.push([price, qty]);
-            }
-          }
-        }
-            let askMap = []
-              if (data.asks && data.asks.length) {
-  
-      for (let [price, qty] of data.asks) {
+    const response = await orderBookSnapAPI(productId);
+    const data = response?.data;
+    console.log(data);
+    let bidMap = [];
+    if (data && data.bids && data.bids.length) {
+      for (let [price, qty] of data.bids) {
         if (Number(qty) >= 0) {
-          askMap.push([price, qty])
+          bidMap.push([price, qty]);
         }
       }
     }
-    dispatch(addExistingState({product_id:productId, bids:bidMap, asks:askMap}));
-  }
-  useEffect(()=>{
-    getSnapOrderBook()
-  },[])
+    let askMap = [];
+    if (data.asks && data.asks.length) {
+      for (let [price, qty] of data.asks) {
+        if (Number(qty) >= 0) {
+          askMap.push([price, qty]);
+        }
+      }
+    }
+    dispatch(
+      addExistingState({ product_id: productId, bids: bidMap, asks: askMap })
+    );
+  };
+  useEffect(() => {
+    getSnapOrderBook();
+  }, []);
 
   // useEffect(() => {
   //   function connect(product: string) {
@@ -121,26 +123,24 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
 
   const process = (data: Delta) => {
     if (data.bids && data.bids.length) {
-      let bidMap = []
+      let bidMap = [];
       for (let [price, qty] of data.bids) {
         if (Number(qty) >= 0) {
-          bidMap.push([price, qty])
+          bidMap.push([price, qty]);
         }
       }
-      dispatch(addBids(bidMap))
+      dispatch(addBids(bidMap));
     }
-      if (data.asks && data.asks.length) {
-      let askMap = []
+    if (data.asks && data.asks.length) {
+      let askMap = [];
       for (let [price, qty] of data.asks) {
         if (Number(qty) >= 0) {
-          askMap.push([price, qty])
+          askMap.push([price, qty]);
         }
       }
-      dispatch(addAsks(askMap))
+      dispatch(addAsks(askMap));
     }
   };
-
-
 
   const buildPriceLevels = (
     levels: LevelType[],
@@ -149,7 +149,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
     const sortedLevelsByPrice: LevelType[] = [...levels].sort(
       (currentLevel: LevelType, nextLevel: LevelType): number => {
         let result: number = 0;
-          return result = nextLevel.price - currentLevel.price;
+        return (result = nextLevel.price - currentLevel.price);
       }
     );
     return sortedLevelsByPrice.map((level, idx) => {
@@ -157,7 +157,6 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
         <div key={level.depth + idx} className="m-1 overflow-hidden">
           <DepthVisualizer
             key={level.depth}
-       
             depth={Number(level.depth)}
             orderType={orderType}
           />
@@ -171,16 +170,16 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
         </div>
       );
     });
-  }
+  };
 
   return (
     <div
-      className={`flex flex-col justify-between h-full bg-gray-900 relative  after:h-full after:block after:absolute after:left-0 z-0 `}
+      className={`flex flex-col justify-between h-full lg:max-w-200 bg-gray-900 lg:bg-gray-950 relative `}
     >
-      <table className={`flex w-full flex-col bg-gray-900`}>
+      <table className={`flex w-full flex-col bg-gray-900 lg:bg-gray-950`}>
         <div className="flex justify-between pb-1">
           <p className=" text-gray-500 text-sm">Price(USDT)</p>
-          
+
           <p className=" text-gray-500 text-sm">Amount(BTC)</p>
           <p className="hidden md:block text-gray-500 text-sm">Total</p>
         </div>
@@ -190,18 +189,19 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
             : null}
         </div>
       </table>
+
       <div className="flex gap-1 items-baseline-last">
         <p
           className={`text-xl font-semibold ${aggTrade[0]?.isBuyerMarket ? "text-green-400" : "text-red-500"}`}
         >
           {formatPrice(Number(aggTrade[0]?.price) || 0)}
         </p>
+        
         <p className="text-xs text-gray-500">
           ${formatPrice(Number(aggTrade[0]?.price) || 0)}
         </p>
       </div>
       <table className={`flex w-full flex-col`}>
-        {/* <TitleRow windowWidth={windowWidth} reversedFieldsOrder={true} /> */}
         <title>ASK</title>
         <div>
           {option === "both" || option === "bid"

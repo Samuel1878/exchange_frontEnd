@@ -62,7 +62,7 @@ function splitData(rawData) {
   let values = [];
   let volumes = [];
   for (let i = 0; i < rawData.length; i++) {
-    categoryData.push([moment(rawData[i][0])]);
+    categoryData.push([moment(rawData[i][0]).format("DD/MM")]);
     values.push([rawData[i][1],rawData[i][4] , rawData[i][3], rawData[i][2] , rawData[i][5]]);
     volumes.push([i, rawData[i][5], rawData[i][1] > rawData[i][4] ? 1 : -1]);
   }
@@ -332,8 +332,8 @@ function calculateMA(dayCount, data) {
   };
 
   return (
-    <section className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-lg">
-      <nav className="flex w-full p-3 pb-0 gap-4 ">
+    <section className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-lg lg:min-w-150">
+      <nav className="flex w-full p-3 pb-0 gap-4">
         <div
           onClick={() => setShowing(Showing.chart)}
           className="cursor-pointer"
@@ -418,9 +418,7 @@ function calculateMA(dayCount, data) {
           notMerge
           lazyUpdate
           ref={myChart}
-    
           onEvents={OnEvents}
-          
         />
       </article>
     </section>

@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from "~/utils/redux";
 import { selectTicker } from "~/context/slices/IndividualMiniTicker";
 import { changeTotalLevel } from "~/context/slices/orderBook";
 import Trade from "./components/trade";
+import OrderHistory from "./components/orderHistory";
 
 export default function ({product_id, openMobileTrade, closeMobileTrade}) {
      const ticker = useAppSelector(selectTicker);
@@ -93,6 +94,7 @@ export default function ({product_id, openMobileTrade, closeMobileTrade}) {
           setIsBuy={setIsBuy}
         />
       </div>
+      <OrderHistory/>
       <BottomDrawerOptions
         openDrawer={openLimitDrawer}
         toggle={() => setIsLimit((prev) => !prev)}

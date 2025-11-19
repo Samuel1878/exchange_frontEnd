@@ -9,19 +9,19 @@ export default function ({pair}) {
   const ticker :TickerSteams= useAppSelector((state)=>state.tickerStreamsPerDay.ticker);
   const aggTrade:aggTradeStreams[] = useAppSelector((state)=>state.aggTrade.aggTrade);
   return (
-    <header className="flex justify-between md:rounded-b-sm px-4 pb-2 bg-gray-900 lg:bg-gray-950 items-end md:pt-4 md:items-center">
+    <header className="flex justify-between md:rounded-b-sm px-4 pb-2 lg:mt-1 bg-gray-900 lg:rounded-md lg:bg-gray-950 items-end md:pt-4 md:items-center">
       <div className="space-y-2 flex flex-col md:items-center flex-1 md:flex-row md:justify-between md:mb-2">
         <div className="flex items-center gap-2">
           <img src="../../assets/coins/btc_eth.png" className="w-10" />
           <div>
-            <p className="text-md font-bold md:text-lg text-gray-50">{pair}</p>
+            <p className="text-md font-bold md:text-2xl text-gray-50">{pair}</p>
             <Link to={""} className="text-gray-400 hidden md:block">
               Price
             </Link>
           </div>
         </div>
         <div className="">
-          <p className={`text-3xl font-bold md:text-xl ${aggTrade[0]?.isBuyerMarket? "text-green-400":"text-red-500"}`}>
+          <p className={`text-3xl font-bold md:text-2xl ${aggTrade[0]?.isBuyerMarket? "text-green-400":"text-red-500"}`}>
             {Number(aggTrade[0]?.price)?.toFixed(2) || 0.00000}
           </p>
 

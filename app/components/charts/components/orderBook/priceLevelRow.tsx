@@ -19,6 +19,7 @@ const PriceLevelRow: FunctionComponent<PriceLevelRowProps> = ({
       className={`flex
   justify-between
   bg-gray-900
+  lg:bg-gray-950
   relative
   items-center
   after:bg-center

@@ -62,7 +62,7 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
   })
 
   return (
-    <main className="" id={"spot"}>
+    <main className="lg:flex lg:justify-center bg-gray-900 lg:bg-gray-950" id={"spot"}>
       {isMobile && isMobileTrade ? (
         <MobileChart product_id={pair} openMobileTrade={openMobileTrade} closeMobileTrade={closeMobileTrade} />
       ) : (
