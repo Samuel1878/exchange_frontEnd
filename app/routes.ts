@@ -28,6 +28,7 @@ export default [
     route("asset", "./routes/wallet.tsx"),
     ...prefix("earn", [
       route("loans", "./routes/loan.tsx"),
+      route("earn", "./routes/earn/index.tsx"),
     ])
   ]),
 ] satisfies RouteConfig;

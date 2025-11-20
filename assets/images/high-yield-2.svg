@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 500 320" height="320" width="500">
+<rect fill="#AEB4BC" height="72.976" width="48.6996" y="158.52" x="114"></rect>
+<mask height="74" width="16" y="158" x="147" maskUnits="userSpaceOnUse" style="mask-type:alpha" id="mask0_1069_26564">
+<rect fill="#0B0E11" height="72.976" width="15.524" y="158.52" x="147.176"></rect>
+</mask>
+<g mask="url(#mask0_1069_26564)">
+</g>
+<rect fill="#AEB4BC" height="122.476" width="48.6996" y="109.02" x="176.7"></rect>
+<mask height="123" width="17" y="109" x="209" maskUnits="userSpaceOnUse" style="mask-type:alpha" id="mask1_1069_26564">
+<rect fill="#0B0E11" height="122.476" width="15.524" y="109.02" x="209.876"></rect>
+</mask>
+<g mask="url(#mask1_1069_26564)">
+</g>
+<rect fill="#AEB4BC" height="172" width="48.6996" y="59.52" x="239.4"></rect>
+<mask height="173" width="17" y="59" x="272" maskUnits="userSpaceOnUse" style="mask-type:alpha" id="mask2_1069_26564">
+<rect fill="#0B0E11" height="172" width="15.524" y="59.52" x="272.575"></rect>
+</mask>
+<g mask="url(#mask2_1069_26564)">
+</g>
+<path fill="#E6E8EA" d="M364.732 166.212L369.694 185.586L361.707 230.116L346.275 214.806L295.816 266.001L260.911 230.973L223.066 269.935H192.685L260.667 202.124L295.328 236.785L331.67 200.744L321.058 190.767V174.684L364.732 166.212Z"></path>
+<mask height="104" width="178" y="166" x="192" maskUnits="userSpaceOnUse" style="mask-type:alpha" id="mask3_1069_26564">
+<path fill="#CACED3" d="M364.733 166.212L369.404 184.506L369.698 185.646L361.818 230.32L346.366 214.908L295.767 266.183L260.667 231.408L223.367 269.935H192.685L260.667 202.124L295.328 236.785L332.682 199.431L319.969 186.453L321.204 174.666L364.733 166.212Z"></path>
+</mask>
+<g mask="url(#mask3_1069_26564)">
+<path fill="#0B0E11" d="M367.237 162.453L357.412 214.125L345.278 202.091L295.392 252.403L260.481 217.493L197.94 281.184L196.437 279.708L260.467 214.499L295.385 249.417L345.266 199.111L356.082 209.839L365.167 162.06L367.237 162.453Z" clip-rule="evenodd" fill-rule="evenodd"></path>
+<path fill="#0B0E11" d="M369.01 170.613L359.455 221.913L345.996 208.765L295.509 259.033L260.607 224.13L199.635 286.684L198.126 285.213L260.587 221.131L295.513 256.056L345.982 205.806L358.106 217.65L366.939 170.227L369.01 170.613Z" clip-rule="evenodd" fill-rule="evenodd"></path>
+<path fill="#0B0E11" d="M370.848 179.252L361.739 230.518L346.37 215.012L295.755 266.218L260.788 231.104L201.496 292.076L199.986 290.607L260.77 228.1L295.75 263.227L346.368 212.017L360.376 226.149L368.774 178.883L370.848 179.252Z" clip-rule="evenodd" fill-rule="evenodd"></path>
+</g>
+<path fill="#F8D33A" d="M356.079 209.853L364.475 166.212L321.062 174.686L331.705 185.444L295.506 221.644L260.845 186.983L177.894 269.935H206.273L260.845 214.442L295.506 249.102L345.404 199.204L356.079 209.853Z" clip-rule="evenodd" fill-rule="evenodd"></path>
+<mask height="20" width="11" y="174" x="321" maskUnits="userSpaceOnUse" style="mask-type:alpha" id="mask4_1069_26564">
+<path fill="#CACED3" d="M331.796 185.418L323.8 193.352L321.056 190.769L321.056 174.683L331.796 185.418Z"></path>
+</mask>
+<g mask="url(#mask4_1069_26564)">
+<path fill="#0B0E11" d="M330.33 186.82L318.855 175.439L320.339 173.943L331.813 185.324L330.33 186.82Z" clip-rule="evenodd" fill-rule="evenodd"></path>
+<path fill="#0B0E11" d="M331.744 195.142L318.853 182.301L320.34 180.809L333.231 193.65L331.744 195.142Z" clip-rule="evenodd" fill-rule="evenodd"></path>
+<path fill="#0B0E11" d="M333.89 203.977L319.268 189.064L320.772 187.589L335.395 202.502L333.89 203.977Z" clip-rule="evenodd" fill-rule="evenodd"></path>
+</g>
+</svg>
