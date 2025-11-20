@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "~/utils/redux";
 import { formatPrice } from "../util";
 import { Link } from "react-router";
 import type { aggTradeStreams } from "~/context/slices/tradeSlice";
+import { CoinPairs } from "~/consts/pairs";
 
 export default function ({pair}) {
   const dispatch = useAppDispatch()
@@ -14,7 +15,7 @@ export default function ({pair}) {
         <div className="flex items-center gap-2">
           <img src="../../assets/coins/btc_eth.png" className="w-10" />
           <div>
-            <p className="text-md font-bold md:text-2xl text-gray-50">{pair}</p>
+            <p className="text-md font-bold md:text-2xl text-gray-50">{CoinPairs[pair].label}</p>
             <Link to={""} className="text-gray-400 hidden md:block">
               Price
             </Link>
@@ -78,7 +79,7 @@ export default function ({pair}) {
         </div>
         <div className="space-y-2 md:flex md:flex-1 md:justify-around">
           <div>
-            <p className="text-gray-500 text-xs">24h Vol(BTC)</p>
+            <p className="text-gray-500 text-xs">24h Vol({CoinPairs[pair].names[0]})</p>
             <p className="text-xs text-gray-50">
               {formatPrice(Number(Number(ticker?.baseVolume)?.toFixed(2))) || 0.0000}
             </p>

@@ -14,8 +14,21 @@ import {
   type TooltipComponentOption,
   type GridComponentOption,
 } from "echarts/components";
-type ECOption = echarts.ComposeOption<|BarSeriesOption |TooltipComponentOption | GridComponentOption | LineSeriesOption | CandlestickSeriesOption >
-import { BarChart, CandlestickChart, LineChart, type BarSeriesOption, type CandlestickSeriesOption, type LineSeriesOption } from "echarts/charts";
+type ECOption = echarts.ComposeOption<
+  | BarSeriesOption
+  | TooltipComponentOption
+  | GridComponentOption
+  | LineSeriesOption
+  | CandlestickSeriesOption
+>;
+import {
+  BarChart,
+  CandlestickChart,
+  LineChart,
+  type BarSeriesOption,
+  type CandlestickSeriesOption,
+  type LineSeriesOption,
+} from "echarts/charts";
 import { UniversalTransition } from "echarts/features";
 import { CanvasRenderer } from "echarts/renderers";
 
@@ -32,13 +45,14 @@ echarts.use([
   CanvasRenderer,
   UniversalTransition,
 ]);
-import rawData from "~/consts/testKline.json"
+import rawData from "~/consts/testKline.json";
 import EChartsReact from "echarts-for-react";
 import moment from "moment";
+import useWindowDimensions from "~/hook/windowWidth";
 enum Showing {
   chart = "chart",
   trade = "trade",
-  info = "info"
+  info = "info",
 }
 enum Period {
   oneSecound = "1s",
@@ -46,56 +60,64 @@ enum Period {
   oneHour = "1h",
   fourHour = "4h",
   oneDay = "1d",
-  oneWeek = "1w"
+  oneWeek = "1w",
 }
-export default function ({product_id , type}) {
+export default function ({ pair, type }) {
   const [showing, setShowing] = useState<Showing>(Showing.chart);
-  const [period, setPeriod] = useState(type === "future"? Period.oneSecound : Period.oneDay);
+  const [period, setPeriod] = useState(
+    type === "future" ? Period.oneSecound : Period.oneDay
+  );
   const myChart = useRef<InstanceType<typeof ReactEChartsCore>>(null);
 
-
+  const { width } = useWindowDimensions();
   const upColor = "#00c951";
-const downColor = "#fb2c36";
+  const downColor = "#fb2c36";
 
-function splitData(rawData) {
-  let categoryData = [];
-  let values = [];
-  let volumes = [];
-  for (let i = 0; i < rawData.length; i++) {
-    categoryData.push([moment(rawData[i][0]).format("DD/MM")]);
-    values.push([rawData[i][1],rawData[i][4] , rawData[i][3], rawData[i][2] , rawData[i][5]]);
-    volumes.push([i, rawData[i][5], rawData[i][1] > rawData[i][4] ? 1 : -1]);
+  function splitData(rawData) {
+    let categoryData = [];
+    let values = [];
+    let volumes = [];
+    for (let i = 0; i < rawData.length; i++) {
+      categoryData.push([moment(rawData[i][0]).format("DD/MM")]);
+      values.push([
+        rawData[i][1],
+        rawData[i][4],
+        rawData[i][3],
+        rawData[i][2],
+        rawData[i][5],
+      ]);
+      volumes.push([i, rawData[i][5], rawData[i][1] > rawData[i][4] ? 1 : -1]);
+    }
+    return {
+      categoryData: categoryData,
+      values: values,
+      volumes: volumes,
+    };
   }
-  return {
-    categoryData: categoryData,
-    values: values,
-    volumes: volumes
+  const OnEvents = {
+    // 'globalout':()=>{
+    //   console.log("globlOut")
+    //   myChart.current.shouldComponentUpdate
+    // }
   };
-}
-const OnEvents = {
-  // 'globalout':()=>{
-  //   console.log("globlOut")
-  //   myChart.current.shouldComponentUpdate
-  // }
-}
 
-const data = splitData(rawData)
-function calculateMA(dayCount, data) {
-  var result = [];
-  for (var i = 0, len = data.values.length; i < len; i++) {
-    if (i < dayCount) {
-      result.push('-');
-      continue;
+  const data = splitData(rawData);
+  function calculateMA(dayCount, data) {
+    var result = [];
+    for (var i = 0, len = data.values.length; i < len; i++) {
+      if (i < dayCount) {
+        result.push("-");
+        continue;
+      }
+      var sum = 0;
+      for (var j = 0; j < dayCount; j++) {
+        sum += data.values[i - j][1];
+      }
+      result.push(+(sum / dayCount).toFixed(3));
     }
-    var sum = 0;
-    for (var j = 0; j < dayCount; j++) {
-      sum += data.values[i - j][1];
-    }
-    result.push(+(sum / dayCount).toFixed(3));
+    return result;
   }
-  return result;
-}
-  const option :ECOption= {
+  const option: ECOption = {
     animation: false,
     // legend: {
     //   bottom: 10,
@@ -106,22 +128,21 @@ function calculateMA(dayCount, data) {
       trigger: "axis",
       axisPointer: {
         type: "cross",
-        snap:true
+        snap: true,
       },
-    
-      showContent:true,
-      show:true,
+
+      showContent: true,
+      show: true,
       alwaysShowContent: true,
-      backgroundColor:"rgba(0,0,0,0)",
-      textStyle:{
-        color:"white",
-        fontFamily:"monospce",
-        fontSize:12,
-        
+      backgroundColor: "rgba(0,0,0,0)",
+      textStyle: {
+        color: "white",
+        fontFamily: "monospce",
+        fontSize: 12,
       },
       position: [5, 5],
       borderWidth: 0,
-      formatter:"{b0} <br/>{c0}"
+      formatter: "{b0} ",
       // formatter:(params, ticket)=>{
       //   console.log(params[0]?.dataIndex);
       //   let html = `<p>${params[0]?.name}</p>`
@@ -129,7 +150,6 @@ function calculateMA(dayCount, data) {
       // }
     },
     axisPointer: {
-    
       link: [
         {
           xAxisIndex: "all",
@@ -138,8 +158,8 @@ function calculateMA(dayCount, data) {
       label: {
         backgroundColor: "#555",
       },
-      type:"cross",
-      snap:true
+      type: "cross",
+      snap: true,
     },
     visualMap: {
       show: false,
@@ -172,7 +192,6 @@ function calculateMA(dayCount, data) {
     ],
     xAxis: [
       {
-
         type: "category",
         data: data.categoryData,
         boundaryGap: false,
@@ -198,7 +217,6 @@ function calculateMA(dayCount, data) {
         },
       },
       {
-  
         type: "category",
         gridIndex: 1,
         data: data.categoryData,
@@ -226,12 +244,11 @@ function calculateMA(dayCount, data) {
           show: false,
         },
         position: "right",
-        splitNumber:5,
+        splitNumber: 5,
         axisTick: { show: false },
         axisLine: { show: true },
         axisLabel: {
           show: true,
-          
         },
         splitLine: {
           show: true,
@@ -330,9 +347,9 @@ function calculateMA(dayCount, data) {
       },
     ],
   };
-
+  // lg:min-w-125 xl:min-w-150 2xl:min-w-210
   return (
-    <section className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-lg lg:min-w-150">
+    <section className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-lg ">
       <nav className="flex w-full p-3 pb-0 gap-4">
         <div
           onClick={() => setShowing(Showing.chart)}
@@ -411,7 +428,27 @@ function calculateMA(dayCount, data) {
       </div>
       <article className="min-h-130 md:min-h-100">
         <ReactEChartsCore
-          style={{ height: 520 }}
+          style={{
+            height: 520,
+            width:width<768? "100%": width/1.85
+              // width > 650
+              //   ? width > 768
+              //     ? width > 1024
+              //       ? width > 1100
+              //         ? width > 1150
+              //           ? width > 1200
+              //             ? width > 1536
+              //               ? width > 1900
+              //                 ? 1150
+              //                 : 800
+              //               : 650
+              //             : 580
+              //           : 550
+              //         : 530
+              //       : 600
+              //     : "100%"
+              //   : "100%",
+          }}
           opts={{ height: 520 }}
           echarts={echarts}
           option={option}

@@ -1,14 +1,20 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Route } from "./+types/trade";
 import { useLoaderData, useSearchParams } from "react-router";
-import { TradeButton } from "~/components/charts/components/buttons";
 import MobileChart from "~/components/charts/mobileTrade";
 import { useAppDispatch } from "~/utils/redux";
-import useWebSocket from "react-use-websocket";
+
 import { addTicker } from "~/context/slices/IndividualMiniTicker";
 import ChartScreen from "~/components/charts/tradeChart";
 import useWindowDimensions from "~/hook/windowWidth";
 import { addAggTrade } from "~/context/slices/tradeSlice";
+
+import useWebSocket, { ReadyState } from "react-use-websocket";
+import { addAsks, addBids } from "~/context/slices/orderBook";
+interface Delta {
+  bids: string[][];
+  asks: string[][];
+}
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Trade" }, { name: "description", content: "Trading" }];
 }
@@ -17,10 +23,9 @@ export async function clientLoader({
   params,
   request,
 }: Route.ClientLoaderArgs) {
-  const type = params.type;
+  const pair = params.pair;
   const url = new URL(request.url);
-  url.searchParams.set("pair", "btcusdt");
-  const pair = url.searchParams.get("pair");
+  const type = url.searchParams.get("type");
 
   return { type, pair };
 }
@@ -29,44 +34,117 @@ export async function clientAction({ request }: Route.ClientActionArgs) {}
 export default function SpotScreen({ loaderData }: Route.ComponentProps) {
   const { width } = useWindowDimensions();
   const { type, pair } = useLoaderData<typeof clientLoader>();
-  const [isMobileTrade, setIsMobileTrade] = useState( width < 768)
-  const dispatch = useAppDispatch();
+  const [isMobileTrade, setIsMobileTrade] = useState(width < 768);
   const isMobile = width < 768;
   const openMobileTrade = () => setIsMobileTrade(true);
   const closeMobileTrade = () => setIsMobileTrade(false);
-  
-  const { sendJsonMessage, getWebSocket } = useWebSocket(
-    `wss://stream.binance.com:9443/ws/${pair}@ticker`,
-    {
-      onOpen: () => console.log("Ticker WebSocket connection opened."),
-      onClose: () => console.log("Ticker WebSocket connection closed."),
+  const [currentStream, setCurrentStream] = useState<null | string[]>(null);
+  const dispatch = useAppDispatch();
+ 
+  const { lastMessage, readyState, sendJsonMessage, sendMessage } =
+    useWebSocket(`wss://stream.binance.com:9443/stream`, {
+      onOpen: () => {
+        console.log("WebSocket Connection Opened");
+      },
+      onClose: () => console.log("WebSocket Connection Closed"),
       shouldReconnect: (closeEvent) => true,
+      reconnectAttempts: 10,
+      reconnectInterval: (attemptNumber) =>
+        Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
       onMessage: (event: WebSocketEventMap["message"]) =>
         processMessages(event),
-    }
-  );
-
+    });
   const processMessages = (event: { data: string }) => {
     const response = JSON.parse(event.data);
-    dispatch(addTicker(response));
+    if (response?.stream === pair + "@depth5") {
+      processDepth(response?.data);
+      return
+    } else if (response?.stream === pair + "@ticker") {
+      dispatch(addTicker(response?.data));
+      return
+    } else if (response?.stream === pair + "@aggTrade") {
+      dispatch(addAggTrade(response?.data));
+      return
+    } else {
+      console.log(response);
+    }
   };
-  const processAggTrade = (event:{data:string}) => {
-    const resonse = JSON.parse(event.data);
-    dispatch(addAggTrade(resonse))
-  }
-  useWebSocket(`wss://stream.binance.com:9443/ws/${pair}@aggTrade`, {
-    onOpen:()=>console.log("AggTrade Websocket is opened"),
-    onClose:()=>console.log("AggTrade Websocket is closed"),
-    shouldReconnect:()=>true,
-    onMessage:(event:WebSocketEventMap["message"]) => processAggTrade(event)
-  })
+  const processDepth = (data: Delta) => {
+    if (data.bids && data.bids.length) {
+      let bidMap = [];
+      for (let [price, qty] of data.bids) {
+        if (Number(qty) >= 0) {
+          bidMap.push([price, qty]);
+        }
+      }
+      dispatch(addBids(bidMap));
+    }
+    if (data.asks && data.asks.length) {
+      let askMap = [];
+      for (let [price, qty] of data.asks) {
+        if (Number(qty) >= 0) {
+          askMap.push([price, qty]);
+        }
+      }
+      dispatch(addAsks(askMap));
+    }
+  };
 
+  const sendSubscriptionMessage = useCallback(
+    (streamNames: string[], method: string) => {
+      const message = {
+        method: method,
+        params: streamNames,
+        id: 1,
+      };
+      sendJsonMessage(message);
+      console.log(`${method} request sent for ${streamNames}`);
+    },
+    [sendJsonMessage]
+  );
+
+  const switchStream = useCallback(
+    (newStream) => {
+      console.log(currentStream);
+      if (currentStream && readyState === ReadyState.OPEN) {
+        sendSubscriptionMessage(currentStream, "UNSUBSCRIBE");
+      }
+      setCurrentStream(newStream);
+    },
+    [currentStream, readyState, sendSubscriptionMessage]
+  );
+
+  useEffect(() => {
+    if (readyState === ReadyState.OPEN && currentStream) {
+      sendSubscriptionMessage(currentStream, "SUBSCRIBE");
+    }
+
+    return () => {
+      //send unsubscribe here on unmount, but often managing this via state is cleaner
+    };
+  }, [readyState, currentStream, sendSubscriptionMessage]);
+  useEffect(() => {
+    pair &&
+      switchStream([pair + "@aggTrade", pair + "@depth5", pair + "@ticker"]);
+  }, [pair]);
   return (
-    <main className="lg:flex lg:justify-center bg-gray-900 lg:bg-gray-950" id={"spot"}>
+    <main
+      className="lg:flex lg:justify-center bg-gray-900 lg:bg-black"
+      id={"spot"}
+    >
       {isMobile && isMobileTrade ? (
-        <MobileChart product_id={pair} openMobileTrade={openMobileTrade} closeMobileTrade={closeMobileTrade} />
+        <MobileChart
+          pair={pair}
+          type={type}
+          openMobileTrade={openMobileTrade}
+          closeMobileTrade={closeMobileTrade}
+        />
       ) : (
-        <ChartScreen product_id={pair} openMobileTrade={openMobileTrade} type={type}/>
+        <ChartScreen
+          pair={pair}
+          openMobileTrade={openMobileTrade}
+          type={type}
+        />
       )}
     </main>
   );

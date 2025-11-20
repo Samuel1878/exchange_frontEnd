@@ -16,7 +16,7 @@ export default [
     route("ai", "./routes/ai.tsx"),
      
     ...prefix("trade", [
-      route(":type", "./routes/trade.tsx")
+      route(":pair", "./routes/trade.tsx")
     ]),
     route("charity", "./routes/charity.tsx"),
     ...prefix ("earn", [

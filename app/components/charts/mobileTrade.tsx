@@ -18,17 +18,23 @@ import { selectTicker } from "~/context/slices/IndividualMiniTicker";
 import { changeTotalLevel } from "~/context/slices/orderBook";
 import Trade from "./components/trade";
 import OrderHistory from "./components/orderHistory";
+import { CoinPairs } from "~/consts/pairs";
 
-export default function ({product_id, openMobileTrade, closeMobileTrade}) {
-     const ticker = useAppSelector(selectTicker);
-   const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
-   const [isBuy, setIsBuy] = useState<boolean>(true);
-   const [isLimit, setIsLimit] = useState(true);
+export default function ({
+  pair,
+  openMobileTrade,
+  closeMobileTrade,
+  type,
+}) {
+  const ticker = useAppSelector(selectTicker);
+  const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
+  const [isBuy, setIsBuy] = useState<boolean>(true);
+  const [isLimit, setIsLimit] = useState(false);
   const [option, setOptions] = useState("both");
   const [openDrawer, setOpenDrawer] = useState(false);
   const orderBookRef = useRef(null);
   const [orderBookFilter, setOrderBookFilter] = useState("0.00001");
-   const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const toggleAction = () => {
     if (option === "both") {
       setOptions("bid");
@@ -44,14 +50,12 @@ export default function ({product_id, openMobileTrade, closeMobileTrade}) {
     }
   };
 
-
-
   return (
     <div className="p-2 bg-gray-900">
       <header className="flex justify-between items-center">
         <div className="flex gap-4 items-end">
           <button className="text-gray-50 font-medium text-xl">
-            BTC/USDT
+            {CoinPairs[pair].label}
             <span></span>
           </button>
           <p
@@ -68,13 +72,9 @@ export default function ({product_id, openMobileTrade, closeMobileTrade}) {
           />
         </button>
       </header>
-      <div className="flex gap-3 mt-6 ">
+      <div className="flex gap-3 mt-6 mb-1">
         <div id="orderBook" className="flex-4 flex flex-col  justify-between">
-          <OrderBook
-           
-            productId={product_id}
-            option={option}
-          />
+          <OrderBook pair={pair} option={option} />
           {/* <App/> */}
           <div className="flex gap-2 mt-2 items-center px-1">
             <button
@@ -92,9 +92,10 @@ export default function ({product_id, openMobileTrade, closeMobileTrade}) {
           isLimit={isLimit}
           setOpenLimitDrawer={setOpenLimitDrawer}
           setIsBuy={setIsBuy}
+          pair={pair}
         />
       </div>
-      <OrderHistory/>
+      <OrderHistory />
       <BottomDrawerOptions
         openDrawer={openLimitDrawer}
         toggle={() => setIsLimit((prev) => !prev)}
