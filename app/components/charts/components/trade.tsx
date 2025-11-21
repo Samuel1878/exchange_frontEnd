@@ -2,19 +2,36 @@ import { FaMinus, FaPlus } from "react-icons/fa";
 import { FiInfo } from "react-icons/fi";
 import { GoArrowSwitch } from "react-icons/go";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { CoinPairs } from "~/consts/pairs";
 
 export default function ({ isBuy, isLimit, setIsBuy, setOpenLimitDrawer ,pair}) {
+  const [searchParams, setSearchParams] = useSearchParams()
+  let type = searchParams.get("type")
   return (
     <div
       id="trde"
       className="flex-5 flex flex-col justify-between gap-4 min-h-110"
     >
-      <div className="px-4 py-2 border-b-0 md:border-b-2 border-b-gray-800  flex gap-4 ">
-        <div className={`font-semibold text-lg `}>Spot</div>
-        <div className={`font-semibold text-lg `}>Cross</div>
-        <div className={`font-semibold text-lg `}>Future</div>
+      <div className="px-4 py-2 border-b-0 md:border-b-2 border-b-gray-600  flex gap-4 ">
+        <div
+          onClick={() => setSearchParams({ type: "spot" })}
+          className={`font-semibold text-lg cursor-pointer ${type === "spot" ? "text-gray-50" : "text-gray-500"}`}
+        >
+          Spot
+        </div>
+        <div
+          onClick={() => setSearchParams({ type: "cross" })}
+          className={`font-semibold text-lg cursor-pointer ${type === "cross" ? "text-gray-50" : "text-gray-500"}`}
+        >
+          Cross
+        </div>
+        <div
+          onClick={() => setSearchParams({ type: "future" })}
+          className={`font-semibold text-lg cursor-pointer ${type === "future" ? "text-gray-50" : "text-gray-500"}`}
+        >
+          Future
+        </div>
       </div>
       <div className="flex flex-col gap-4">
         <div className="flex gap-1">

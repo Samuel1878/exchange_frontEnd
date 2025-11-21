@@ -1,11 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import type { FunctionComponent } from "react";
 import PriceLevelRow from "./priceLevelRow";
-import { useAppDispatch, useAppSelector } from "~/utils/redux";
+import { useAppSelector } from "~/utils/redux";
 import {
-  addAsks,
-  addBids,
-  addExistingState,
   selectAsks,
   selectBids,
   type LevelType,
@@ -13,11 +10,10 @@ import {
 import DepthVisualizer from "./depthVisulizer";
 
 import { formatPrice} from "../../util/index";
-import useWebSocket from "react-use-websocket";
-import { orderBookSnapAPI } from "~/api/chartAPI";
-import { selectTicker } from "~/context/slices/IndividualMiniTicker";
 import type { aggTradeStreams } from "~/context/slices/tradeSlice";
 import { CoinPairs } from "~/consts/pairs";
+import useWindowDimensions from "~/hook/windowWidth";
+import { formatTotalPrice } from "~/utils/helpers";
 
 export enum OrderType {
   BIDS,
@@ -28,12 +24,6 @@ interface OrderBookProps {
   pair: string;
   option;
 }
-
-interface Delta {
-  bids: string[][];
-  asks: string[][];
-}
-
 const OrderBook: FunctionComponent<OrderBookProps> = ({
   pair,
 
@@ -41,55 +31,11 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
 }) => {
   const bids: LevelType[] = useAppSelector(selectBids);
   const asks: LevelType[] = useAppSelector(selectAsks);
-  const ticker = useAppSelector(selectTicker);
-  const dispatch = useAppDispatch();
+  const {width} = useWindowDimensions();
+  let isLg = width>1024;
   const aggTrade: aggTradeStreams[] = useAppSelector(
     (state) => state.aggTrade.aggTrade
   );
-  // const { sendJsonMessage, getWebSocket } = useWebSocket(
-  //   `wss://stream.binance.com:9443/ws/${productId}@depth5`,
-  //   {
-  //     onOpen: () => console.log("OrderBook WebSocket connection opened."),
-  //     onClose: () => console.log("OrderBook WebSocket connection closed."),
-  //     shouldReconnect: (closeEvent) => true,
-  //     onMessage: (event: WebSocketEventMap["message"]) =>
-  //       processMessages(event),
-  //   }
-  // );
-
-  // const processMessages = (event: { data: string }) => {
-  //   const response = JSON.parse(event.data);
-  //   process(response);
-  // };
-
-  // const getSnapOrderBook = async () => {
-  //   const response = await orderBookSnapAPI(productId);
-  //   const data = response?.data;
-  //   console.log(data);
-  //   let bidMap = [];
-  //   if (data && data.bids && data.bids.length) {
-  //     for (let [price, qty] of data.bids) {
-  //       if (Number(qty) >= 0) {
-  //         bidMap.push([price, qty]);
-  //       }
-  //     }
-  //   }
-  //   let askMap = [];
-  //   if (data.asks && data.asks.length) {
-  //     for (let [price, qty] of data.asks) {
-  //       if (Number(qty) >= 0) {
-  //         askMap.push([price, qty]);
-  //       }
-  //     }
-  //   }
-  //   dispatch(
-  //     addExistingState({ product_id: productId, bids: bidMap, asks: askMap })
-  //   );
-  // };
-  // useEffect(() => {
-  //   getSnapOrderBook();
-  // }, []);
-
 
 
   const buildPriceLevels = (
@@ -103,6 +49,15 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
       }
     );
     return sortedLevelsByPrice.map((level, idx) => {
+      if (option==="both" && isLg && idx>17){
+        return
+      }
+      if (option==="both" && !isLg && idx>6){
+        return
+      }
+      if (option!=="both" && !isLg && idx>13){
+        return
+      }
       return (
         <div key={level.depth + idx} className="m-1 overflow-hidden">
           <DepthVisualizer
@@ -112,7 +67,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
           />
           <PriceLevelRow
             key={level.amount + level.total}
-            total={level.total.toString()}
+            total={formatTotalPrice(level.total)}
             size={level.amount.toString()}
             price={formatPrice(level.price)}
             type={orderType}
@@ -121,7 +76,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
       );
     });
   };
-
+ 
   return (
     <div
       className={`flex flex-col justify-between h-full lg:min-w-55 xl:w-70 2xl:w-85 bg-gray-900 lg:bg-gray-950 relative `}
@@ -130,10 +85,12 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
         <div className="flex justify-between pb-1">
           <p className=" text-gray-500 text-sm">Price(USDT)</p>
 
-          <p className=" text-gray-500 text-sm">Amount({CoinPairs[pair].names[0]})</p>
+          <p className=" text-gray-500 text-sm">
+            Amount({CoinPairs[pair].names[0]})
+          </p>
           <p className="hidden md:block text-gray-500 text-sm">Total</p>
         </div>
-        <div>
+        <div className="">
           {option === "both" || option === "ask"
             ? buildPriceLevels(asks, OrderType.ASKS)
             : null}
@@ -142,7 +99,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
 
       <div className="flex gap-1 items-baseline-last">
         <p
-          className={`text-xl font-semibold ${aggTrade[0]?.isBuyerMarket ? "text-green-400" : "text-red-500"}`}
+          className={`text-2xl md:text-xl font-semibold ${aggTrade[0]?.isBuyerMarket ? "text-green-400" : "text-red-500"}`}
         >
           {formatPrice(Number(aggTrade[0]?.price) || 0)}
         </p>
@@ -153,7 +110,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
       </div>
       <div className={`flex w-full flex-col`}>
         <title>ASK</title>
-        <div>
+        <div className="">
           {option === "both" || option === "bid"
             ? buildPriceLevels(bids, OrderType.BIDS)
             : null}

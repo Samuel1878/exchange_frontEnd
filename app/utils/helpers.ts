@@ -55,3 +55,34 @@ export function formatLevels(map) {
     return { price: p, amount: q, total: cumulative };
   });
 }
+
+export const formatTotalPrice = (num:number):string => {
+  if (num <1000) return num.toFixed(2).toString();
+  const units = ["", "k", "M", "B", "T"];
+  let unitIndex = 0;
+  let value = num;
+  while (value>= 1000 && unitIndex<units.length -1){
+    value/=1000;
+    unitIndex++
+  }
+  return value.toFixed(2).replace(/\.00$/, "") + units[unitIndex]
+}
+
+
+
+export function rafThrottle<T extends (...args: any[]) => void>(func: T) {
+  let ticking = false;
+  let lastArgs: any[];
+
+  return (...args: Parameters<T>) => {
+    lastArgs = args;
+
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(() => {
+        func(...lastArgs);
+        ticking = false;
+      });
+    }
+  };
+}

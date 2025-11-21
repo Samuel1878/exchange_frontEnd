@@ -3,13 +3,15 @@ import AuthSlice from "./slices/authSlice";
 import orderbookReducer from './slices/orderBook';
 import tickerSlice from "./slices/IndividualMiniTicker";
 import  aggTradeSlice  from "./slices/tradeSlice";
+import  allMarketTickerSlice  from "./slices/allMarketTicker";
 
 const store = configureStore({
   reducer: {
     auth: AuthSlice,
     orderbook: orderbookReducer,
     tickerStreamsPerDay:tickerSlice,
-    aggTrade:aggTradeSlice
+    aggTrade:aggTradeSlice,
+    allMarketTickerSlice : allMarketTickerSlice
   },
 });
 export default store;

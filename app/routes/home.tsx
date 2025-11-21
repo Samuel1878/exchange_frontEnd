@@ -14,6 +14,7 @@ import FAQ from "~/components/homeComponents/f&q";
 import FooterSection from "~/components/footer";
 import NumberFlow from "@number-flow/react";
 import { useEffect, useState } from "react";
+import AllMarketTickerProvider from "~/context/socketContext/AllMarketTickerContext";
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Home" },
@@ -107,7 +108,9 @@ export default function Home() {
           </div>
         </article>
         <article id="hero2" className="md:mt-8 lg:mt-2 space-y-4">
-          <HomeMiniChart />
+          <AllMarketTickerProvider>
+            <HomeMiniChart />
+          </AllMarketTickerProvider>
           <AiMiniChart />
         </article>
       </section>
@@ -185,7 +188,9 @@ export default function Home() {
                   <p className="text-lg text-gray-50 font-medium font-serif md:text-xl ">
                     {e.label}
                   </p>
-                  <p className={`font-thin text-sm hidden md:block text-gray-400`}>
+                  <p
+                    className={`font-thin text-sm hidden md:block text-gray-400`}
+                  >
                     {e.description}
                   </p>
                   <button className="bg-amber-300 p-1 rounded-md w-30 hidden md:block text-gray-950 mt-6 text-md font-medium">

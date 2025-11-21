@@ -12,7 +12,7 @@ export const TradeButton = ({
   return (
     <button
       onClick={action}
-      className={`${style} flex items-center justify-center rounded-md`}
+      className={`${style} flex items-center justify-center rounded-md cursor-pointer`}
     >
       <p className={`${textStyle} text-md`}>{label}</p>
     </button>
@@ -21,7 +21,7 @@ export const TradeButton = ({
 
 export const OrderBookFilterBtn = ({ option, toggleAction }) => {
   return (
-    <button className="flex  space-x-1 rounded-lg" onClick={toggleAction}>
+    <button className="flex  space-x-1 rounded-lg cursor-pointer" onClick={toggleAction}>
       <div className="space-y-1">
         <div className="h-1.5 w-4  bg-gray-400" />
         <div className="h-1.5 w-4  bg-gray-400" />

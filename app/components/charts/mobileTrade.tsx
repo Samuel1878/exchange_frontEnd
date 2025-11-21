@@ -1,21 +1,11 @@
-import { websocketClient } from "@massive.com/client-js";
+
 import { useEffect, useRef, useState } from "react";
-import { FiInfo } from "react-icons/fi";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { Form } from "react-router";
-import { FaMinus, FaPlus } from "react-icons/fa";
-import { GoArrowSwitch } from "react-icons/go";
 import { OrderBookFilterBtn } from "./components/buttons";
 import { BottomDrawerOptions } from "./components/bottomDrawer";
-import * as echarts from "echarts";
-import { getOptions } from "./configs/miniOrderConfig";
-
-import ReactECharts from "echarts-for-react";
 import OrderBook from "./components/orderBook/orderBook";
-import App from "./components/ordeBookTest";
 import { useAppDispatch, useAppSelector } from "~/utils/redux";
 import { selectTicker } from "~/context/slices/IndividualMiniTicker";
-import { changeTotalLevel } from "~/context/slices/orderBook";
 import Trade from "./components/trade";
 import OrderHistory from "./components/orderHistory";
 import { CoinPairs } from "~/consts/pairs";
@@ -72,7 +62,7 @@ export default function ({
           />
         </button>
       </header>
-      <div className="flex gap-3 mt-6 mb-1">
+      <div className="flex gap-2 mt-6 mb-1">
         <div id="orderBook" className="flex-4 flex flex-col  justify-between">
           <OrderBook pair={pair} option={option} />
           {/* <App/> */}

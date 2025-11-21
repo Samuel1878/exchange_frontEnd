@@ -1,9 +1,7 @@
-import { FiInfo } from "react-icons/fi";
+
 import { OrderBookFilterBtnWeb, TradeButton } from "./components/buttons";
 import CandleSticks from "./components/candleSticks";
 import Header from "./components/header";
-import { IoMdArrowDropdown } from "react-icons/io";
-import { FaMinus, FaPlus } from "react-icons/fa";
 import Trade from "./components/trade";
 import { useState } from "react";
 import { BottomDrawerOptions } from "./components/bottomDrawer";
@@ -15,9 +13,9 @@ import LgTrade from "./components/lgTrade";
 export default function ({ pair, openMobileTrade, type }) {
    const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
      const [isBuy, setIsBuy] = useState<boolean>(false);
-     const [isLimit, setIsLimit] = useState(true);
+     const [isLimit, setIsLimit] = useState(false);
      const [option, setOptions] = useState("both");
-
+ 
   return (
     <div className="space-y-1 bg-black pb-1">
       <div className="lg:flex">
@@ -46,7 +44,12 @@ export default function ({ pair, openMobileTrade, type }) {
               <div>
                 <CandleSticks pair={pair} type={type} />
                 <div className="hidden lg:flex lg:flex-1 bg-gray-950 mt-1 rounded-sm lg:h-100">
-                  <LgTrade isLimit={isLimit} type={type} pair={pair}/>
+                  <LgTrade
+                    isLimit={isLimit}
+                    type={type}
+                    pair={pair}
+                    setIsLimit={setIsLimit}
+                  />
                 </div>
               </div>
 
@@ -62,7 +65,9 @@ export default function ({ pair, openMobileTrade, type }) {
 
                 <div className="bg-gray-900 lg:bg-gray-950 mt-1 flex-1 lg:mr-1 rounded-sm lg:flex lg:flex-col">
                   <div className="p-2 px-4 border-b-2 border-b-gray-700 lg:border-b-gray-900">
-                    <p className="text-gray-50 font-semibold">Order Book</p>
+                    <p className="text-gray-50 font-semibold md:text-md lg:text-lg">
+                      Order Book
+                    </p>
                   </div>
                   <div className="px-4 p-2">
                     <OrderBookFilterBtnWeb
@@ -86,6 +91,7 @@ export default function ({ pair, openMobileTrade, type }) {
               />
             </div>
           </div>
+          
         </div>
         <div className="hidden lg:flex lg:flex-col">
           <div className="w-full bg-gray-950 mt-1 ml-1 rounded-sm flex-1 lg:min-w-50 xl:w-70 2xl:w-85"></div>

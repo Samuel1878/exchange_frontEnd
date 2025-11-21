@@ -20,11 +20,6 @@ export const CoinPairs = {
     label: "XRP/USDT",
     names: ["XRP", "USDT", "Ripple", "Tether"],
   },
-  bnbusdt: {
-    value: "bnbusdt",
-    label: "BNB/USDT",
-    names: ["BNB", "USDT", "Binance Coin", "Tether"],
-  },
   dogeusdt: {
     value: "dogeusdt",
     label: "DOGE/USDT",
@@ -65,10 +60,10 @@ export const CoinPairs = {
     label: "ETC/USDT",
     names: ["ETC", "USDT", "Ethereum Classic", "Tether"],
   },
-  maticusdt: {
-    value: "maticusdt",
-    label: "MATIC/USDT",
-    names: ["MATIC", "USDT", "Polygon", "Tether"],
+  manausdt: {
+    value: "manausdt",
+    label: "MANA/USDT",
+    names: ["MANA", "USDT", "Decentraland", "Tether"],
   },
   uniusdt: {
     value: "uniusdt",
@@ -89,6 +84,11 @@ export const CoinPairs = {
     value: "xlmusdt",
     label: "XLM/USDT",
     names: ["XLM", "USDT", "Stellar Lumens", "Tether"],
+  },
+  atom: {
+    value: "atomusdt",
+    label: "ATOM/USDT",
+    names: ["ATOM", "USDT", "Cosmos", "Tether"],
   },
   nearusdt: {
     value: "nearusdt",

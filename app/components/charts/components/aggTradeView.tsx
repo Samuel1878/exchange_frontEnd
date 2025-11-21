@@ -33,7 +33,7 @@ export default function ({ pair }) {
         <p className="text-gray-500 text-sm font-semibold">Amount({CoinPairs[pair].names[0]})</p>
         <p className="text-gray-500 text-sm font-semibold">Time</p>
       </div>
-      <div className="overflow-y-auto h-100 pl-4">
+      <div className="overflow-y-auto h-100 pl-4 lg:h-full lg:pr-2">
         {data.map((e,i) => {
           return <TradingPriceRow e={e} key={i}/>;
         })}

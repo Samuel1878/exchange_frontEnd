@@ -1,16 +1,15 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Route } from "./+types/trade";
-import { useLoaderData, useSearchParams } from "react-router";
+import { useLoaderData } from "react-router";
 import MobileChart from "~/components/charts/mobileTrade";
 import { useAppDispatch } from "~/utils/redux";
-
 import { addTicker } from "~/context/slices/IndividualMiniTicker";
 import ChartScreen from "~/components/charts/tradeChart";
 import useWindowDimensions from "~/hook/windowWidth";
 import { addAggTrade } from "~/context/slices/tradeSlice";
-
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { addAsks, addBids } from "~/context/slices/orderBook";
+import { rafThrottle } from "~/utils/helpers";
 interface Delta {
   bids: string[][];
   asks: string[][];
@@ -54,9 +53,9 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
       onMessage: (event: WebSocketEventMap["message"]) =>
         processMessages(event),
     });
-  const processMessages = (event: { data: string }) => {
+  const processMessages = rafThrottle((event: { data: string }) => {
     const response = JSON.parse(event.data);
-    if (response?.stream === pair + "@depth5") {
+    if (response?.stream === pair + "@depth20@1000ms") {
       processDepth(response?.data);
       return
     } else if (response?.stream === pair + "@ticker") {
@@ -68,7 +67,7 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
     } else {
       console.log(response);
     }
-  };
+  })
   const processDepth = (data: Delta) => {
     if (data.bids && data.bids.length) {
       let bidMap = [];
@@ -105,7 +104,6 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
 
   const switchStream = useCallback(
     (newStream) => {
-      console.log(currentStream);
       if (currentStream && readyState === ReadyState.OPEN) {
         sendSubscriptionMessage(currentStream, "UNSUBSCRIBE");
       }
@@ -125,7 +123,7 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
   }, [readyState, currentStream, sendSubscriptionMessage]);
   useEffect(() => {
     pair &&
-      switchStream([pair + "@aggTrade", pair + "@depth5", pair + "@ticker"]);
+      switchStream([pair + "@aggTrade", pair + "@depth20@1000ms", pair + "@ticker"]);
   }, [pair]);
   return (
     <main

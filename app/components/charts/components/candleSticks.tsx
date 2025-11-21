@@ -382,7 +382,7 @@ export default function ({ pair, type }) {
           </p>
         </div>
       </nav>
-      <div className="flex gap-4 p-2 pl-4 border-y-1 border-y-gray-800 items-center">
+      <div className="flex gap-4 p-2 pl-4 border-y-2 border-y-gray-900 items-center">
         <p
           onClick={() => setPeriod(Period.oneSecound)}
           className={`text-sm font-medium cursor-pointer ${period === Period.oneSecound ? "text-gray-50" : "text-gray-500"}`}
@@ -430,7 +430,7 @@ export default function ({ pair, type }) {
         <ReactEChartsCore
           style={{
             height: 520,
-            width:width<768? "100%": width/1.85
+            width: width>1024?width/1.85: "100%" 
               // width > 650
               //   ? width > 768
               //     ? width > 1024

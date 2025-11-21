@@ -698,7 +698,7 @@ const initialState: OrderbookState = {
   bids: [],
   asks: [],
   groupingSize:5,
-  totalLevel:7,
+  totalLevel:36,
   lastUpdateId:null
 };
 
