@@ -29,7 +29,7 @@ export default [
     ...prefix("earn", [
       route("loans", "./routes/loan.tsx"),
       route("earn", "./routes/earn/index.tsx"),
-      route("earn/:type", "./routes/earn/subscribe/index.tsx"),
+      route("earn/:type", "./routes/earn/subscribe/[type].tsx"),
     ]),
   ]),
 ] satisfies RouteConfig;

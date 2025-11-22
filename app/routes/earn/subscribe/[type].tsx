@@ -1,5 +1,4 @@
 import FooterSection from "~/components/footer";
-import type { Route } from "../subscribe/+types";
 import { useState } from "react";
 import miniUsdt from "assets/coins/miniUsdt.png";
 import miniBtc from "assets/coins/miniBtc.png";
@@ -7,26 +6,54 @@ import miniEth from "assets/coins/miniEth.png";
 import miniXrp from "assets/coins/miniXrp.png";
 import miniLtc from "assets/coins/miniLtc.png";
 import btcEth from "assets/coins/btc_eth.png";
-
-export async function clientLoader({ params }: Route.LoaderArgs) {
+import { useFetcher } from "react-router";
+import type { Route } from "./+types/[type]";
+interface LoaderDataParams {
+    type: string | null;
+}
+export async function clientLoader({ params }: { params: { type?: string } }): Promise<LoaderDataParams> {
     return { type: params.type || null };
 }
 
-export async function clientAction({ params }: Route.ClientActionArgs) {
+
+export async function clientAction({ params, request }: Route.ClientActionArgs) {
     try {
-        // Your action logic here
+        const formData = await request.formData();
+        const intent = formData.get("intent");
+        const amount = formData.get("amount");
+        const asset = formData.get("asset");
+
+        if (intent === "subscribe") {
+            // Your subscription logic here
+            console.log("Subscribing with:", { amount, asset });
+
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            return {
+                success: true,
+                message: "Subscription successful!",
+                data: { amount, asset }
+            };
+        }
+
+        return { success: false, error: "Unknown action" };
     } catch (error) {
-        console.error("Error deleting photo:", error);
-        throw error;
+        console.error("Error in subscription:", error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Subscription failed"
+        };
     }
 }
 
-export default function SubscribeTypePage({ loaderData }: Route.ComponentProps) {
+export default function SubscribeTypePage({ loaderData }: { loaderData: LoaderDataParams }) {
     const [isSubscribing, setIsSubscribing] = useState(false);
     const [subscriptionAmount, setSubscriptionAmount] = useState('');
     const [selectedAsset, setSelectedAsset] = useState(loaderData?.type || 'USDT');
     const [useAutoSubscribe, setUseAutoSubscribe] = useState(true);
     const [loading, setLoading] = useState(false);
+    const fetcher = useFetcher();
     const availableAssets = [
         { symbol: 'USDT', balance: 0, name: 'Tether', coin: miniUsdt },
         { symbol: 'BUSD', balance: 800.00, name: 'Binance USD', coin: miniUsdt },
@@ -36,8 +63,8 @@ export default function SubscribeTypePage({ loaderData }: Route.ComponentProps) 
         { symbol: 'LTC', balance: 20, name: 'Litecoin', coin: miniLtc },
         { symbol: 'BTC-ETH', balance: 1.2, name: 'BTC-ETH Combo', coin: btcEth },
     ];
-    const getStatusColor = (status) => {
-        const colorMap = {
+    const getStatusColor = (status: string) => {
+        const colorMap: Record<string, string> = {
             Review: "text-yellow-400",
             completed: "text-green-400",
             Rejected: "text-red-400",
@@ -46,16 +73,24 @@ export default function SubscribeTypePage({ loaderData }: Route.ComponentProps) 
         };
         return colorMap[status] || "text-gray-400";
     };
-    const DepositData = [];
+    interface DepositItem {
+        crypto: string;
+        amount: string;
+        status: string;
+        time: {
+            date: Date;
+        };
+    }
+    const DepositData: DepositItem[] = [];
     // Get current selected asset data
     const currentAsset = availableAssets.find(a => a.symbol === selectedAsset);
     const hasZeroBalance = currentAsset?.balance === 0;
 
-    const handleSubscribe = async () => {
-        setIsSubscribing(true);
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        setIsSubscribing(false);
-    };
+    // const handleSubscribe = async () => {
+    //     setIsSubscribing(true);
+    //     await new Promise(resolve => setTimeout(resolve, 2000));
+    //     setIsSubscribing(false);
+    // };
 
     const handleMaxAmount = () => {
         if (hasZeroBalance) {
@@ -137,94 +172,106 @@ export default function SubscribeTypePage({ loaderData }: Route.ComponentProps) 
                                             )}
                                         </div>
                                     </div>
+                                    <fetcher.Form method="post">
+                                        <div className="mb-4">
+                                            <label className="block text-gray-300 mb-2 font-semibold">Subscription Amount</label>
+                                            <div className="relative">
+                                                <input
+                                                    type="number"
+                                                    value={subscriptionAmount}
+                                                    onChange={handleAmountChange}
+                                                    min="0"
+                                                    step="0.01"
+                                                    placeholder="0.00"
+                                                    disabled={hasZeroBalance}
+                                                    className={`w-full bg-gray-800 border rounded-lg py-3 px-4 text-white text-lg font-semibold focus:outline-none ${hasZeroBalance
+                                                        ? 'opacity-50 cursor-not-allowed border-gray-600'
+                                                        : 'focus:border-gray-900 border-gray-700'
+                                                        }`}
+                                                />
+                                                <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
+                                                    <span className={`font-semibold ${hasZeroBalance ? 'text-gray-500' : 'text-gray-400'
+                                                        }`}>
+                                                        {selectedAsset}
+                                                    </span>
+                                                </div>
+                                            </div>
 
-                                    <div className="mb-4">
-                                        <label className="block text-gray-300 mb-2 font-semibold">Subscription Amount</label>
-                                        <div className="relative">
-                                            <input
-                                                type="number"
-                                                value={subscriptionAmount}
-                                                onChange={handleAmountChange}
-                                                min="0"
-                                                step="0.01"
-                                                placeholder="0.00"
-                                                disabled={hasZeroBalance}
-                                                className={`w-full bg-gray-800 border rounded-lg py-3 px-4 text-white text-lg font-semibold focus:outline-none ${hasZeroBalance
-                                                    ? 'opacity-50 cursor-not-allowed border-gray-600'
-                                                    : 'focus:border-gray-900 border-gray-700'
-                                                    }`}
-                                            />
-                                            <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
-                                                <span className={`font-semibold ${hasZeroBalance ? 'text-gray-500' : 'text-gray-400'
+                                            <div className="flex justify-between text-sm mt-2">
+                                                <span className={`${hasZeroBalance ? 'text-gray-500' : 'text-gray-400'
                                                     }`}>
-                                                    {selectedAsset}
+                                                    Available: {currentAsset?.balance} {selectedAsset}
                                                 </span>
+                                                <button
+                                                    onClick={handleMaxAmount}
+                                                    disabled={hasZeroBalance}
+                                                    className={`${hasZeroBalance
+                                                        ? 'text-gray-500 cursor-not-allowed'
+                                                        : 'text-gray-400 hover:text-amber-300'
+                                                        }`}
+                                                >
+                                                    MAX
+                                                </button>
+                                            </div>
+
+                                            {/* Warning message for zero balance assets */}
+                                            {hasZeroBalance && (
+                                                <div className="text-red-400 text-sm mt-2 flex items-center">
+                                                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                                    </svg>
+                                                    Insufficient balance. Please select another asset.
+                                                </div>
+                                            )}
+                                            <div className="flex items-center space-x-4 mt-2">
+                                                <input
+                                                    type="checkbox"
+                                                    id="autoSubscribe"
+                                                    checked={useAutoSubscribe}
+                                                    onChange={() => setUseAutoSubscribe(!useAutoSubscribe)}
+                                                    className="w-4 h-4 text-amber-300 bg-gray-800 border-gray-600 rounded focus:ring-amber-300"
+                                                />
+                                                <label htmlFor="autoSubscribe" className="text-gray-300 text-sm">
+                                                    I have read and agree to the Terms and Conditions
+                                                </label>
                                             </div>
                                         </div>
-
-                                        <div className="flex justify-between text-sm mt-2">
-                                            <span className={`${hasZeroBalance ? 'text-gray-500' : 'text-gray-400'
+                                        {fetcher.data && (
+                                            <div className={`mt-4 p-3 rounded ${fetcher.data.success
+                                                ? 'bg-green-900 text-green-300'
+                                                : 'bg-red-900 text-red-300'
                                                 }`}>
-                                                Available: {currentAsset?.balance} {selectedAsset}
-                                            </span>
+                                                {fetcher.data.success ? fetcher.data.message : fetcher.data.error}
+                                            </div>
+                                        )}
+                                        <div className="mt-6 flex items-center">
                                             <button
-                                                onClick={handleMaxAmount}
-                                                disabled={hasZeroBalance}
-                                                className={`${hasZeroBalance
-                                                    ? 'text-gray-500 cursor-not-allowed'
-                                                    : 'text-gray-400 hover:text-amber-300'
+                                                // onClick={handleSubscribe}
+                                                name="intent"
+                                                value="subscribe"
+                                                type="submit"
+                                                disabled={!canSubscribe()}
+                                                className={`w-full py-3 px-4 rounded-lg font-semibold transition duration-200 ${!canSubscribe()
+                                                    ? 'bg-amber-300 text-gray-950 cursor-not-allowed opacity-50'
+                                                    : 'bg-amber-300 hover:bg-amber-300 text-gray-950'
                                                     }`}
                                             >
-                                                MAX
+                                                {isSubscribing ? (
+                                                    <div className="flex items-center justify-center">
+                                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-950 mr-2"></div>
+                                                        Processing...
+                                                    </div>
+                                                ) : hasZeroBalance ? (
+                                                    'Insufficient Balance'
+                                                ) : !subscriptionAmount || parseFloat(subscriptionAmount) <= 0 ? (
+                                                    'Enter Amount'
+                                                ) : (
+                                                    'Confirm Subscription'
+                                                )}
                                             </button>
                                         </div>
 
-                                        {/* Warning message for zero balance assets */}
-                                        {hasZeroBalance && (
-                                            <div className="text-red-400 text-sm mt-2 flex items-center">
-                                                <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                </svg>
-                                                Insufficient balance. Please select another asset.
-                                            </div>
-                                        )}
-                                        <div className="flex items-center space-x-4 mt-2">
-                                            <input
-                                                type="checkbox"
-                                                id="autoSubscribe"
-                                                checked={useAutoSubscribe}
-                                                onChange={() => setUseAutoSubscribe(!useAutoSubscribe)}
-                                                className="w-4 h-4 text-amber-300 bg-gray-800 border-gray-600 rounded focus:ring-amber-300"
-                                            />
-                                            <label htmlFor="autoSubscribe" className="text-gray-300 text-sm">
-                                                I have read and agree to the Terms and Conditions
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-6 flex items-center">
-                                        <button
-                                            onClick={handleSubscribe}
-                                            disabled={!canSubscribe()}
-                                            className={`w-full py-3 px-4 rounded-lg font-semibold transition duration-200 ${!canSubscribe()
-                                                ? 'bg-amber-300 text-gray-950 cursor-not-allowed opacity-50'
-                                                : 'bg-amber-300 hover:bg-amber-300 text-gray-950'
-                                                }`}
-                                        >
-                                            {isSubscribing ? (
-                                                <div className="flex items-center justify-center">
-                                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-950 mr-2"></div>
-                                                    Processing...
-                                                </div>
-                                            ) : hasZeroBalance ? (
-                                                'Insufficient Balance'
-                                            ) : !subscriptionAmount || parseFloat(subscriptionAmount) <= 0 ? (
-                                                'Enter Amount'
-                                            ) : (
-                                                'Confirm Subscription'
-                                            )}
-                                        </button>
-                                    </div>
+                                    </fetcher.Form>
                                 </div>
 
                                 <div className="col-span-3 lg:col-span-2 mt-10 lg:mt-0">
