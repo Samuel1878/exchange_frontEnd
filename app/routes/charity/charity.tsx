@@ -1,48 +1,8 @@
 import FooterSection from "~/components/footer";
-// import CharittyImage from "assets/images/charity.png";
+import CharittyImage from "assets/images/charity.png";
 import React, { useEffect, useRef, useState } from "react";
-const FeaturedProjects = [
-  {
-    id: 1,
-    title: "Morocco Earthquake Emergency Appeal",
-    description: "Providing Emergency Relief to People in Morocco",
-    imageUrl: <img src="../../assets/charity/image_1.png" className="w-full h-36 object-cover" />,
-    status: "Completed",
-    progress: 100,
-    beneficiaries: "231.43K",
-    donations: 3197,
-  },
-  {
-    id: 2,
-    title: "Beirut Explosion Relief",
-    description: "We stand with you, Lebanon",
-    imageUrl: <img src="../../assets/charity/image_2.png" className="w-full h-36 object-cover" />,
-    status: "Completed",
-    progress: 100,
-    beneficiaries: "10.06K",
-    donations: 184,
-  },
-  {
-    id: 3,
-    title: "Empower Bududa",
-    description: "Save the landslide disaster victims in Uganda",
-    imageUrl: <img src="../../assets/charity/image_3.png" className="w-full h-36 object-cover" />,
-    status: "Completed",
-    progress: 100,
-    beneficiaries: "37.97K",
-    donations: 273,
-  },
-  {
-    id: 4,
-    title: "Emergency appeal: Haiti Earthquake Relief",
-    description: "Join our efforts in sending much needed relief funds to Haiti in the wake of a devastating earthquake.",
-    imageUrl: <img src="../../assets/charity/image_4.png" className="w-full h-36 object-cover" />,
-    status: "Completed",
-    progress: 100,
-    beneficiaries: "54.73K",
-    donations: 756,
-  },
-];
+import { Link, useNavigate } from "react-router";
+import { FeaturedProjects } from "data/charity/featured-projects";
 const randomNames = [
   "michael",
   "karen",
@@ -84,7 +44,7 @@ const DonationScrollNoCSS = () => {
     const scrollHeight = scrollRef.current.scrollHeight / 2;
     const interval = setInterval(() => {
       setScrollPosition((prev) => {
-        let next = prev + 1; 
+        let next = prev + 1;
         if (next >= scrollHeight) next = 0;
         return next;
       });
@@ -93,38 +53,39 @@ const DonationScrollNoCSS = () => {
   }, []);
   return (
     <div className="">
-      <div className="grid grid-cols-3 text-sm font-semibold bg-gray-950 border-b border-gray-700 pb-5 mb-4">
+      <div className="grid grid-cols-3 text-sm font-semibold bg-gray-950 border-b border-gray-700 pb-5 mb-4 p-4">
         <div>Participant Users</div>
         <div className="text-center">Donation Time</div>
         <div className="text-right">Donation Amount</div>
       </div>
-    <div className="relative h-96 w-full overflow-hidden bg-gray-900 text-white p-4">
-      <div
-        ref={scrollRef}
-        className="space-y-2"
-        style={{
-          transform: `translateY(-${scrollPosition}px)`,
-          transition: "none",
-          willChange: "transform",
-        }}
-      >
-        {[...donations, ...donations].map((don, idx) => (
-          <div
-            key={idx}
-            className="grid grid-cols-3 border-b border-gray-700 py-2"
-          >
-            <div>{don.name}</div>
-            <div className="text-center">{new Date().toLocaleTimeString()}</div>
-            <div className="text-right">{don.price} USDT</div>
-          </div>
-        ))}
+      <div className="relative h-96 w-full overflow-hidden bg-gray-900 text-white p-4">
+        <div
+          ref={scrollRef}
+          className="space-y-2"
+          style={{
+            transform: `translateY(-${scrollPosition}px)`,
+            transition: "none",
+            willChange: "transform",
+          }}
+        >
+          {[...donations, ...donations].map((don, idx) => (
+            <div
+              key={idx}
+              className="grid grid-cols-3 border-b border-gray-700 py-2"
+            >
+              <div>{don.name}</div>
+              <div className="text-center">{new Date().toLocaleTimeString()}</div>
+              <div className="text-right">{don.price} USDT</div>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
     </div>
   );
 };
 
 export default function CharityRoute() {
+  const navigate = useNavigate();
   return (
     <main className="bg-gray-900 lg:bg-gray-950 overflow-x-hidden">
       <section
@@ -136,21 +97,21 @@ export default function CharityRoute() {
             <div className=" text-gray-300 p-6 md:p-5 space-y-10">
               <div className="flex flex-col lg:flex-row lg:items-center md:items-start lg:justify-between lg:gap-6 space-y-7 lg:space-y-2 lg:space-x-10">
                 <div className="space-y-7 mb-4 lg:mb-0 lg:w-1/2">
-                  {/* <img src={CharittyImage} alt="" className="lg:w-full" /> */}
+                  <img src={CharittyImage} alt="" className="lg:w-full" />
                 </div>
                 <div className="space-y-7 mb-4">
                   <h1 className="text-4xl font-bold lg:text-4xl">Web3 Solutions for Social Change</h1>
-                  <p className="text-sm font-thin lg:text-xl">We are the '' charity organization, a non-profit organization committed to leveraging web3 technology as the future force for justice.</p>
+                  <p className="text-sm font-thin lg:text-xl lg:font-semibold lg:text-gray-400">We are the '' charity organization, a non-profit organization committed to leveraging web3 technology as the future force for justice.</p>
                 </div>
               </div>
               <div className="flex flex-col lg:flex-row lg:items-center md:items-start lg:justify-between lg:gap-6 space-y-7 lg:space-x-10">
                 <div className="space-y-7 mb-4 lg:mb-0 lg:w-1/2 bg-gradient-to-br from-gray-800 to-gray-900 rounded p-4 border-l-4 lg:border-l-4 border-amber-300">
                   <h2 className="text-2xl font-bold lg:text-3xl">Our Commitments</h2>
-                  <p className="text-sm font-thin lg:text-sm">We enable Web3 as a driver of social transformation by making its education and research accessible to all, and advancing global solutions for local humanitarian impact.</p>
+                  <p className="text-sm font-thin lg:text-sm lg:font-semibold lg:text-gray-400">We enable Web3 as a driver of social transformation by making its education and research accessible to all, and advancing global solutions for local humanitarian impact.</p>
                 </div>
                 <div className="space-y-7 mb-4 lg:mb-0 lg:w-1/2 bg-gradient-to-br from-gray-800 to-gray-900 rounded p-4 border-l-4 lg:border-l-4 border-amber-300">
                   <h2 className="text-2xl font-bold lg:text-3xl">Our Impact</h2>
-                  <p className="text-sm font-thin lg:text-sm">To date, we have helped over 2 million people in more than 54 countries by committing more than $23 million to fund 32 projects. Because we believe Web 3 should be built by and benefit all.</p>
+                  <p className="text-sm font-thin lg:text-sm lg:font-semibold lg:text-gray-400">To date, we have helped over 2 million people in more than 54 countries by committing more than $23 million to fund 32 projects. Because we believe Web 3 should be built by and benefit all.</p>
                 </div>
               </div>
               <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8 p-6 max-w-6xl mx-auto">
@@ -193,7 +154,7 @@ export default function CharityRoute() {
                         <span className="w-3 h-3 bg-blue-500 rounded-full mr-3"></span>
                         Direct Giving
                       </h2>
-                      <p className="text-gray-300">We transfer your donation directly to the end beneficiary - meaning 100% of your money goes to those who need it most.</p>
+                      <p className="text-gray-300 lg:font-semibold lg:text-gray-400">We transfer your donation directly to the end beneficiary - meaning 100% of your money goes to those who need it most.</p>
                     </div>
 
                     <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 hover:border-green-500 transition-colors duration-300">
@@ -201,7 +162,7 @@ export default function CharityRoute() {
                         <span className="w-3 h-3 bg-green-500 rounded-full mr-3"></span>
                         Transparency
                       </h2>
-                      <p className="text-gray-300">We revolutionize global giving by making it more transparent to address challenges facing the social sector such as corruption, lack of trust in nonprofits, high global transfer fees, inefficient processes and lack of accountability in donor spending.</p>
+                      <p className="text-gray-300 lg:font-semibold lg:text-gray-400">We revolutionize global giving by making it more transparent to address challenges facing the social sector such as corruption, lack of trust in nonprofits, high global transfer fees, inefficient processes and lack of accountability in donor spending.</p>
                     </div>
 
                     <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 hover:border-purple-500 transition-colors duration-300">
@@ -209,7 +170,7 @@ export default function CharityRoute() {
                         <span className="w-3 h-3 bg-purple-500 rounded-full mr-3"></span>
                         Transformative Tech
                       </h2>
-                      <p className="text-gray-300">Conducting in-depth research to explore the potential of Web3 technologies for social good.</p>
+                      <p className="text-gray-300 lg:font-semibold lg:text-gray-400">Conducting in-depth research to explore the potential of Web3 technologies for social good.</p>
                     </div>
 
                     <div className="bg-gray-800/50 p-6 rounded-xl border border-gray-700 hover:border-yellow-500 transition-colors duration-300">
@@ -217,7 +178,7 @@ export default function CharityRoute() {
                         <span className="w-3 h-3 bg-yellow-500 rounded-full mr-3"></span>
                         Research
                       </h2>
-                      <p className="text-gray-300">To better understand and support Web 3 solutions, we invest in the innovation, research and development of it.</p>
+                      <p className="text-gray-300 lg:font-semibold lg:text-gray-400">To better understand and support Web 3 solutions, we invest in the innovation, research and development of it.</p>
                     </div>
                   </div>
                 </div>
@@ -225,17 +186,24 @@ export default function CharityRoute() {
               <div className="space-y-7">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                   <h1 className="text-3xl font-bold text-white mb-4 md:mb-0">Featured News and Projects</h1>
-                  <button className="bg-gradient-to-r from-amber-300 to-amber-400 hover:from-amber-300 hover:to-amber-400 text-gray-800 font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
+
+                  <Link to="/charity/projects" className="bg-gradient-to-r text-center from-amber-300 to-amber-400 hover:from-amber-300 hover:to-amber-400 text-gray-800 font-semibold py-3 px-6 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl">
                     View All
-                  </button>
+                  </Link>
                 </div>
                 <hr className="border-gray-700 mb-8" />
                 <div className="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] touch-pan-x pb-6">
                   <div className="flex space-x-4 w-max">
                     {FeaturedProjects.map((f) => (
-                      <div className="w-65 flex-shrink-0 rounded-lg shadow p-4 hover:border-amber-300 border border-gray-700 transition-colors duration-300 ">
+                      <div className="w-65 flex-shrink-0 rounded-lg shadow p-4 hover:border-amber-300 border border-gray-700 transition-colors duration-300 cursor-pointer" key={f.id}
+                        onClick={() => navigate(`projects/${f.id}`)}
+                      >
                         <div className="relative rounded-lg overflow-hidden mb-4">
-                          {f.imageUrl}
+                          <img
+                            src={f.imageUrl}
+                            className="w-full h-36 object-cover"
+                            alt={f.title}
+                          />
                           <div className="absolute bottom-2 right-2 flex items-center space-x-2 bg-transparent bg-opacity-50 text-white text-xs rounded px-2 py-1 font-semibold select-none">
                             <div className="flex items-center space-x-1">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -266,7 +234,7 @@ export default function CharityRoute() {
                 </div>
               </div>
               <div className="space-y-7">
-                <h2 className="text-3xl font-bold lg:text-4xl">Join Us in Making a Difference</h2>
+                <h2 className="text-3xl font-bold lg:text-4xl">Donors for this Project</h2>
                 <div className="">
                   <DonationScrollNoCSS />
                 </div>

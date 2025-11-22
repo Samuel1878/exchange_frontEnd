@@ -158,7 +158,7 @@ export default function ByMarketPrice({ loaderData }: Route.ComponentProps) {
                                 <div className="border border-gray-700 rounded-lg p-4 lg:p-6 w-full md:w-[400px]">
                                     <div className="flex flex-col-2 gap-4 justify-between lg:items-center lg:flex-row">
                                         <button>Buy BTC</button>
-                                        <button>Sell BTC</button>
+                                        {/* <button>Sell BTC</button> */}
                                     </div>
                                     <div className="border border-gray-700 rounded-lg p-4 lg:p-6 mt-4 lg:space-y-5">
                                         <div className="flex flex-col-2 justify-between lg:items-center lg:flex-row">
@@ -177,9 +177,9 @@ export default function ByMarketPrice({ loaderData }: Route.ComponentProps) {
                                         </div>
                                         <input type="text" className="w-full border-gray-300 rounded-md px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900 lg:focus:ring-gray-950" />
                                     </div>
-                                    <div className="text-center mt-6 text-gray-900 font-bold">
+                                    {/* <div className="text-center mt-6 text-gray-900 font-bold">
                                         <button className="bg-amber-300 w-full p-3 rounded">Buy BTC</button>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                             <div className="space-y-2 mb-4 lg:space-x-7">

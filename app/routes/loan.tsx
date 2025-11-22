@@ -42,9 +42,7 @@ const BorrowTabs = [
 export default function LoanTab() {
     const navigate = useNavigate();
     const tokens = (allTokensData);
-    const [showModal, setShowModal] = useState(false);
     const [activeTab, setActiveTab] = useState("Borrowing_Order");
-    const Borrowtokens = allTokensData[activeTab] || [];
     const [selectedToken, setSelectedToken] = useState(null);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -86,7 +84,7 @@ export default function LoanTab() {
                                     <button className="bg-amber-300 text-gray-800 p-2 rounded-lg lg:w-1/3">Borrow Now</button>
                                 </div>
                                 <div className="md:block hidden sm:block my-4 lg:my-0 lg:space-y-2 md:space-y-2">
-                                    <div className="flex flex-2 border p-4 gap-2 rounded-2xl bg-blend-color-dodge">
+                                    <div className="flex flex-2 border p-4 gap-2 rounded-2xl bg-opacity-50 bg-gradient-to-b from-gray-950 via-gray-800 to-gray-900">
                                         <div className="lg:p-4 md:p-4">
                                             <p>Fixed Rate Loans</p>
                                             <span>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quo de</span>
@@ -98,7 +96,7 @@ export default function LoanTab() {
                                             <img src={Loan} alt="" className="lg:w-[200px]" />
                                         </div>
                                     </div>
-                                    <div className="flex flex-2 border p-4 gap-2 rounded-2xl ">
+                                    <div className="flex flex-2 border p-4 gap-2 rounded-2xl bg-opacity-50 bg-gradient-to-b from-gray-950 via-gray-800 to-gray-900">
                                         <div className="lg:p-4 md:p-4">
                                             <p>Vip Loan</p>
                                             <span>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quo de</span>
@@ -261,7 +259,7 @@ export default function LoanTab() {
                                         ))}
                                     </div>
                                 </div>
-                                <div className="lg:border lg:rounded lg:h-52 h-52 space-y-2 lg:space-y-4 lg:p-2">
+                                <div className="lg:border lg:rounded lg:h-52 h-52 space-y-2 lg:space-y-4 lg:p-2 border-gray-700">
                                     <div className="flex flex-wrap items-center justify-center p-5">
                                         {!loading ? (
                                             <svg width="94" height="70" viewBox="0 0 94 70" fill="none" xmlns="http://www.w3.org/2000/svg" className="svg-class">
