@@ -31,5 +31,6 @@ export default [
       route("earn", "./routes/earn/index.tsx"),
       route("earn/:type", "./routes/earn/subscribe/[type].tsx"),
     ]),
+    route("blog","./routes/news/index.tsx"),
   ]),
 ] satisfies RouteConfig;

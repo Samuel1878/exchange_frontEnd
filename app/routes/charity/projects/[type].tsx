@@ -8,7 +8,6 @@ import { Input } from "~/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Button } from "~/components/ui/button";
-import { ArrowDownUp } from "lucide-react";
 
 const randomNames = [
   "michael", "karen", "linda", "john", "david", "emily", "jessica", "daniel",

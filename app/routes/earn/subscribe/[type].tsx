@@ -26,7 +26,7 @@ export async function clientAction({ params, request }: Route.ClientActionArgs) 
         if (intent === "subscribe") {
             // Your subscription logic here
             console.log("Subscribing with:", { amount, asset });
-
+            
             // Simulate API call
             await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -86,11 +86,6 @@ export default function SubscribeTypePage({ loaderData }: { loaderData: LoaderDa
     const currentAsset = availableAssets.find(a => a.symbol === selectedAsset);
     const hasZeroBalance = currentAsset?.balance === 0;
 
-    // const handleSubscribe = async () => {
-    //     setIsSubscribing(true);
-    //     await new Promise(resolve => setTimeout(resolve, 2000));
-    //     setIsSubscribing(false);
-    // };
 
     const handleMaxAmount = () => {
         if (hasZeroBalance) {
@@ -180,6 +175,7 @@ export default function SubscribeTypePage({ loaderData }: { loaderData: LoaderDa
                                                     type="number"
                                                     value={subscriptionAmount}
                                                     onChange={handleAmountChange}
+                                                    name="amount"
                                                     min="0"
                                                     step="0.01"
                                                     placeholder="0.00"
