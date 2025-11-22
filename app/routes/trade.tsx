@@ -121,10 +121,10 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
       //send unsubscribe here on unmount, but often managing this via state is cleaner
     };
   }, [readyState, currentStream, sendSubscriptionMessage]);
-  useEffect(() => {
-    pair &&
-      switchStream([pair + "@aggTrade", pair + "@depth20@1000ms", pair + "@ticker"]);
-  }, [pair]);
+  // useEffect(() => {
+  //   pair &&
+  //     switchStream([pair + "@aggTrade", pair + "@depth20@1000ms", pair + "@ticker"]);
+  // }, [pair]);
   return (
     <main
       className="lg:flex lg:justify-center bg-gray-900 lg:bg-black"

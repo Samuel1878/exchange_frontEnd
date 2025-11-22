@@ -9,28 +9,31 @@ import {
 export default [
   layout("routes/layout/navBarLayout.tsx", [
     index("routes/home.tsx"),
-    route("market", "./routes/market/market.tsx"),
-    ...prefix("market/price", [
-      route(":type", "./routes/market/price/[type].tsx")
+
+    ...prefix("market", [
+      index("./routes/market/market.tsx"),
+      route(":type", "./routes/market/price/[type].tsx"),
     ]),
     route("ai", "./routes/ai.tsx"),
 
-    ...prefix("trade", [
-      route(":pair", "./routes/trade.tsx")
-    ]),
-    route("charity", "./routes/charity/charity.tsx"),
-
-    ...prefix("charity/", [
-
-      route("projects", "./routes/charity/projects/index.tsx"),
-      route("projects/:id", "./routes/charity/projects/[type].tsx"),
+    ...prefix("trade", [route(":pair", "./routes/trade.tsx")]),
+    ...prefix("charity", [
+      index("./routes/charity/charity.tsx"),
+      route(
+        "projects",
+        "./routes/charity/projects/index.tsx",
+        route(":id", "./routes/charity/projects/[type].tsx")
+      ),
+      // route("projects/", ""),
     ]),
     route("asset", "./routes/wallet.tsx"),
-    ...prefix("earn", [
+    ...prefix("finance", [
+      ...prefix("earn", [
+        index("./routes/earn/index.tsx"),
+        route(":type", "./routes/earn/subscribe/[type].tsx"),
+      ]),
       route("loans", "./routes/loan.tsx"),
-      route("earn", "./routes/earn/index.tsx"),
-      route("earn/:type", "./routes/earn/subscribe/[type].tsx"),
     ]),
-    route("blog","./routes/news/index.tsx"),
+    route("trends", "./routes/news/index.tsx"),
   ]),
 ] satisfies RouteConfig;

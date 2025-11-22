@@ -39,12 +39,12 @@ export default function ({pair}) {
           <p
             className={`text-3xl font-bold md:text-xl xl:text-2xl ${aggTrade[0]?.isBuyerMarket ? "text-green-400" : "text-red-500"}`}
           >
-            {Number(aggTrade[0]?.price)?.toFixed(2) || 0.0}
+            {formatPrice(Number(aggTrade[0]?.price))}
           </p>
 
           <p className="hidden md:block text-xs text-gray-50">
             ${" "}
-            {formatPrice(Number(Number(aggTrade[0]?.price)?.toFixed(2) || 0.0))}
+            {formatPrice(Number(Number(aggTrade[0]?.price)?.toFixed(2)))}
           </p>
           <div className="flex md:hidden gap-2 ">
             <p className="text-sm text-gray-50">

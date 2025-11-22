@@ -9,6 +9,7 @@ import OrderBook from "./components/orderBook/orderBook";
 import AggTradeView from "./components/aggTradeView";
 import OrderHistory from "./components/orderHistory";
 import LgTrade from "./components/lgTrade";
+import TradingPairs from "./components/tradingPairs";
 
 export default function ({ pair, openMobileTrade, type }) {
    const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
@@ -94,7 +95,9 @@ export default function ({ pair, openMobileTrade, type }) {
           
         </div>
         <div className="hidden lg:flex lg:flex-col">
-          <div className="w-full bg-gray-950 mt-1 ml-1 rounded-sm flex-1 lg:min-w-50 xl:w-70 2xl:w-85"></div>
+          <div className="w-full bg-gray-950 mt-1 ml-1 rounded-sm flex-1 lg:min-w-50 xl:w-70 2xl:w-85">
+            <TradingPairs currentPair={pair}/>
+          </div>
           <div className="hidden lg:flex lg:flex-col flex-1 lg:ml-1 lg:mt-1 bg-gray-950 rounded-sm">
             <div className="p-2 px-4 border-b-2 border-b-gray-700 lg:border-b-gray-900">
               <p className="text-gray-50 font-semibold">Market Trades</p>

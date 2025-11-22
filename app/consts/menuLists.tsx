@@ -89,7 +89,7 @@ export const verticalNavMenu: menu[] = [
 export const tradeMenuList: menu[] = [
   {
     value: "trade/btcusdt?type=future",
-    label: "Event Contract",
+    label: "Future",
     description: "Short cycle, quick returns",
     icon: <GiTimeTrap size={26} color="rgba(120,130,150,1)" />,
   },
@@ -109,13 +109,13 @@ export const tradeMenuList: menu[] = [
 
 export const earnMenuList: menu[] = [
   {
-    value: "earn/loans",
+    value: "finance/loans",
     label: "Loans",
     description: "Access quick and easy loans with competitive rates",
     icon: <GrMoney size={26} color="rgb(120,130,150)" />,
   },
   {
-    value: "earn/earn",
+    value: "finance/earn",
     icon: <GiReceiveMoney size={26} color="rgba(120,130,150,1)" />,
     label: "Advanced Earn",
     description:
