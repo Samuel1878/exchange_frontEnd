@@ -677,113 +677,92 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
 import { ORDERBOOK_LEVELS } from "~/consts";
+export interface LevelType {
+  price: number;
+  amount:number;
+  total:number;
+  depth:string;
 
+}
 export interface OrderbookState {
   market: string;
-  bids: number[][];
-  asks: number[][];
+  bids: LevelType[];
+  asks: LevelType[];
+  groupingSize: number;
+  totalLevel:number,
+  lastUpdateId:number
 }
 
 const initialState: OrderbookState = {
-  market: "PI_XBTUSD",
+  market: "",
   bids: [],
   asks: [],
+  groupingSize:5,
+  totalLevel:36,
+  lastUpdateId:null
 };
 
-/** Replace or insert a price level */
-function upsertLevel(levels: number[][], [price, size]: number[][][number]) {
-  const idx = levels.findIndex((l) => l[0] === price);
-
-  if (size === 0) {
-    // remove only if found
-    if (idx !== -1) levels.splice(idx, 1);
-    return levels;
-  }
-
-  if (idx !== -1) {
-    // update price level
-    levels[idx] = [price, size];
-  } else {
-    // insert price level
-    levels.push([price, size]);
-  }
-  return levels;
-}
-function addTotals(levels: number[][]): number[][] {
-  let total = 0;
-
-  return levels.map(([price, size]) => {
-    total += size;
-    return [price, size, total]; // [price, size, total]
-  });
-}
-
-/** Add depth % = total / maxTotal */
-function addDepth(levels: number[][]): number[][] {
-  if (levels.length === 0) return levels;
-
-  const maxTotal = levels[levels.length - 1][2]; // last cumulative total
-
-  return levels.map(([p, s, t]) => {
-    const depth = (t / maxTotal) * 100;
-    return [p, s, t, depth]; // [price, size, total, depth%]
-  });
-}
-
 /** Apply delta updates Binance style */
-function applyDeltas(levels: number[][], deltas: number[][]) {
+function applyDeltas(levels: LevelType[], deltas: string[][]) {
   const updated = [...levels];
-
+ 
   deltas.forEach(([price, size]) => {
-    upsertLevel(updated, [price, size]);
+    let p = Number(price);
+    let a = Number(Number(size).toFixed(6));
+    let t = Number((p*a).toFixed(2));
+    let depth  =( (t/p) * 100).toString();
+    //  if (updated.length > colSize) {
+    //   set
+    //  }
+    updated.push({price:p, amount:a, total:t,depth:depth }) 
   });
 
   return updated;
 }
+const addSnapData = (levels:string[][]) => {
+  let snap :LevelType[]= []
+  levels.forEach(([price, size]) => {
+    let p = Number(price);
+    let a = Number(Number(size).toFixed(5));
+    let t = Number((p*a).toFixed(2));
+    let depth  =( (t/p) * 100).toString();
+       snap.push({ price: p, amount: a, total: t, depth: depth }); 
+  })
+  return snap
 
-/** Sort and limit output (Binance style) */
-function finalizeBids(levels: number[][]): number[][] {
-  return (
-    addDepth(addTotals(levels
-      // Sort descending for bids
-      // .sort((a, b) => b[0] - a[0])
-      .slice(0, ORDERBOOK_LEVELS)
-  )))
 }
-
-function finalizeAsks(levels: number[][]): number[][] {
-  console.log(levels)
-  return addDepth(addTotals(
-    levels
-      // Sort ascending for asks
-      // .sort((a, b) => a[0] - b[0])
-      .slice(0, ORDERBOOK_LEVELS)
-  ))
-}
-
 export const orderbookSlice = createSlice({
   name: "orderbook",
   initialState,
   reducers: {
     addBids(state, { payload }) {
       const curr = current(state).bids;
-
       const updated = applyDeltas(curr, payload);
-      state.bids = finalizeBids(updated);
+      state.bids = updated.slice(
+        updated.length - state.totalLevel,
+        updated.length
+      );
     },
 
     addAsks(state, { payload }) {
       const curr = current(state).asks;
-
       const updated = applyDeltas(curr, payload);
-      state.asks = finalizeAsks(updated);
+      state.asks = updated.slice(
+        updated.length - state.totalLevel,
+        updated.length
+      );
     },
-
+    changeTotalLevel (state, {payload}){
+      state.totalLevel = payload
+    },
+    addLastUpdatedId (state, {payload}){
+      state.lastUpdateId = payload
+    },
     /** Initial snapshot load */
-    addExistingState(state, { payload }) {
-      state.market = payload["product_id"];
-      state.bids = finalizeBids(payload.bids);
-      state.asks = finalizeAsks(payload.asks);
+    addExistingState(state,  {payload}) {
+      state.market = payload.product_id;
+      state.bids = addSnapData(payload.bids);
+      state.asks = addSnapData(payload.asks);
     },
 
     clearOrdersState(state) {
@@ -793,7 +772,7 @@ export const orderbookSlice = createSlice({
   },
 });
 
-export const { addBids, addAsks, addExistingState, clearOrdersState } =
+export const { addBids, addAsks,changeTotalLevel, addExistingState, clearOrdersState ,addLastUpdatedId} =
   orderbookSlice.actions;
 
 export const selectBids = (state: RootState) => state.orderbook.bids;

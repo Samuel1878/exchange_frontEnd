@@ -49,7 +49,7 @@ export default function NavBar() {
     return () => window.removeEventListener("resize", resizeHandler);
   });
   return (
-    <header className="top-0 right-0 left-0 bg-gray-900 lg:bg-gray-950 z-10 min-h-16 flex w-full">
+    <header className="top-0 right-0 left-0 bg-gray-900 lg:bg-gray-950 z-100 min-h-16 flex w-full">
       <nav className="flex w-full justify-between items-center relative px-2 pl-3 md:px-4 lg:px-8 xl:px-12">
         <div className="flex flex-row gap-2 lg:gap-4 items-center">
           <Link to="/" onClick={() => setIsOpen(false)}>
@@ -82,7 +82,7 @@ export default function NavBar() {
             className="hidden xl:flex items-center justify-center"
           >
             {/* <RiGlobalFill size={30}/> */}
-            <img src="assets/icons/lang.svg" className="w-8 h-8" />
+            <img src="../assets/icons/lang.svg" className="w-8 h-8" />
           </button>
           <div className="flex-row flex gap-2 items-center lg:hidden">
             <Hamburger

@@ -4,6 +4,9 @@ export const colorRedOpacity = 'rgba(235, 84, 84, 0.2)';
 export const colorGreen = '#47b262';
 export const colorRed = '#eb5454';
 export const priceFormatter = (value) => {
+  if (!value){
+    return "0.0000"
+  }
   const result = Math.round(value * 100) / 100 + '';
   // Adding padding 0 if needed
   let dotIndex = result.indexOf('.');
@@ -14,18 +17,81 @@ export const priceFormatter = (value) => {
   }
   return result;
 };
+export const formatPrice = (arg: number): string => {
+  if (!arg){
+    return "0.0000"
+  }
+    return arg.toLocaleString("en", {
+      useGrouping: true,
+      minimumFractionDigits: 2,
+    });
+  };
 
 export const ProductIds = {
-  XBTUSD: 'PI_XBTUSD',
-  ETHUSD: 'PI_ETHUSD'
+  btcusdt: 'BTC/USDT',
+  ethusdt: 'ETH/USDT'
 };
 
-const options: any = {
-  PI_XBTUSD: [0.5, 1, 2.5],
-  PI_ETHUSD: [0.05, 0.1, 0.25]
-};
 
-export const ProductsMap: any = {
-  "PI_XBTUSD": "PI_ETHUSD",
-  "PI_ETHUSD": "PI_XBTUSD",
-}
+export const ProductsMap: any = [
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+  {
+    id: 1,
+    value: "btcusdt",
+    label: "BTC/USDT",
+  },
+];
