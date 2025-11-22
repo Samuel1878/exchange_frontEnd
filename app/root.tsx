@@ -15,6 +15,7 @@ import AuthProvider from "./context/authProvider";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./config/i18n";
 import React from "react";
+
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -53,9 +54,9 @@ export default function App() {
       <I18nextProvider i18n={i18n}>
         <ReduxProvider store={store}>
           <AuthProvider>
-          
+           
               <Outlet />
-            
+         
           </AuthProvider>
         </ReduxProvider>
       </I18nextProvider>

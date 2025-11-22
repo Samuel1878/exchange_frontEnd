@@ -140,7 +140,7 @@ export default function LoanTab() {
                                                     <SlotCounter value={"$1309920"} />
                                                 </td>
                                                 <td
-                                                    className={`text-right px-4 py-3 ${e.change.startsWith("+") ? "text-green-400" : "text-red-400"
+                                                    className={`text-right px-4 py-3 ${e.change.startsWith("-") ? "text-red-500" : "text-green-400"
                                                         }`}
                                                 >
                                                     -0.249%

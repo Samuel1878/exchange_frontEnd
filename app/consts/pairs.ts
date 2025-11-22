@@ -85,7 +85,7 @@ export const CoinPairs = {
     label: "XLM/USDT",
     names: ["XLM", "USDT", "Stellar Lumens", "Tether"],
   },
-  atom: {
+  atomusdt: {
     value: "atomusdt",
     label: "ATOM/USDT",
     names: ["ATOM", "USDT", "Cosmos", "Tether"],

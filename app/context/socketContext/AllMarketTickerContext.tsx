@@ -10,12 +10,17 @@ import { useAppDispatch } from "~/utils/redux";
 import { addData } from "../slices/allMarketTicker";
 import { rafThrottle } from "~/utils/helpers";
 
-export const AllMarketTickerContext = createContext(null);
-
+export const AllMarketTickerContext = createContext<StreamContextType | null>(
+  null
+);
+interface StreamContextType {
+  switchStream: (streamId: string[]) => void;
+  currentStream: string[] | null;
+}
 export default function AllMarketTickerProvider({ children }) {
   const [currentStream, setCurrentStream] = useState<null | string[]>(null);
   const dispatch = useAppDispatch();
-  const { readyState, sendJsonMessage } = useWebSocket(
+  const { readyState, sendJsonMessage, getWebSocket } = useWebSocket(
     `wss://stream.binance.com:9443/stream`,
     {
       onOpen: () => {
@@ -30,20 +35,10 @@ export default function AllMarketTickerProvider({ children }) {
       onMessage: (event: WebSocketEventMap["message"]) => throttledTrade(event),
     }
   );
-//   const processMessages = (event: { data: string }) => {
-//     const response = JSON.parse(event.data);
-//     dispatch(addData(response));
- 
-
-//   };
-     const throttledTrade = rafThrottle((event: { data: string }) => {
-       const response = JSON.parse(event.data);
-       dispatch(addData(response));
-     });
-
-//   const throttledTradeUpdate = throttl((dispatch, data) => {
-//     dispatch(updateAggTrade(data));
-//   }, 150); // u
+  const throttledTrade = rafThrottle((event: { data: string }) => {
+    const response = JSON.parse(event.data);
+    dispatch(addData(response));
+  });
   const sendSubscriptionMessage = useCallback(
     (streamNames: string[], method: string) => {
       const message = {
@@ -71,14 +66,25 @@ export default function AllMarketTickerProvider({ children }) {
     if (readyState === ReadyState.OPEN && currentStream) {
       sendSubscriptionMessage(currentStream, "SUBSCRIBE");
     }
-    return () => {
-      //send unsubscribe here on unmount, but often managing this via state is cleaner
-    };
+    return () => {};
   }, [readyState, currentStream, sendSubscriptionMessage]);
 
   return (
-    <AllMarketTickerContext.Provider value={{ switchStream }}>
+    <AllMarketTickerContext.Provider
+      value={{ switchStream, currentStream }}
+    >
       {children}
     </AllMarketTickerContext.Provider>
   );
 }
+
+// if (currentStream && readyState === ReadyState.OPEN) {
+//   sendSubscriptionMessage(currentStream, "UNSUBSCRIBE");
+//   console.log("Unsubscribed on unmount:", currentStream);
+// }
+
+// const ws = getWebSocket();
+// if (ws) {
+//   ws.close(1000, "Provider unmounted"); // Clean close
+//   console.log("WebSocket manually closed");
+// }

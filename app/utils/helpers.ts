@@ -57,6 +57,9 @@ export function formatLevels(map) {
 }
 
 export const formatTotalPrice = (num:number):string => {
+  if (!num){
+    return "0.00"
+  }
   if (num <1000) return num.toFixed(2).toString();
   const units = ["", "k", "M", "B", "T"];
   let unitIndex = 0;

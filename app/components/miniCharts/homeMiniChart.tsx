@@ -5,7 +5,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import SlotCounter from "react-slot-counter"
 import { AllMarketTickerContext } from "~/context/socketContext/AllMarketTickerContext";
 import { useAppSelector } from "~/utils/redux";
-import { selectTopTickers, type TickSliceType } from "~/context/slices/allMarketTicker";
+import { selectAllTickers, selectTopTickers, type TickSliceType } from "~/context/slices/allMarketTicker";
 import { Loader } from "lucide-react";
 import { formatPrice } from "../charts/util";
 import { CoinPairs } from "~/consts/pairs";
@@ -39,12 +39,12 @@ export default function HomeMiniChart() {
       <div key={i} className="flex flex-row w-full my-5 ">
         <div className="flex flex-row flex-4 justify-between">
           <div className="flex gap-2 items-center">
-            <img src={Coins[CoinPairs[e?.symbol?.toLowerCase()].names[0]]} width={30} className="rounded-full overflow-hidden"/>
+            <img src={Coins[CoinPairs[e?.symbol?.toLowerCase()]?.names[0] || ""]} width={30} className="rounded-full overflow-hidden"/>
             <p className="text-md text-gray-50 font-bold">
-              {CoinPairs[e?.symbol?.toLowerCase()]?.names[0]}
+              {CoinPairs[e?.symbol?.toLowerCase()]?.names[0] || ""}
             </p>
             <p className="text-sm font-light text-gray-400">
-              {CoinPairs[e?.symbol?.toLowerCase()]?.names[2]}
+              {CoinPairs[e?.symbol?.toLowerCase()]?.names[2] || ""}
             </p>
           </div>
           {/* <SlotCounter value={e?.price} /> */}
@@ -54,7 +54,7 @@ export default function HomeMiniChart() {
         </div>
         <div className="flex-1 flex justify-end">
           <p
-            className={`text-lg font-semibold  ${e?.priceChangePercent?.startsWith("+", 0) ? "text-green-400" : " text-red-500"}`}
+            className={`text-lg font-semibold  ${e?.priceChangePercent?.startsWith("-", 0) ? "text-red-500" : " text-green-400"}`}
           >
             {e?.priceChangePercent || 0.0}%
           </p>

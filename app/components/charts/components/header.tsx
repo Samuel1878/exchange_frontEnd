@@ -51,7 +51,7 @@ export default function ({pair}) {
               $ {formatPrice(Number(Number(aggTrade[0]?.price).toFixed(2)))}
             </p>
             <p
-              className={`text-sm  ${ticker?.priceChangePercent?.startsWith("+", 0) ? "text-green-400" : " text-red-500"}`}
+              className={`text-sm  ${ticker?.priceChangePercent?.startsWith("-", 0) ? "text-red-500" : " text-green-400"}`}
             >
               {Number(ticker?.priceChangePercent)}%
             </p>
@@ -61,12 +61,12 @@ export default function ({pair}) {
           <p className="text-xs text-gray-500">24h Change</p>
           <div className="flex items-center gap-2">
             <p
-              className={`font-bold text-xs xl:text-md lg:font-semibold ${ticker?.priceChange?.startsWith("+", 0) ? "text-green-400" : " text-red-500"}`}
+              className={`font-bold text-xs xl:text-md lg:font-semibold ${ticker?.priceChange?.startsWith("-", 0) ? "text-red-500" : " text-green-400"}`}
             >
               {Number(ticker?.priceChange)?.toFixed(2) || 0.0}
             </p>
             <p
-              className={` text-xs xl:text-md lg:font-semibold ${ticker?.priceChangePercent?.startsWith("+", 0) ? "text-green-400" : " text-red-500"}`}
+              className={` text-xs xl:text-md lg:font-semibold ${ticker?.priceChangePercent?.startsWith("-", 0) ? "text-red-500" : " text-green-400"}`}
             >
               {Number(ticker?.priceChangePercent) || 0.0}%
             </p>

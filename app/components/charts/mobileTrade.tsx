@@ -49,7 +49,7 @@ export default function ({
             <span></span>
           </button>
           <p
-            className={`font-semibold text-sm ${ticker?.priceChangePercent?.startsWith("+", 0) ? "text-green-500" : "text-red-500"}`}
+            className={`font-semibold text-sm ${ticker?.priceChangePercent?.startsWith("-", 0) ? "text-red-500" : "text-green-400"}`}
           >
             {ticker?.priceChangePercent || "0"} %
           </p>
