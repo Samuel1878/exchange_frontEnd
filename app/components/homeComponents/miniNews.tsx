@@ -7,7 +7,7 @@ export default function () {
   return (
     <section className="flex flex-col items-center justify-center ">
       <div className="my-13">
-        <p className="text-2xl lg:text-3xl font-extrabold">Breaking News</p>
+        <p className="text-2xl lg:text-3xl font-extrabold text-gray-50">Breaking News</p>
       </div>
       <div className="flex gap-10 lg:gap-12 w-100 overflow-x-auto overflow-y-clip pb-6 md:w-full md:justify-center">
         <div
@@ -25,7 +25,7 @@ export default function () {
             />
             <p className="text-md font-bold text-gray-50">{article_one.title}</p>
             <p className="text-amber-400 font-serif">{article_one.content}</p>
-            <p className="font-thin text-gray-500">{article_one.description}</p>
+            <p className="font-thin text-gray-400">{article_one.description}</p>
             <a
               className="underline mt-2 text-amber-300"
               href={article_one.source_url}
@@ -53,7 +53,7 @@ export default function () {
             />
             <p className="text-md font-bold my-2 text-gray-50">{article_two.title}</p>
             <p className="text-amber-400 font-serif">{article_two.content}</p>
-            <p className="font-thin text-gray-500">{article_two.description}</p>
+            <p className="font-thin text-gray-400">{article_two.description}</p>
             <a
               className="underline mt-2 text-amber-300"
               href={article_two.source_url}
@@ -83,7 +83,7 @@ export default function () {
             <p className="text-amber-400 font-serif my-2">
               {article_three.content}
             </p>
-            <p className="font-thin text-gray-500">{article_three.description}</p>
+            <p className="font-thin text-gray-400">{article_three.description}</p>
             <a
               className="underline mt-2 text-amber-300"
               href={article_three.source_url}

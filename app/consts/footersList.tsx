@@ -55,30 +55,30 @@ export const services = [
     value: "ai",
   },
   {
-    label: "option",
-    value: "option",
+    label: "future",
+    value: "trade/btcusdt?type=future",
   },
   {
     label: "spot",
-    value: "spot",
+    value: "trade/btcusdt?type=spot",
   },
   {
-    label: "contract",
-    value: "contract",
+    label: "margin",
+    value: "trade/btcusdt?type=cross",
   },
   {
     label: "loan",
-    value: "loan",
+    value: "finance/loans",
   },
   {
     label: "earn",
-    value: "earn",
+    value: "finance/earn",
   },
 ];
 export const help = [
   {
     label: "download",
-    value: "#download",
+    value: "/#download",
   },
   {
     label: "24/7 Support",
@@ -86,7 +86,7 @@ export const help = [
   },
   {
     label: "FAQ",
-    value: "#faq",
+    value: "/#faq",
   },
 ];
 export const company = [
@@ -95,7 +95,7 @@ export const company = [
     value: "about",
   },
   {
-    label: "Term of Service",
+    label: "Terms and Conditions",
     value: "term",
   },
   {

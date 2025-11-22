@@ -189,7 +189,7 @@ export default function Home() {
                     {e.label}
                   </p>
                   <p
-                    className={`font-thin text-sm hidden md:block text-gray-400`}
+                    className={`font-light text-sm hidden md:block text-gray-400`}
                   >
                     {e.description}
                   </p>
@@ -200,7 +200,7 @@ export default function Home() {
                 <div
                   className={`md:hidden flex flex-row justify-between items-center`}
                 >
-                  <p className="font-thin text-sm">{e.description}</p>
+                  <p className="font-light text-sm text-gray-500">{e.description}</p>
 
                   <img
                     src={e.image}

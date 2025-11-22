@@ -24,7 +24,7 @@ export default function AiMiniChart() {
                 <p className="text-md text-gray-50 font-bold">{e.symbol}</p>
               </div>
               <div className="flex items-center gap-2 justify-between">
-                <p>
+                <p className="text-gray-50">
                   {" "}
                   <SlotCounter value={e.users} />
                 </p>

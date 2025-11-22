@@ -91,19 +91,19 @@ export const tradeMenuList: menu[] = [
     value: "trade/btcusdt?type=future",
     label: "Future",
     description: "Short cycle, quick returns",
-    icon: <GiTimeTrap size={26} color="rgba(120,130,150,1)" />,
+    icon: <GiTimeTrap size={30} color="rgba(120,130,150,1)" />,
   },
   {
     value: "trade/btcusdt?type=spot",
     label: "Spot",
     description: "Buy and sell on the spot market with advanced tools",
-    icon: <BsCurrencyExchange size={26} color="rgba(120,130,150,1)" />,
+    icon: <BsCurrencyExchange size={30} color="rgba(120,130,150,1)" />,
   },
   {
     value: "trade/btcusdt?type=cross",
     label: "Margin",
     description: "Increase your profits with leverage",
-    icon: <FaFileContract size={26} color="rgba(120,130,150,1)" />,
+    icon: <FaFileContract size={30} color="rgba(120,130,150,1)" />,
   },
 ];
 
@@ -112,11 +112,11 @@ export const earnMenuList: menu[] = [
     value: "finance/loans",
     label: "Loans",
     description: "Access quick and easy loans with competitive rates",
-    icon: <GrMoney size={26} color="rgb(120,130,150)" />,
+    icon: <GrMoney size={30} color="rgb(120,130,150)" />,
   },
   {
     value: "finance/earn",
-    icon: <GiReceiveMoney size={26} color="rgba(120,130,150,1)" />,
+    icon: <GiReceiveMoney size={50} color="rgba(120,130,150,1)" />,
     label: "Advanced Earn",
     description:
       "Maximize your returns with our advanced yield investment products",
@@ -126,14 +126,14 @@ export const earnMenuList: menu[] = [
 export const moreMenuList: menu[] = [
   {
     value: "trends",
-    icon: <RiBarChart2Fill size={26} color="rgba(120,130,150,1)" />,
+    icon: <RiBarChart2Fill size={30} color="rgba(120,130,150,1)" />,
     label: "Market Trends",
     description: "Expand your knowledge and get the latest insights",
   },
   {
     value: "charity",
     label: "Charity",
-    icon: <FaHandHoldingHeart size={26} color="rgba(120,130,150,1)" />,
+    icon: <FaHandHoldingHeart size={30} color="rgba(120,130,150,1)" />,
     description:
       "Blockchain empowers charity to be more transparent, efficient, and traceable",
   },

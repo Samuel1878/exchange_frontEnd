@@ -1,119 +1,182 @@
-import Hamburger from "hamburger-react";
-import { useEffect, useRef, useState } from "react";
-import { Link, NavLink, useNavigate, useNavigation } from "react-router";
-import { topNavMenu, verticalNavMenu } from "~/consts/menuLists";
-import gsap from "gsap";
-import { BiDownload } from "react-icons/bi";
-import { MdKeyboardArrowDown } from "react-icons/md";
-import VerticalNavBar from "./verticalNavBar";
-import { RiGlobalFill } from "react-icons/ri";
-import HorizonalNavBar from "./horizonalNavBar";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "~/components/ui/drawer";
 
-export default function NavBar() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const menuRef = useRef(null);
-  const navRef = useRef(null);
+import * as React from "react";
+import Hamburger from "hamburger-react";
+import { Link, useNavigate } from "react-router";
+
+import useWindowWidth from "~/hook/windowWidth";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "../ui/navigation-menu";
+import { dropdownMenus, topNavMenu, verticalNavMenu, type menu } from "~/consts/menuLists";
+import { BiDownload } from "react-icons/bi";
+import VerticalNavBar from "./verticalNavBar";
+import { X } from "lucide-react";
+
+export default function NavigationBar() {
+  const { width } = useWindowWidth();
+  const isMobile = width > 768;
+  const [isOpen, setIsOpen] = React.useState<boolean>(false);
+  const menuRef = React.useRef(null);
+  const navRef = React.useRef(null);
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const navigate = useNavigate();
-  useEffect(() => {
-    if (!menuRef.current) return;
-    if (isOpen) {
-      gsap.to(menuRef.current, {
-        duration: 0.7,
-        translateY: 20,
-        ease: "power2.out",
-        opacity: 1,
-        display: "flex",
-      });
-    } else {
-      gsap.to(menuRef.current, {
-        duration: 0.4,
-        translateY: -2,
-        opacity: 0,
-        ease: "power2.in",
-        onComplete: () => {
-          if (menuRef.current) {
-            menuRef.current.style.display = "none";
-          }
-        },
-      });
-    }
-  }, [isOpen]);
   const resizeHandler = () => {
     if (window.innerWidth > 1024) {
       setIsOpen(false);
     }
   };
-  useEffect(() => {
+  React.useEffect(() => {
     window.addEventListener("resize", resizeHandler);
     return () => window.removeEventListener("resize", resizeHandler);
   });
   return (
-    <header className="top-0 right-0 left-0 bg-gray-900 lg:bg-gray-950 z-100 min-h-16 flex w-full">
-      <nav className="flex w-full justify-between items-center relative px-2 pl-3 md:px-4 lg:px-8 xl:px-12">
-        <div className="flex flex-row gap-2 lg:gap-4 items-center">
-          <Link to="/" onClick={() => setIsOpen(false)}>
+    <nav className="top-0 right-0 left-0 bg-gray-900 lg:bg-gray-950 z-100 min-h-16 flex w-full justify-between px-2 pl-3 md:px-4 lg:px-8 xl:px-10">
+      <NavigationMenu viewport={false} className="bg-gray-900 lg:bg-gray-950">
+        <div className="flex flex-row gap-2 lg:gap-4 items-center lg:mr-6">
+          <Link
+            to="/"
+            // onClick={() => setIsOpen(false)}
+          >
             <img src="../../assets/logo.png" className="w-30 z-50 lg:w-32" />
           </Link>
-
-          <ul className="flex-row items-center space-x-3 hidden lg:flex lg:ml-6">
-            <HorizonalNavBar />
-          </ul>
         </div>
-
-        <div className="flex gap-4 lg:items-center xl:gap-5">
-          <div className="lg:flex hidden gap-3 ">
-            <button className="bg-gray-800 p-1 px-4 rounded-md">
-              <p className="text-gray-50 font-medium text-md">Log In</p>
-            </button>
-            <button className="bg-amber-300 p-1 px-4 rounded-md">
-              <p className="text-gray-950 font-medium text-md">Sign Up</p>
-            </button>
-          </div>
-          <div className="h-5 w-0.5 hidden xl:block  bg-gray-600 mx-2" />
-          <button
-            onClick={() => navigate("#download")}
-            className="hidden xl:flex items-center justify-center"
-          >
-            <BiDownload size={30} />
+        <NavigationMenuList className="hidden lg:flex">
+          {topNavMenu.map((e, idx) => (
+            <NavigationMenuItem
+              className="bg-gray-900 lg:bg-gray-950 hover:bg-gray-950"
+              key={idx}
+            >
+              {e.hasMore ? (
+                <>
+                  <NavigationMenuTrigger className="bg-gray-950 text-gray-100 lg:text-md xl:text-lg font-bold capitalize hover:bg-gray-950 focus:bg-gray-950 focus:text-amber-400">
+                    {e.label}
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent className="px-2">
+                    <ul className="min-w-100 bg-gray-900">
+                      {dropdownMenus[e.value]?.map((data: menu, i: number) => (
+                        <li className="p-2">
+                          <NavigationMenuLink
+                            asChild
+                            className="bg-gray-900 hover:bg-gray-800  "
+                          >
+                            <Link
+                              to={data.value}
+                              key={i}
+                              className="flex flex-row items-center py-4  gap-4 hover:**:first:text-amber-300 hover:**:not-first:text-gray-300"
+                            >
+                              {data.icon}
+                              <div className="flex flex-col items-start gap-y-1 ">
+                                <p className="text-gray-100 text-lg font-bold">
+                                  {data.label}
+                                </p>
+                                <p className="text-gray-500 text-sm font-medium">
+                                  {data.description}
+                                </p>
+                              </div>
+                            </Link>
+                          </NavigationMenuLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </NavigationMenuContent>
+                </>
+              ) : (
+                <NavigationMenuLink className="py-6 px-4 flex hover:**:text-amber-300 hover:bg-gray-950 ">
+                  <Link
+                    to={e.value}
+                    className="text-gray-100 lg:text-md xl:text-lg font-bold capitalize focus:text-amber-400"
+                  >
+                    {e.label}
+                  </Link>
+                </NavigationMenuLink>
+              )}
+            </NavigationMenuItem>
+          ))}
+        </NavigationMenuList>
+      </NavigationMenu>
+      <div className="lg:items-center flex gap-5 xl:gap-6">
+        <div className="lg:flex hidden gap-3 ">
+          <button className="bg-gray-800 p-1 px-4 rounded-md">
+            {" "}
+            <p className="text-gray-50 font-medium text-md">Log In</p>
           </button>
-          <button
-            // onClick={() => navigate("#download")}
-            className="hidden xl:flex items-center justify-center"
-          >
-            {/* <RiGlobalFill size={30}/> */}
-            <img src="../assets/icons/lang.svg" className="w-8 h-8" />
-          </button>
-          <div className="flex-row flex gap-2 items-center lg:hidden">
-            <Hamburger
-              toggled={isOpen}
-              toggle={setIsOpen}
-              color="#fff"
-              size={23}
-              distance="lg"
-            />
-          </div>
+          <button className="bg-amber-300 p-1 px-4 rounded-md">
+            <p className="text-gray-950 font-medium text-md">Sign Up</p>
+          </button>{" "}
         </div>
-
-        <ul
-          id="toggleNav"
-          ref={menuRef}
-          className="z-30 border-b-2 border-gray-400 rounded-b-2xl h-screen overflow-y-auto pt-2 hidden md:h-screen flex-col overflow-hidden absolute left-0 right-0 top-10 bg-gray-900 opacity-0"
+        <div className="h-5 w-0.5 hidden xl:block  bg-gray-600 mx-2" />
+        <button
+          onClick={() => navigate("/#download")}
+          className="hidden xl:flex items-center justify-center"
         >
-          <div className="flex-row px-7 flex gap-4 my-8 justify-around items-center w-full">
-            <button className="flex justify-center items-center rounded-lg bg-gray-700 w-full h-10">
-              <p className="text-neutral-50 text-lg font-medium">Log In</p>
-            </button>
-            <button className="flex justify-center items-center rounded-lg bg-amber-300 w-full h-10">
-              <p className="text-neutral-950 text-lg font-medium">Sign Up</p>
-            </button>
-          </div>
-          {verticalNavMenu?.map((e, i) =>
-            VerticalNavBar({ e: e, i: i, toggleMenu: toggleMenu })
-          )}
-          <div className="h-full w-full pb-20" onClick={toggleMenu} />
-        </ul>
-      </nav>
-    </header>
+          <BiDownload size={30} color="#fff" />
+        </button>
+        <button
+          // onClick={() => navigate("#download")}
+          className="hidden xl:flex items-center justify-center"
+        >
+          {/* <RiGlobalFill size={30}/> */}
+          <img src="../assets/icons/lang.svg" className="w-8 h-8" />
+        </button>
+        <div className="flex-row flex gap-2 items-center lg:hidden">
+          <Hamburger
+            toggled={isOpen}
+            toggle={setIsOpen}
+            color="#fff"
+            size={23}
+            distance="lg"
+          />
+        </div>
+      </div>
+
+        <Drawer open={isOpen} direction="top" onClose={() => setIsOpen(false)}>
+          <DrawerContent className="bg-gray-900">
+            <DrawerClose className="top-4 right-6  absolute">
+              <X color="#fff" />
+            </DrawerClose>
+            <DrawerHeader>
+              <div className="h-5"></div>
+              <DrawerTitle>
+                <div className="flex-row px-7 flex gap-4 my-6 justify-around items-center w-full ">
+                  <button className="flex justify-center items-center rounded-lg bg-gray-700 w-full h-10">
+                    <p className="text-neutral-50 text-lg font-medium">
+                      Log In
+                    </p>
+                  </button>
+                  <button className="flex justify-center items-center rounded-lg bg-amber-300 w-full h-10">
+                    <p className="text-neutral-950 text-lg font-medium">
+                      Sign Up
+                    </p>
+                  </button>
+                </div>
+              </DrawerTitle>
+            </DrawerHeader>
+            <DrawerDescription className="h-auto">
+              {verticalNavMenu?.map((e, i) =>
+                VerticalNavBar({ e: e, i: i, toggleMenu: toggleMenu })
+              )}
+            </DrawerDescription>
+
+            <DrawerFooter>{/* <Button>Submit</Button> */}</DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+
+    </nav>
   );
 }

@@ -23,15 +23,15 @@ export default function HomeMiniChart() {
    const tickers = useAppSelector(selectTopTickers);
   
   
-  useEffect(()=>{
-    switchStream([
-      "btcusdt@ticker",
-      "ethusdt@ticker",
-      "solusdt@ticker",
-      "xrpusdt@ticker",
-      "dogeusdt@ticker",
-    ]);
-  },[]);
+  // useEffect(()=>{
+  //   switchStream([
+  //     "btcusdt@ticker",
+  //     "ethusdt@ticker",
+  //     "solusdt@ticker",
+  //     "xrpusdt@ticker",
+  //     "dogeusdt@ticker",
+  //   ]);
+  // },[]);
   const BuildMiniPrice = (data) => {
 
   return data?.map((e: TickSliceType, i) => {
@@ -90,7 +90,7 @@ export default function HomeMiniChart() {
         </button>
         </div>
        
-        <Link to={"market"} className="text-md font-thin md:flex items-center gap-2 hidden text-gray-500">
+        <Link to={"market"} className="text-sm font-light md:flex items-center gap-2 hidden text-gray-500">
           View more <IoIosArrowForward size={14} color="rgba(140,140,140,.7)"/>
 
         </Link>
@@ -102,7 +102,7 @@ export default function HomeMiniChart() {
       ) : (
         <div></div>
       )}
-      <Link to={"market"} className="font-thin flex items-center text-sm md:hidden">
+      <Link to={"market"} className="font-light flex items-center text-sm md:hidden text-gray-500">
         View More <IoIosArrowForward size={14} color="rgba(140,140,140,.7)"/>
 
       </Link>

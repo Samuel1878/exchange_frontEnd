@@ -44,7 +44,7 @@ export default function Certifications() {
           return (
             <div className="flex mr-14 gap-4 items-center" key={e.id}>
               <img src={e.image} className="w-15 h-15" />
-              <p className="min-w-md whitespace-normal font-thin ">{e.text}</p>
+              <p className="min-w-md whitespace-normal font-thin text-gray-400">{e.text}</p>
             </div>
           );
         })}

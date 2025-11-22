@@ -14,7 +14,7 @@ import { formatPrice } from "./charts/util";
 import { formatTotalPrice } from "~/utils/helpers";
 import { Coins } from "~/utils";
 const cryptoTabs = [
-//   { label: "Favorites", Id: "1" },
+  //   { label: "Favorites", Id: "1" },
   { label: "Crypto", Id: "1" },
   { label: "US_stocks", Id: "2" },
   { label: "FX", Id: "3" },
@@ -53,38 +53,37 @@ export default function () {
 
   const buildMarketRow = (tickers) => {
     return tickers.map((e) => {
-        // console.log(e)
+      // console.log(e)
       return (
-    
         <tr
           key={e?.symbol}
           className="cursor-pointer hover:bg-gray-800 lg:hover:bg-gray-900 "
           onClick={() => navigate(`price/${e?.symbol}`)}
         >
-          <td className="flex items-center space-x-2 px-4 py-5">
-            <FaRegStar className="w-9 h-6" />
+          <td className="flex items-center space-x-2 px-2 md:px-4 py-5">
+            <FaRegStar className="md:w-9 md:h-6 w-5 h-3" />
             <img
               src={Coins[CoinPairs[e?.symbol?.toLowerCase()]?.names[0]]}
               width={30}
               className="rounded-full overflow-hidden"
             />
-            <span className="font-light text-gray-400 text-md">
-              <span className="font-bold text-gray-50 text-lg mr-1">
+            <span className="font-light text-gray-400 text-xs md:text-md">
+              <span className="font-bold text-gray-50 lg:text-sm md:text-lg mr-1">
                 {CoinPairs[e?.symbol?.toLowerCase()]?.names[0]}
               </span>
               {CoinPairs[e?.symbol?.toLowerCase()]?.names[2] || ""}
             </span>
           </td>
           <td className="text-right px-4 py-3">
-            <p className="text-gray-50 font-bold  text-lg ">
+            <p className="text-gray-50 font-bold  text-sm md:text-lg ">
               {formatPrice(Number(e?.lastPrice)) || "0.0000"}
             </p>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 text-xs md:text-sm">
               ${formatPrice(Number(e?.lastPrice)) || "0.0000"}
             </p>
           </td>
           <td
-            className={`text-right px-4 py-3 font-semibold text-md ${
+            className={`text-right px-4 py-3 font-semibold text-sm md:text-md ${
               e?.priceChangePercent?.startsWith("-")
                 ? "text-red-500"
                 : "text-green-400"
@@ -141,11 +140,11 @@ export default function () {
 
             <div className="overflow-x-auto">
               <table className="min-w-full">
-                <thead className=" text-gray-400 text-md">
+                <thead className=" text-gray-400 text-xs md:text-md">
                   <tr>
                     <th className="text-left px-4 py-2">Name</th>
                     <th className="text-right px-4 py-2">Price</th>
-                    <th className="text-right px-4 py-2">24h Change</th>
+                    <th className="text-right md:px-4 py-2">24h Change</th>
                     <th className="hidden md:table-cell text-right px-4 py-2">
                       24h High
                     </th>
