@@ -10,12 +10,14 @@ import { addAggTrade } from "~/context/slices/tradeSlice";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 import { addAsks, addBids } from "~/context/slices/orderBook";
 import { rafThrottle } from "~/utils/helpers";
+import axios from "axios";
+
+export function meta({}: Route.MetaArgs) {
+  return [{ title: "Trade" }, { name: "description", content: "Trading" }];
+}
 interface Delta {
   bids: string[][];
   asks: string[][];
-}
-export function meta({}: Route.MetaArgs) {
-  return [{ title: "Trade" }, { name: "description", content: "Trading" }];
 }
 
 export async function clientLoader({
@@ -25,14 +27,14 @@ export async function clientLoader({
   const pair = params.pair;
   const url = new URL(request.url);
   const type = url.searchParams.get("type");
-
   return { type, pair };
 }
+
 export async function clientAction({ request }: Route.ClientActionArgs) {}
 
 export default function SpotScreen({ loaderData }: Route.ComponentProps) {
   const { width } = useWindowDimensions();
-  const { type, pair } = useLoaderData<typeof clientLoader>();
+  const { type, pair } = loaderData;
   const [isMobileTrade, setIsMobileTrade] = useState(width < 768);
   const isMobile = width < 768;
   const openMobileTrade = () => setIsMobileTrade(true);
@@ -40,7 +42,7 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
   const [currentStream, setCurrentStream] = useState<null | string[]>(null);
   const dispatch = useAppDispatch();
  
-  const { lastMessage, readyState, sendJsonMessage, sendMessage } =
+  const {  readyState, sendJsonMessage } =
     useWebSocket(`wss://stream.binance.com:9443/stream`, {
       onOpen: () => {
         console.log("WebSocket Connection Opened");

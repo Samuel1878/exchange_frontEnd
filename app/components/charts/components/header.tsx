@@ -6,25 +6,40 @@ import type { aggTradeStreams } from "~/context/slices/tradeSlice";
 import { CoinPairs } from "~/consts/pairs";
 import { FaRegStar } from "react-icons/fa6";
 import { FiArrowUpRight } from "react-icons/fi";
+import { BiSolidDownArrow, BiSolidUpArrow } from "react-icons/bi";
 
-export default function ({pair}) {
-  const dispatch = useAppDispatch()
+export default function ({pair, openPairs, setOpenPairs}) {
   const ticker :TickerSteams= useAppSelector((state)=>state.tickerStreamsPerDay.ticker);
   const aggTrade:aggTradeStreams[] = useAppSelector((state)=>state.aggTrade.aggTrade);
   return (
     <header className="flex justify-between md:rounded-b-sm px-4 pb-2 lg:mt-1 bg-gray-900 lg:rounded-md lg:bg-gray-950 items-end md:pt-4 lg:pt-3 md:items-center">
-      <div className="space-y-2 flex flex-col md:items-center flex-1 md:flex-row md:justify-between md:mb-2">
+      <div className="space-y-2 flex flex-col md:items-center flex-1 md:flex-4 md:flex-row md:justify-between md:mb-2">
         <div className="flex items-center gap-2">
           <div className="hidden md:inline xl:mx-2 cursor-pointer">
             <FaRegStar color="#777" size={25} />
           </div>
           <img src="../../assets/coins/btc_eth.png" className="w-10" />
           <div>
-            <p className="text-md font-bold md:text-2xl text-gray-50">
+            <p className="text-md font-bold md:text-2xl text-gray-50 flex items-center">
               {CoinPairs[pair].label}
+              {openPairs ? (
+                <BiSolidUpArrow
+                  onClick={() => setOpenPairs(false)}
+                  className="block lg:hidden ml-3 cursor-pointer"
+                  color="#fff"
+                  size={15}
+                />
+              ) : (
+                <BiSolidDownArrow
+                  onClick={() => setOpenPairs(true)}
+                  className="block lg:hidden ml-3 cursor-pointer"
+                  color="#fff"
+                  size={15}
+                />
+              )}
             </p>
             <Link
-              to={""}
+              to={`/market/${pair}`}
               className="text-gray-400 hidden md:flex md:items-center md:gap-1 "
             >
               <span className="hidden md:block ">
@@ -43,8 +58,7 @@ export default function ({pair}) {
           </p>
 
           <p className="hidden md:block text-xs text-gray-50">
-            ${" "}
-            {formatPrice(Number(Number(aggTrade[0]?.price)?.toFixed(2)))}
+            $ {formatPrice(Number(Number(aggTrade[0]?.price)?.toFixed(2)))}
           </p>
           <div className="flex md:hidden gap-2 ">
             <p className="text-sm text-gray-50">
@@ -73,7 +87,7 @@ export default function ({pair}) {
           </div>
         </div>
       </div>
-      <div className="flex justify-between flex-1 ">
+      <div className="flex justify-between flex-1 md:flex-3 lg:flex-4">
         <div className="space-y-2 md:flex md:flex-1 md:justify-around">
           <div>
             <p className="text-gray-500 text-xs ">24h High</p>

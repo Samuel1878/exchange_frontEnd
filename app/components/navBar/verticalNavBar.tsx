@@ -1,3 +1,4 @@
+
 import { useCallback, useMemo, useRef, useState } from "react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 import { Link, useNavigate } from "react-router";
@@ -55,7 +56,7 @@ export default function VerticalNavBar({
           dropdownMenus[open.value]?.map((v: menu, index: number) => (
             <Link
               onClick={toggleMenu}
-              to={v.value }
+              to={v.value}
               key={index}
               className="py-4 px-23 flex items-start w-full hover:bg-gray-800 transition-colors hover:**:text-neutral-100"
             >

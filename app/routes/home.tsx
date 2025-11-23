@@ -1,3 +1,4 @@
+
 import type { Route } from "./+types/home";
 
 import { useTranslation } from "react-i18next";
@@ -16,14 +17,11 @@ import NumberFlow from "@number-flow/react";
 import { useEffect, useState } from "react";
 import AllMarketTickerProvider from "~/context/socketContext/AllMarketTickerContext";
 export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Home" },
-    { name: "description", content: "Welcome" },
-  ];
+  return [{ title: "Home" }, { name: "description", content: "Welcome" }];
 }
 
 export default function Home() {
- const { t } = useTranslation();
+  const { t } = useTranslation();
   const [number, setNumber] = useState(85290471);
   const [volume, setVolume] = useState(10760109);
   useEffect(() => {
@@ -200,7 +198,9 @@ export default function Home() {
                 <div
                   className={`md:hidden flex flex-row justify-between items-center`}
                 >
-                  <p className="font-light text-sm text-gray-500">{e.description}</p>
+                  <p className="font-light text-sm text-gray-500">
+                    {e.description}
+                  </p>
 
                   <img
                     src={e.image}

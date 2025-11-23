@@ -1,3 +1,4 @@
+
 import {
   Drawer,
   DrawerClose,
@@ -9,7 +10,7 @@ import {
   DrawerTrigger,
 } from "~/components/ui/drawer";
 
-import * as React from "react";
+import React from "react";
 import Hamburger from "hamburger-react";
 import { Link, useNavigate } from "react-router";
 
@@ -23,14 +24,19 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "../ui/navigation-menu";
-import { dropdownMenus, topNavMenu, verticalNavMenu, type menu } from "~/consts/menuLists";
+import {
+  dropdownMenus,
+  topNavMenu,
+  verticalNavMenu,
+  type menu,
+} from "~/consts/menuLists";
 import { BiDownload } from "react-icons/bi";
 import VerticalNavBar from "./verticalNavBar";
 import { X } from "lucide-react";
 
 export default function NavigationBar() {
-  const { width } = useWindowWidth();
-  const isMobile = width > 768;
+  // const { width } = useWindowWidth();
+  // const isMobile = width > 768;
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const menuRef = React.useRef(null);
   const navRef = React.useRef(null);
@@ -70,13 +76,13 @@ export default function NavigationBar() {
                   <NavigationMenuContent className="px-2">
                     <ul className="min-w-100 bg-gray-900">
                       {dropdownMenus[e.value]?.map((data: menu, i: number) => (
-                        <li className="p-2">
+                        <li className="p-2" key={i}>
                           <NavigationMenuLink
+                            href={data.value}
                             asChild
                             className="bg-gray-900 hover:bg-gray-800  "
                           >
-                            <Link
-                              to={data.value}
+                            <div
                               key={i}
                               className="flex flex-row items-center py-4  gap-4 hover:**:first:text-amber-300 hover:**:not-first:text-gray-300"
                             >
@@ -89,7 +95,7 @@ export default function NavigationBar() {
                                   {data.description}
                                 </p>
                               </div>
-                            </Link>
+                            </div>
                           </NavigationMenuLink>
                         </li>
                       ))}
@@ -145,38 +151,35 @@ export default function NavigationBar() {
         </div>
       </div>
 
-        <Drawer open={isOpen} direction="top" onClose={() => setIsOpen(false)}>
-          <DrawerContent className="bg-gray-900">
-            <DrawerClose className="top-4 right-6  absolute">
-              <X color="#fff" />
-            </DrawerClose>
-            <DrawerHeader>
-              <div className="h-5"></div>
-              <DrawerTitle>
-                <div className="flex-row px-7 flex gap-4 my-6 justify-around items-center w-full ">
-                  <button className="flex justify-center items-center rounded-lg bg-gray-700 w-full h-10">
-                    <p className="text-neutral-50 text-lg font-medium">
-                      Log In
-                    </p>
-                  </button>
-                  <button className="flex justify-center items-center rounded-lg bg-amber-300 w-full h-10">
-                    <p className="text-neutral-950 text-lg font-medium">
-                      Sign Up
-                    </p>
-                  </button>
-                </div>
-              </DrawerTitle>
-            </DrawerHeader>
-            <DrawerDescription className="h-auto">
-              {verticalNavMenu?.map((e, i) =>
-                VerticalNavBar({ e: e, i: i, toggleMenu: toggleMenu })
-              )}
-            </DrawerDescription>
+      <Drawer open={isOpen} direction="top" onClose={() => setIsOpen(false)}>
+        <DrawerContent className="bg-gray-900">
+          <DrawerClose className="top-4 right-6  absolute">
+            <X color="#fff" />
+          </DrawerClose>
+          <DrawerHeader>
+            <div className="h-5"></div>
+            <DrawerTitle>
+              <div className="flex-row px-7 flex gap-4 my-6 justify-around items-center w-full ">
+                <button className="flex justify-center items-center rounded-lg bg-gray-700 w-full h-10">
+                  <p className="text-neutral-50 text-lg font-medium">Log In</p>
+                </button>
+                <button className="flex justify-center items-center rounded-lg bg-amber-300 w-full h-10">
+                  <p className="text-neutral-950 text-lg font-medium">
+                    Sign Up
+                  </p>
+                </button>
+              </div>
+            </DrawerTitle>
+          </DrawerHeader>
+          <DrawerDescription className="h-auto">
+            {verticalNavMenu?.map((e, i) => (
+              <VerticalNavBar key={i} e={e} i={i} toggleMenu={toggleMenu} />
+            ))}
+          </DrawerDescription>
 
-            <DrawerFooter>{/* <Button>Submit</Button> */}</DrawerFooter>
-          </DrawerContent>
-        </Drawer>
-
+          <DrawerFooter>{/* <Button>Submit</Button> */}</DrawerFooter>
+        </DrawerContent>
+      </Drawer>
     </nav>
   );
 }

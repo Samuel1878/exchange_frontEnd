@@ -1,4 +1,4 @@
-// src/context/AuthProvider.js
+"user client"
 import React, { createContext, useContext, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "../utils/redux";
 import { login, logout } from "./slices/authSlice";

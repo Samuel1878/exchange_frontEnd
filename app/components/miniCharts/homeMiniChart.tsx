@@ -23,15 +23,15 @@ export default function HomeMiniChart() {
    const tickers = useAppSelector(selectTopTickers);
   
   
-  // useEffect(()=>{
-  //   switchStream([
-  //     "btcusdt@ticker",
-  //     "ethusdt@ticker",
-  //     "solusdt@ticker",
-  //     "xrpusdt@ticker",
-  //     "dogeusdt@ticker",
-  //   ]);
-  // },[]);
+  useEffect(()=>{
+    switchStream([
+      "btcusdt@ticker",
+      "ethusdt@ticker",
+      "solusdt@ticker",
+      "xrpusdt@ticker",
+      "dogeusdt@ticker",
+    ]);
+  },[]);
   const BuildMiniPrice = (data) => {
 
   return data?.map((e: TickSliceType, i) => {

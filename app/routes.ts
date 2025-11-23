@@ -19,13 +19,10 @@ export default [
     ...prefix("trade", [route(":pair", "./routes/trade.tsx")]),
     ...prefix("charity", [
       index("./routes/charity/charity.tsx"),
-      route(
-        "projects",
-        "./routes/charity/projects/index.tsx",
-        route(":id", "./routes/charity/projects/[type].tsx")
-      ),
-      // route("projects/", ""),
+      route("projects", "./routes/charity/projects/index.tsx"),
+      route("projects/:id", "./routes/charity/projects/[type].tsx"),
     ]),
+    route("deposit", "./routes/deposit.tsx"),
     route("asset", "./routes/wallet.tsx"),
     ...prefix("finance", [
       ...prefix("earn", [

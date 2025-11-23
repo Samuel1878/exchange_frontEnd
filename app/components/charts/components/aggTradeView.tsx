@@ -3,6 +3,8 @@ import { useAppSelector } from "~/utils/redux";
 import { formatPrice } from "../util";
 import moment from "moment";
 import { CoinPairs } from "~/consts/pairs";
+import { ScrollArea } from "~/components/ui/scroll-area";
+;
 const TradingPriceRow = ({ e }: { e: aggTradeStreams }) => {
   const time = moment(e.time).format("hh:mm:ss");
   return (
@@ -30,14 +32,16 @@ export default function ({ pair }) {
     <div className="pb-4 bg-gray-900 lg:bg-gray-950 lg:rounded-md lg:min-w-55 xl:w-70 2xl:w-85">
       <div className="flex justify-between py-2 px-4">
         <p className="text-gray-500 text-sm font-semibold">Price (USDT)</p>
-        <p className="text-gray-500 text-sm font-semibold">Amount({CoinPairs[pair].names[0]})</p>
+        <p className="text-gray-500 text-sm font-semibold">
+          Amount({CoinPairs[pair].names[0]})
+        </p>
         <p className="text-gray-500 text-sm font-semibold">Time</p>
       </div>
-      <div className="overflow-y-auto h-100 pl-4 lg:h-full lg:pr-2">
-        {data.map((e,i) => {
-          return <TradingPriceRow e={e} key={i}/>;
+      <ScrollArea className="h-100 w-full pr-2 pl-4 lg:h-full lg:pr-2">
+        {data.map((e, i) => {
+          return <TradingPriceRow e={e} key={i} />;
         })}
-      </div>
+      </ScrollArea>
     </div>
   );
 }

@@ -70,9 +70,7 @@ export default function AllMarketTickerProvider({ children }) {
   }, [readyState, currentStream, sendSubscriptionMessage]);
 
   return (
-    <AllMarketTickerContext.Provider
-      value={{ switchStream, currentStream }}
-    >
+    <AllMarketTickerContext.Provider value={{ switchStream, currentStream }}>
       {children}
     </AllMarketTickerContext.Provider>
   );
