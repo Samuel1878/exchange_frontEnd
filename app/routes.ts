@@ -22,9 +22,9 @@ export default [
       route(
         "projects",
         "./routes/charity/projects/index.tsx",
-        route(":id", "./routes/charity/projects/[type].tsx")
+        // route(":id", "")
       ),
-      // route("projects/", ""),
+      route("projects/:id", "./routes/charity/projects/[type].tsx"),
     ]),
     route("asset", "./routes/wallet.tsx"),
     ...prefix("finance", [
@@ -35,5 +35,9 @@ export default [
       route("loans", "./routes/loan.tsx"),
     ]),
     route("trends", "./routes/news/index.tsx"),
+    ...prefix("ico",[
+      index("./routes/ico/index.tsx"),
+      route("announcement/:type","./routes/ico/announcement/[type].tsx"),
+    ])
   ]),
 ] satisfies RouteConfig;
