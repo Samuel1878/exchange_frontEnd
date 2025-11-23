@@ -2,7 +2,7 @@ import FooterSection from "~/components/footer";
 import type { Route } from "./+types";
 import { useState, useEffect } from "react";
 import { Skeleton } from "~/components/ui/skeleton"
-
+import BlogImage from "assets/images/smart-arbirage-2.svg"
 interface NewsArticle {
     article_id: string;
     title: string;
@@ -98,7 +98,7 @@ export default function EarnIndex({ loaderData }: { loaderData: NewsApiResponse 
     }, []);
 
     // Initialize image loading states
-    
+
 
     // Skeleton loading for initial load
     if (initialLoading) {
@@ -145,9 +145,17 @@ export default function EarnIndex({ loaderData }: { loaderData: NewsApiResponse 
                     <div className="w-full">
                         <div className="text-gray-300 p-6 md:p-5 space-y-10">
 
-                            <div className="text-center space-y-4">
-                                <h1 className="text-4xl font-bold text-white">Cryptocurrency News</h1>
+                            <div className="grid gap-4 lg:grid-cols-2">
+                                <div className="text-white text-xl font-bold lg:text-2xl">
+                                    <h1 className="py-3 lg:py-7">Cryptocurrency News</h1>
+                                    <p className="text-sm font-thin lg:text-lg lg:font-medium lg:text-gray-500">
+                                        The Cryptocurrency News website is a responsive web application designed to provide users with the latest cryptocurrency market information and news. The platform helps traders and investors make informed decisions by tracking market trends in the cryptocurrency space.
 
+                                    </p>
+                                </div>
+                                <div className="hidden lg:block">
+                                    <img src={BlogImage} alt="" />
+                                </div>
                             </div>
 
                             {loaderData.status === "success" && articles.length > 0 ? (
@@ -232,7 +240,7 @@ export default function EarnIndex({ loaderData }: { loaderData: NewsApiResponse 
                                             <button
                                                 onClick={loadMoreArticles}
                                                 disabled={loading}
-                                                className="bg-amber-300 hover:bg-amber-400 disabled:bg-amber-200 text-gray-950 font-medium py-3 px-6 rounded-lg transition-colors disabled:cursor-not-allowed"
+                                                className="bg-amber-300 hover:bg-amber-300 disabled:bg-amber-300 text-gray-950 font-medium transition-colors disabled:cursor-not-allowed"
                                             >
                                                 {loading ? (
                                                     <span className="flex items-center justify-center">
