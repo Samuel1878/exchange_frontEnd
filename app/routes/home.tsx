@@ -106,9 +106,9 @@ export default function Home() {
           </div>
         </article>
         <article id="hero2" className="md:mt-8 lg:mt-2 space-y-4">
-          <AllMarketTickerProvider>
+          {/* <AllMarketTickerProvider> */}
             <HomeMiniChart />
-          </AllMarketTickerProvider>
+          {/* </AllMarketTickerProvider> */}
           <AiMiniChart />
         </article>
       </section>

@@ -78,24 +78,26 @@ export default function NavigationBar() {
                       {dropdownMenus[e.value]?.map((data: menu, i: number) => (
                         <li className="p-2" key={i}>
                           <NavigationMenuLink
-                            href={data.value}
+                            // href={data.value}
                             asChild
                             className="bg-gray-900 hover:bg-gray-800  "
                           >
-                            <div
-                              key={i}
-                              className="flex flex-row items-center py-4  gap-4 hover:**:first:text-amber-300 hover:**:not-first:text-gray-300"
-                            >
-                              {data.icon}
-                              <div className="flex flex-col items-start gap-y-1 ">
-                                <p className="text-gray-100 text-lg font-bold">
-                                  {data.label}
-                                </p>
-                                <p className="text-gray-500 text-sm font-medium">
-                                  {data.description}
-                                </p>
+                            <Link to={data.value}>
+                              <div
+                                key={i}
+                                className="flex flex-row items-center py-4  gap-4 hover:**:first:text-amber-300 hover:**:not-first:text-gray-300"
+                              >
+                                {data.icon}
+                                <div className="flex flex-col items-start gap-y-1 ">
+                                  <p className="text-gray-100 text-lg font-bold">
+                                    {data.label}
+                                  </p>
+                                  <p className="text-gray-500 text-sm font-medium">
+                                    {data.description}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
+                            </Link>
                           </NavigationMenuLink>
                         </li>
                       ))}

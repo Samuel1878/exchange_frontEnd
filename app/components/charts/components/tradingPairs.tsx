@@ -13,6 +13,8 @@ import { useNavigate } from "react-router";
 import useWindowDimensions from "~/hook/windowWidth";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "~/components/ui/drawer";
 import { X } from "lucide-react";
+import { useTickersStore } from "~/store/useTickersStore";
+import { useTickers } from "~/hook/useTickers";
 enum Filter {
     usdt = "usdt",
     spot = "spot",
@@ -25,36 +27,59 @@ export default function ({currentPair, isOpen, setIsOpen}) {
     const [filter, setFilter] = useState<Filter>(Filter.usdt);
     const [priceSort, setPriceSort] = useState(false);
     const [changeSort, setChangeSort] = useState(false);
-    const {switchStream} = useContext(AllMarketTickerContext);
+    // const {switchStream} = useContext(AllMarketTickerContext);
+    const {tickers} = useTickersStore()
      const { width } = useWindowDimensions();
-      const tickers = useAppSelector(selectAllTickers);
+  // const dispatch = useAppDispatch();
+       useTickers([
+         "btcusdt@ticker",
+         "ethusdt@ticker",
+         "solusdt@ticker",
+         "xrpusdt@ticker",
+         "dogeusdt@ticker",
+         "adausdt@ticker",
+         "avaxusdt@ticker",
+         "linkusdt@ticker",
+         "dotusdt@ticker",
+         "ltcusdt@ticker",
+         "shibusdt@ticker",
+         "etcusdt@ticker",
+         "manausdt@ticker",
+         "uniusdt@ticker",
+         "bchusdt@ticker",
+         "trxusdt@ticker",
+         "xlmusdt@ticker",
+         "atomusdt@ticker",
+         "nearusdt@ticker",
+         "pepeusdt@ticker",
+       ]);
     const navigation = useNavigate()
-      useEffect(() => {
-        console.log("Send stream message for Market Data in Trade")
-        switchStream([
-          "btcusdt@ticker",
-          "ethusdt@ticker",
-          "solusdt@ticker",
-          "xrpusdt@ticker",
-          "dogeusdt@ticker",
-          "adausdt@ticker",
-          "avaxusdt@ticker",
-          "linkusdt@ticker",
-          "dotusdt@ticker",
-          "ltcusdt@ticker",
-          "shibusdt@ticker",
-          "etcusdt@ticker",
-          "manausdt@ticker",
-          "uniusdt@ticker",
-          "bchusdt@ticker",
-          "trxusdt@ticker",
-          "xlmusdt@ticker",
-          "atomusdt@ticker",
-          "nearusdt@ticker",
-          "pepeusdt@ticker",
-        ]);
-      }, []);
-    const BuildPairs = (data) => {
+      // useEffect(() => {
+      //   console.log("Send stream message for Market Data in Trade")
+      //   switchStream([
+      //     "btcusdt@ticker",
+      //     "ethusdt@ticker",
+      //     "solusdt@ticker",
+      //     "xrpusdt@ticker",
+      //     "dogeusdt@ticker",
+      //     "adausdt@ticker",
+      //     "avaxusdt@ticker",
+      //     "linkusdt@ticker",
+      //     "dotusdt@ticker",
+      //     "ltcusdt@ticker",
+      //     "shibusdt@ticker",
+      //     "etcusdt@ticker",
+      //     "manausdt@ticker",
+      //     "uniusdt@ticker",
+      //     "bchusdt@ticker",
+      //     "trxusdt@ticker",
+      //     "xlmusdt@ticker",
+      //     "atomusdt@ticker",
+      //     "nearusdt@ticker",
+      //     "pepeusdt@ticker",
+      //   ]);
+      // }, []);
+    const BuildPairs = ({data}) => {
   
           let pairs = data;
            if (search){
@@ -165,7 +190,7 @@ export default function ({currentPair, isOpen, setIsOpen}) {
               </div>
             </div>
             <ScrollArea className="h-94 w-full lg:px-2 xl:px-3 pr-3">
-              {BuildPairs(tickers)}
+              <BuildPairs data={Object.values(tickers)} />
             </ScrollArea>
           </aside>
         ) : (
@@ -234,7 +259,7 @@ export default function ({currentPair, isOpen, setIsOpen}) {
                     <BsSortDown size={15} />
                   )}
                 </div>
-  
+
                 <div
                   onClick={() => setChangeSort((prev) => !prev)}
                   className="text-gray-600 text-xs font-semibold flex items-center gap-1 cursor-pointer"
@@ -248,7 +273,7 @@ export default function ({currentPair, isOpen, setIsOpen}) {
                 </div>
               </div>
               <ScrollArea className="h-100 md:h-full w-full px-4">
-                {BuildPairs(tickers)}
+                <BuildPairs data={Object.values(tickers)} />
               </ScrollArea>
               <DrawerDescription></DrawerDescription>
             </DrawerContent>

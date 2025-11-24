@@ -10,6 +10,8 @@ import { Loader } from "lucide-react";
 import { formatPrice } from "../charts/util";
 import { CoinPairs } from "~/consts/pairs";
 import { Coins } from "~/utils";
+import { useTickers } from "~/hook/useTickers";
+import { useTickersStore, type Ticker } from "~/store/useTickersStore";
 
 enum lists {
   coin = "coin",
@@ -19,24 +21,30 @@ enum lists {
 
 export default function HomeMiniChart() {
   const [focus, setFocus] = useState<lists>(lists.coin);
-   const {switchStream} = useContext(AllMarketTickerContext)
-   const tickers = useAppSelector(selectTopTickers);
-  
-  
-  useEffect(()=>{
-    switchStream([
-      "btcusdt@ticker",
-      "ethusdt@ticker",
-      "solusdt@ticker",
-      "xrpusdt@ticker",
-      "dogeusdt@ticker",
-    ]);
-  },[]);
-  const BuildMiniPrice = (data) => {
+  //  const {switchStream} = useContext(AllMarketTickerContext)
+  //  const tickers = useAppSelector(selectTopTickers);
+  useTickers([
+    "btcusdt@ticker",
+    "ethusdt@ticker",
+    "solusdt@ticker",
+    "xrpusdt@ticker",
+    "dogeusdt@ticker",
+  ]);
+  const {tickers} = useTickersStore()
+  // useEffect(()=>{
+  //   switchStream([
+  //     "btcusdt@ticker",
+  //     "ethusdt@ticker",
+  //     "solusdt@ticker",
+  //     "xrpusdt@ticker",
+  //     "dogeusdt@ticker",
+  //   ]);
+  // },[]);
+  const BuildMiniPrice = ({e, i}:{e:Ticker , i:number}) => {
 
-  return data?.map((e: TickSliceType, i) => {
+  
     return (
-      <div key={i} className="flex flex-row w-full my-5 ">
+      <div key={e.lastPrice} className="flex flex-row w-full my-5 ">
         <div className="flex flex-row flex-4 justify-between">
           <div className="flex gap-2 items-center">
             <img src={Coins[CoinPairs[e?.symbol?.toLowerCase()]?.names[0] || ""]} width={30} className="rounded-full overflow-hidden"/>
@@ -61,7 +69,6 @@ export default function HomeMiniChart() {
         </div>
       </div>
     );
-  });
 
   }
   return (
@@ -69,42 +76,59 @@ export default function HomeMiniChart() {
       <div className="w-full flex items-center justify-center gap-4 md:justify-between">
         <div className="flex items-center justify-center gap-4 md:justify-start">
           <button
-          onClick={() => setFocus(lists.coin)}
-          className={`p-2 ${focus === lists.coin ? "border-b-2 border-b-amber-300" : "border-0"}`}
-        >
-          <p
-            className={`text-md font-bold ${focus === lists.coin ? "text-gray-50" : "text-gray-400"}`}
+            onClick={() => setFocus(lists.coin)}
+            className={`p-2 ${focus === lists.coin ? "border-b-2 border-b-amber-300" : "border-0"}`}
           >
-            Top Listing
-          </p>
-        </button>
-        <button
-          onClick={() => setFocus(lists.nft)}
-          className={`p-2 ${focus === lists.nft ? "border-b-2 border-b-amber-300" : "border-0"}`}
-        >
-          <p
-            className={`text-md font-bold  ${focus === lists.nft ? "text-gray-50" : "text-gray-400"}`}
+            <p
+              className={`text-md font-bold ${focus === lists.coin ? "text-gray-50" : "text-gray-400"}`}
+            >
+              Top Listing
+            </p>
+          </button>
+          <button
+            onClick={() => setFocus(lists.nft)}
+            className={`p-2 ${focus === lists.nft ? "border-b-2 border-b-amber-300" : "border-0"}`}
           >
-            NFTs
-          </p>
-        </button>
+            <p
+              className={`text-md font-bold  ${focus === lists.nft ? "text-gray-50" : "text-gray-400"}`}
+            >
+              NFTs
+            </p>
+          </button>
         </div>
-       
-        <Link to={"market"} className="text-sm font-light md:flex items-center gap-2 hidden text-gray-500">
-          View more <IoIosArrowForward size={14} color="rgba(140,140,140,.7)"/>
 
+        <Link
+          to={"market"}
+          className="text-sm font-light md:flex items-center gap-2 hidden text-gray-500"
+        >
+          View more <IoIosArrowForward size={14} color="rgba(140,140,140,.7)" />
         </Link>
       </div>
       {lists.coin === focus ? (
         <div className="w-full">
-          {tickers.length ? BuildMiniPrice(tickers):<Loader/>}
+          {Object.values(tickers).length ? (
+            Object.values(tickers)
+              .filter(
+                (e) =>
+                  e.symbol === "BTCUSDT" ||
+                  e.symbol === "ETHUSDT" ||
+                  e.symbol === "SOLUSDT" ||
+                  e.symbol === "XRPUSDT" ||
+                  e.symbol === "DOGEUSDT"
+              )
+              .map((data: Ticker, idx) => <BuildMiniPrice e={data} i={idx} />)
+          ) : (
+            <Loader />
+          )}
         </div>
       ) : (
         <div></div>
       )}
-      <Link to={"market"} className="font-light flex items-center text-sm md:hidden text-gray-500">
-        View More <IoIosArrowForward size={14} color="rgba(140,140,140,.7)"/>
-
+      <Link
+        to={"market"}
+        className="font-light flex items-center text-sm md:hidden text-gray-500"
+      >
+        View More <IoIosArrowForward size={14} color="rgba(140,140,140,.7)" />
       </Link>
     </div>
   );

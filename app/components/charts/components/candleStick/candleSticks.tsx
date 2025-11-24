@@ -122,7 +122,7 @@ export default function ({ pair, type }) {
             ref={containerRef}
             containerProps={{ style: { flexGrow: "1", position: "relative" } }}
             options={{
-              width: width > 1024 ? width / 1.85 : width,
+              width: width > 1024 ? width / 1.85 : width>768? width*.65 :width,
               height: 530, //"300px", //chartContainerRef.current.clientHeight,
               layout: {
                 background: { color: "transparent" },

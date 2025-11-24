@@ -14,6 +14,7 @@ import type { aggTradeStreams } from "~/context/slices/tradeSlice";
 import { CoinPairs } from "~/consts/pairs";
 import useWindowDimensions from "~/hook/windowWidth";
 import { formatTotalPrice } from "~/utils/helpers";
+import { useOrderbookStore } from "~/store/useOrderBookStore";
 
 export enum OrderType {
   BIDS,
@@ -32,6 +33,8 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
   const bids: LevelType[] = useAppSelector(selectBids);
   const asks: LevelType[] = useAppSelector(selectAsks);
   const {width} = useWindowDimensions();
+  // const {bids, asks} = useOrderbookStore();
+  console.log(bids, asks)
   let isLg = width>1024;
   const aggTrade: aggTradeStreams[] = useAppSelector(
     (state) => state.aggTrade.aggTrade
@@ -91,9 +94,9 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
           <p className="hidden md:block text-gray-500 text-sm">Total</p>
         </div>
         <div className="">
-          {option === "both" || option === "ask"
+          {/* {option === "both" || option === "ask"
             ? buildPriceLevels(asks, OrderType.ASKS)
-            : null}
+            : null} */}
         </div>
       </div>
 
@@ -111,9 +114,9 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
       <div className={`flex w-full flex-col`}>
         <title>ASK</title>
         <div className="">
-          {option === "both" || option === "bid"
+          {/* {option === "both" || option === "bid"
             ? buildPriceLevels(bids, OrderType.BIDS)
-            : null}
+            : null} */}
         </div>
       </div>
     </div>

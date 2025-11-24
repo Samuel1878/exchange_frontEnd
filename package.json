@@ -49,7 +49,8 @@
     "react-slot-counter": "^3.3.1",
     "react-use-websocket": "^4.13.0",
     "tailwind-merge": "^3.4.0",
-    "vaul": "^1.1.2"
+    "vaul": "^1.1.2",
+    "zustand": "^5.0.8"
   },
   "devDependencies": {
     "@react-router/dev": "^7.9.2",

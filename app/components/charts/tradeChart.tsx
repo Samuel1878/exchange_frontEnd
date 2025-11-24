@@ -144,13 +144,13 @@ export default function ({ pair, openMobileTrade, type }) {
         </div>
         <div className="hidden lg:flex lg:flex-col">
           <div className="w-full bg-gray-950 mt-1 ml-1 rounded-sm flex-1 lg:min-w-50 xl:w-70 2xl:w-85">
-            <AllMarketTickerProvider>
+            {/* <AllMarketTickerProvider> */}
               <TradingPairs
                 currentPair={pair}
                 isOpen={openPairs}
                 setIsOpen={setOpenPairs}
               />
-            </AllMarketTickerProvider>
+            {/* </AllMarketTickerProvider> */}
           </div>
           <div className="hidden lg:flex lg:flex-col flex-1 lg:ml-1 lg:mt-1 bg-gray-950 rounded-sm">
             <div className="p-2 px-4 border-b-2 border-b-gray-700 lg:border-b-gray-900">

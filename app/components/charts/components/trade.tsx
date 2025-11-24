@@ -60,7 +60,7 @@ export default function ({ isBuy, isLimit, setIsBuy, setOpenLimitDrawer ,pair}) 
         <input
           disabled={!isLimit}
           className ={`outline-gray-700 outline-1 focus:outline-amber-400 rounded-md text-center h-10 w-full text-gray-50 ${isLimit?"bg-gray-900":"bg-gray-800"}`}
-          placeholder="Price (USDT)"
+          placeholder={isLimit?"Price (USDT)":"Market Price"}
         />
         <input
           className="outline-gray-700 outline-1 focus:outline-amber-400 rounded-md text-center h-10 w-full text-gray-50"
