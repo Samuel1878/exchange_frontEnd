@@ -13,7 +13,7 @@ import { useNavigate } from "react-router";
 import useWindowDimensions from "~/hook/windowWidth";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "~/components/ui/drawer";
 import { X } from "lucide-react";
-import { useTickersStore } from "~/store/useTickersStore";
+import { useTickersStore, type Ticker, type Tickers } from "~/store/useTickersStore";
 import { useTickers } from "~/hook/useTickers";
 enum Filter {
     usdt = "usdt",
@@ -79,7 +79,7 @@ export default function ({currentPair, isOpen, setIsOpen}) {
       //     "pepeusdt@ticker",
       //   ]);
       // }, []);
-    const BuildPairs = ({data}) => {
+    const BuildPairs = (data:Ticker[]) => {
   
           let pairs = data;
            if (search){
@@ -94,10 +94,9 @@ export default function ({currentPair, isOpen, setIsOpen}) {
             pairs= data.sort((a, b)=>Number(a?.priceChangePercent) -Number( b?.priceChangePercent))
           
           } 
-     
        
-       return pairs?.map((e: TickSliceType, i) => (
-         <div key={i} className="flex justify-between my-4 lg:my-2 cursor-pointer" onClick={()=>navigation(`/trade/${e?.symbol?.toLowerCase()}?type=${filter===Filter.usdt?Filter.spot:filter}`)}>
+       return pairs?.map((e: Ticker, i) => (
+         <div key={i} className="flex justify-between my-4 lg:my-3 cursor-pointer" onClick={()=>navigation(`/trade/${e?.symbol?.toLowerCase()}?type=${filter===Filter.usdt?Filter.spot:filter}`)}>
            <p className="font-semibold text-xs text-gray-50 flex gap-1">
              <img
                src={Coins[CoinPairs[e?.symbol?.toLowerCase()]?.names[0]]}
@@ -189,13 +188,14 @@ export default function ({currentPair, isOpen, setIsOpen}) {
                 )}
               </div>
             </div>
-            <ScrollArea className="h-94 w-full lg:px-2 xl:px-3 pr-3">
-              <BuildPairs data={Object.values(tickers)} />
+            <ScrollArea className="h-100 w-full lg:px-2 xl:px-3 pr-3">
+              {/* <BuildPairs data={Object.values(tickers)} /> */}
+              {BuildPairs(Object?.values(tickers))}
             </ScrollArea>
           </aside>
         ) : (
           <Drawer open={isOpen} onClose={() => setIsOpen(false)}>
-            <DrawerContent className="bg-gray-900">
+            <DrawerContent className="bg-gray-900 min-h-2/3">
               <DrawerTitle className="flex w-full mb-2 justify-between px-4 text-gray-50 text-2xl font-medium">
                 Market
                 <DrawerClose className="">
@@ -273,7 +273,8 @@ export default function ({currentPair, isOpen, setIsOpen}) {
                 </div>
               </div>
               <ScrollArea className="h-100 md:h-full w-full px-4">
-                <BuildPairs data={Object.values(tickers)} />
+                {/* <BuildPairs data={Object.values(tickers)} /> */}
+                {BuildPairs(Object?.values(tickers))}
               </ScrollArea>
               <DrawerDescription></DrawerDescription>
             </DrawerContent>

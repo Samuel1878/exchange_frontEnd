@@ -76,9 +76,8 @@ export default function () {
   //   ]);
   // }, []);
   const {tickers} = useTickersStore();
-  // console.log(tickers)
-  const BuildMarketRow = ({ticker}:{ticker:Ticker}) => {
-    // return tickers.map((e) => {
+  const BuildMarketRow = (tickers) => {
+    return Object?.values(tickers)?.map((ticker:Ticker) => {
       
       return (
         <tr
@@ -132,7 +131,7 @@ export default function () {
           </td>
         </tr>
       );
-    // });
+    });
   };
   return (
     <section id="hero" className="flex flex-col lg:items-center flex-1 ">
@@ -186,7 +185,8 @@ export default function () {
                   </tr>
                 </thead>
                 <tbody>
-                  {activeTab === "Crypto" ?Object?.values(tickers).map((ticker)=><BuildMarketRow ticker={ticker}/>) : null}
+                  {BuildMarketRow(tickers)}
+                  {/* {activeTab === "Crypto" ?Object?.values(tickers).map((ticker)=><BuildMarketRow ticker={ticker}/>) : null} */}
                 </tbody>
               </table>
             </div>

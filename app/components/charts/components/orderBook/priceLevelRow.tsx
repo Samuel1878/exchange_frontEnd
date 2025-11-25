@@ -21,14 +21,7 @@ const PriceLevelRow: FunctionComponent<PriceLevelRowProps> = ({
   lg:bg-gray-950
   relative
   items-center
-  after:bg-center
-   h-4
-      after:h-full
-      after:p-1
-      after:block
-      after:absolute
-      after:left-0
-      z-0
+   h-6
 
   `}
     >

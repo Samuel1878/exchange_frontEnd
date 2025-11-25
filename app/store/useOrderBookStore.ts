@@ -1,96 +1,87 @@
 // useOrderbookStore.ts
-import {create} from "zustand";
-import {produce} from "immer";
-
-type PriceKey = number;
-export type Level = [number, number];
-
-interface OrderbookState {
-  bids: Record<PriceKey, number>;
-  asks: Record<PriceKey, number>;
+import { create } from "zustand";
+import { produce } from "immer";
+export interface LevelType {
+  price: number;
+  amount: number;
+  total: number;
+  depth: string;
+}
+export interface OrderbookState {
+  bids: LevelType[];
+  asks: LevelType[];
+  totalLevel: number;
   lastUpdateId: number | null;
-  symbol: string | null;
-  snapshotLoaded: boolean;
-
-  // actions
-  setSnapshot: (payload: {
-    lastUpdateId: number;
-    bids: Level[];
-    asks: Level[];
-    symbol?: string;
-  }) => void;
-  applyDiffs: (diffs: any[]) => void; // apply batch of Binance diff events
+  applyDiffs: (diffs: BinanceResponse) => void;
   reset: () => void;
+}
+export interface BinanceResponse {
+  lastUpdateId: number;
+  bids: string[][];
+  asks: string[][];
 }
 
 export const useOrderbookStore = create<OrderbookState>((set, get) => ({
-  bids: {},
-  asks: {},
+  bids: [],
+  asks: [],
+  totalLevel: 36,
   lastUpdateId: null,
-  symbol: null,
-  snapshotLoaded: false,
 
-  setSnapshot: ({ lastUpdateId, bids, asks, symbol }) =>
-    set(() => ({
-      lastUpdateId,
-      bids: Object.fromEntries(bids.map(([p, q]) => [Number(p), Number(q)])),
-      asks: Object.fromEntries(asks.map(([p, q]) => [Number(p), Number(q)])),
-      snapshotLoaded: true,
-      symbol: symbol ?? null,
-    })),
-
-  applyDiffs: (diffs) =>
+  applyDiffs: (diffs: BinanceResponse) =>
     set(
       produce((state: OrderbookState) => {
-        // diffs is an array of depth events from WS
-        // if (!state.snapshotLoaded || state.lastUpdateId == null) return;
-
-        for (const data of diffs) {
-          const { U, u, b = [], a = [] } = data; // Binance depth format
-          // skip if already applied
-          if (u <= (state.lastUpdateId ?? 0)) continue;
-
-          // Ensure continuity: first event after snapshot must have U <= lastUpdateId+1 <= u
-          if (U > (state.lastUpdateId ?? 0) + 1) {
-            // Out-of-sync: indicate by clearing snapshot flag (caller should resync)
-            state.snapshotLoaded = false;
-            return;
-          }
-
-          // apply bids
-          for (const [pRaw, qRaw] of b) {
-            const p = Number(pRaw);
-            const q = Number(qRaw);
-            if (q === 0) {
-              delete state.bids[p];
-            } else {
-              state.bids[p] = q;
+        function initialApply(deltas: string[][]) {
+          let data = [];
+          deltas.forEach(([price, size]) => {
+            if (Number(size) >= 0) {
+              let p = Number(price);
+              let a = Number(Number(size).toFixed(6));
+              let t = Number((p * a).toFixed(2));
+              let depth = ((t / p) * 100).toString();
+              data.push({ price, p, amount: a, total: t, depth: depth });
             }
-          }
+          });
+          return data;
+        }
+        function applyDeltas(levels: LevelType[], deltas: string[][]) {
+          const updated = [...levels];
 
-          // apply asks
-          for (const [pRaw, qRaw] of a) {
-            const p = Number(pRaw);
-            const q = Number(qRaw);
-            if (q === 0) {
-              delete state.asks[p];
-            } else {
-              state.asks[p] = q;
+          deltas.forEach(([price, size]) => {
+            if (Number(size) >= 0) {
+              let p = Number(price);
+              let a = Number(Number(size).toFixed(6));
+              let t = Number((p * a).toFixed(2));
+              let depth = ((t / p) * 100).toString();
+              updated.push({ price: p, amount: a, total: t, depth: depth });
             }
-          }
+          });
 
-          state.lastUpdateId = u;
+          return updated.slice(
+            updated.length - state.totalLevel,
+            updated.length
+          );
+        }
+        const { lastUpdateId, bids, asks } = diffs;
+        if (lastUpdateId === null) {
+          state.lastUpdateId = lastUpdateId;
+          state.asks = initialApply(asks);
+          state.bids = initialApply(bids);
+          return;
+        }
+        // if (lastUpdateId !== null && state.lastUpdateId > lastUpdateId) return;
+        if (lastUpdateId !== null && state.lastUpdateId < lastUpdateId) {
+          state.lastUpdateId = lastUpdateId;
+          state.asks = applyDeltas(state.asks, asks);
+          state.bids = applyDeltas(state.bids, bids);
         }
       })
     ),
 
   reset: () =>
     set({
-      bids: {},
-      asks: {},
+      bids: [],
+      asks: [],
       lastUpdateId: null,
-      snapshotLoaded: false,
-      symbol: null,
     }),
 }));
 

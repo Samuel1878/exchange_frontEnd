@@ -73,7 +73,7 @@ export default function NavigationBar() {
                   <NavigationMenuTrigger className="bg-gray-950 text-gray-100 lg:text-md xl:text-lg font-bold capitalize hover:bg-gray-950 focus:bg-gray-950 focus:text-amber-400">
                     {e.label}
                   </NavigationMenuTrigger>
-                  <NavigationMenuContent className="px-2">
+                  <NavigationMenuContent className="px-2 z-50">
                     <ul className="min-w-100 bg-gray-900">
                       {dropdownMenus[e.value]?.map((data: menu, i: number) => (
                         <li className="p-2" key={i}>

@@ -15,6 +15,7 @@ import { CoinPairs } from "~/consts/pairs";
 import useWindowDimensions from "~/hook/windowWidth";
 import { formatTotalPrice } from "~/utils/helpers";
 import { useOrderbookStore } from "~/store/useOrderBookStore";
+import { useAggTradeStore } from "~/store/useAggTradeStore";
 
 export enum OrderType {
   BIDS,
@@ -30,16 +31,15 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
 
   option,
 }) => {
-  const bids: LevelType[] = useAppSelector(selectBids);
-  const asks: LevelType[] = useAppSelector(selectAsks);
+  // const bids: LevelType[] = useAppSelector(selectBids);
+  // const asks: LevelType[] = useAppSelector(selectAsks);
   const {width} = useWindowDimensions();
-  // const {bids, asks} = useOrderbookStore();
-  console.log(bids, asks)
+  const {bids, asks} = useOrderbookStore();
+  const {trades} = useAggTradeStore()
   let isLg = width>1024;
-  const aggTrade: aggTradeStreams[] = useAppSelector(
-    (state) => state.aggTrade.aggTrade
-  );
-
+  // const aggTrade: aggTradeStreams[] = useAppSelector(
+  //   (state) => state.aggTrade.aggTrade
+  // );
 
   const buildPriceLevels = (
     levels: LevelType[],
@@ -62,7 +62,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
         return
       }
       return (
-        <div key={level.depth + idx} className="m-1 overflow-hidden">
+        <div key={level.depth + idx} className="overflow-hidden relative">
           <DepthVisualizer
             key={level.depth}
             depth={Number(level.depth)}
@@ -94,29 +94,29 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
           <p className="hidden md:block text-gray-500 text-sm">Total</p>
         </div>
         <div className="">
-          {/* {option === "both" || option === "ask"
+          {option === "both" || option === "ask"
             ? buildPriceLevels(asks, OrderType.ASKS)
-            : null} */}
+            : null}
         </div>
       </div>
 
       <div className="flex gap-1 items-baseline-last">
         <p
-          className={`text-2xl md:text-xl font-semibold ${aggTrade[0]?.isBuyerMarket ? "text-green-400" : "text-red-500"}`}
+          className={`text-2xl md:text-xl font-semibold ${trades[0]?.maker ? "text-green-400" : "text-red-500"}`}
         >
-          {formatPrice(Number(aggTrade[0]?.price) || 0)}
+          {formatPrice(Number(trades[0]?.price) || 0)}
         </p>
 
         <p className="text-xs text-gray-500">
-          ${formatPrice(Number(aggTrade[0]?.price) || 0)}
+          ${formatPrice(Number(trades[0]?.price) || 0)}
         </p>
       </div>
       <div className={`flex w-full flex-col`}>
         <title>ASK</title>
         <div className="">
-          {/* {option === "both" || option === "bid"
+          {option === "both" || option === "bid"
             ? buildPriceLevels(bids, OrderType.BIDS)
-            : null} */}
+            : null}
         </div>
       </div>
     </div>

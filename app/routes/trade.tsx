@@ -46,7 +46,7 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
   // const [currentStream, setCurrentStream] = useState<null | string[]>(null);
 // const dispatch = useAppDispatch()
   useDepthAggTrades([`${pair}@aggTrade`], pair);
-  useOrderbook(pair)
+  useOrderbook([`${pair}@depth20@1000ms`])
 //   const {  readyState, sendJsonMessage } =
 //     useWebSocket(`wss://stream.binance.com:9443/stream`, {
 //       onOpen: () => {

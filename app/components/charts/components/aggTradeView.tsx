@@ -6,14 +6,16 @@ import { CoinPairs } from "~/consts/pairs";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { useAggTradeStore, type AggTrade } from "~/store/useAggTradeStore";
 ;
-const TradingPriceRow = ({ e }: { e: AggTrade }) => {
+const TradingPriceRow = (trades) => {
+  return trades?.map((e:AggTrade, i:number)=> {
   const time = moment(e.time).format("hh:mm:ss");
   return (
-    <div className="flex  w-full justify-between items-center mb-1" key={e.time}>
+    <div
+      className="flex  w-full justify-between items-center mb-1"
+      key={e.id}
+    >
       <div className="flex-1 ">
-        <p
-          className={`text-sm ${e.maker ? "text-green-400" : "text-red-500"}`}
-        >
+        <p className={`text-sm ${e.maker ? "text-green-400" : "text-red-500"}`}>
           {formatPrice(e.price)}
         </p>
       </div>
@@ -23,6 +25,8 @@ const TradingPriceRow = ({ e }: { e: AggTrade }) => {
       </div>
     </div>
   );
+  })
+
 };
 
 export default function ({ pair }) {
@@ -41,9 +45,10 @@ export default function ({ pair }) {
         <p className="text-gray-500 text-sm font-semibold">Time</p>
       </div>
       <ScrollArea className="h-100 w-full pr-2 pl-4 lg:h-120 lg:pr-2">
-        {trades?.map((e, i) => {
+        {/* {trades?.map((e, i) => {
           return <TradingPriceRow e={e} key={i} />;
-        })}
+        })} */}
+      {TradingPriceRow(trades)}
       </ScrollArea>
     </div>
   );

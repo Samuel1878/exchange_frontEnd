@@ -74,7 +74,7 @@ export default function ({ pair, type }) {
     ariaLabel,
   }) => {
     return (
-      <div className={`flex p-2 absolute top-4 left-2 z-50 gap-2`} aria-label={ariaLabel}>
+      <div className={`flex p-2 absolute top-4 left-2 z-20 gap-2`} aria-label={ariaLabel}>
         {children}
       </div>
     );
