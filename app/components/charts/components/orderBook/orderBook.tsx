@@ -71,7 +71,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
           <PriceLevelRow
             key={level.amount + level.total}
             total={formatTotalPrice(level.total)}
-            size={level.amount.toString()}
+            size={level.amount.toFixed(6)}
             price={formatPrice(level.price)}
             type={orderType}
           />

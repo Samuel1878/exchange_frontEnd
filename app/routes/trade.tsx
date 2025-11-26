@@ -15,6 +15,7 @@ import axios from "axios";
 import { useDepthAggTrades } from "~/hook/useAggTrade";
 import { useTickers } from "~/hook/useTickers";
 import { useOrderbook } from "~/hook/useOrderBook";
+import { useKlines } from "~/hook/useKline";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Trade" }, { name: "description", content: "Trading" }];
@@ -46,7 +47,8 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
   // const [currentStream, setCurrentStream] = useState<null | string[]>(null);
 // const dispatch = useAppDispatch()
   useDepthAggTrades([`${pair}@aggTrade`], pair);
-  useOrderbook([`${pair}@depth20@1000ms`])
+  useOrderbook([`${pair}@depth20@1000ms`]);
+  
 //   const {  readyState, sendJsonMessage } =
 //     useWebSocket(`wss://stream.binance.com:9443/stream`, {
 //       onOpen: () => {

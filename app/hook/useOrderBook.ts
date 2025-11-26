@@ -17,9 +17,9 @@ export function useOrderbook(stream: string[]) {
 
   // const stream = `${symbol.toLowerCase()}@depth20@1000ms`; // or @depth for raw diffs
   const { sendJsonMessage, lastMessage } = useWebSocket(
-    `wss://stream.binance.com:9443/ws/${stream}`,
+    `wss://stream.binance.com:9443/ws`,
     {
-      share: true,
+      share: false,
       onOpen: () =>
         console.log("WebSocket Manager is Opened for OrderBook Diff"),
       onClose: () =>

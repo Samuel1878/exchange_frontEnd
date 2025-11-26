@@ -1,97 +1,56 @@
-export const colorGray = '#888';
-export const colorGreenOpacity = 'rgba(71, 178, 98, 0.2)';
-export const colorRedOpacity = 'rgba(235, 84, 84, 0.2)';
-export const colorGreen = '#47b262';
-export const colorRed = '#eb5454';
+import dayjs from "dayjs";
+import type { TimeFormatterFn } from "lightweight-charts";
+type DataRange = "1s" | "15m" | "1h" | "4h" | "1d" | "1w";
 export const priceFormatter = (value) => {
-  if (!value){
-    return "0.0000"
+  if (!value) {
+    return "0.0000";
   }
-  const result = Math.round(value * 100) / 100 + '';
+  const result = Math.round(value * 100) / 100 + "";
   // Adding padding 0 if needed
-  let dotIndex = result.indexOf('.');
+  let dotIndex = result.indexOf(".");
   if (dotIndex < 0) {
-    return result + '.00';
+    return result + ".00";
   } else if (dotIndex === result.length - 2) {
-    return result + '0';
+    return result + "0";
   }
   return result;
 };
 export const formatPrice = (arg: number): string => {
-  if (!arg){
-    return "0.0000"
+  if (!arg) {
+    return "0.0000";
   }
-    return arg.toLocaleString("en", {
-      useGrouping: true,
-      minimumFractionDigits: 2,
-    });
-  };
-
-export const ProductIds = {
-  btcusdt: 'BTC/USDT',
-  ethusdt: 'ETH/USDT'
+  return arg.toLocaleString("en", {
+    useGrouping: true,
+    minimumFractionDigits: 2,
+    maximumFractionDigits:7
+  });
 };
 
-
-export const ProductsMap: any = [
+export const dataRangeMap: Record<
+  DataRange,
   {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
+    formatter: TimeFormatterFn<string>;
+  }
+> = {
+  "1s": {
+    formatter: (t) => dayjs(t).format("YYYY-MM-DD hh:mm:ss"),
   },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
+  "15m": {
+    formatter: (t) => dayjs(t).format("YYYY-MM-DD hh:mm"),
   },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
+  "1h": {
+    formatter: (t) => dayjs(t).format("YYYY-MM-DD hh"),
   },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
+  "4h":{
+   formatter: (t) => dayjs(t).format("YYYY-MM-DD hh"),
   },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
+  "1d": {
+    formatter: (t) => dayjs(t).format("YYYY-MM-DD"),
   },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
+  "1w": {
+    formatter: (t) => {
+      const dateObj = dayjs(t);
+      return `${dateObj.format("YYYY-MM-DD")}`;
+    },
   },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
-  },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
-  },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
-  },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
-  },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
-  },
-  {
-    id: 1,
-    value: "btcusdt",
-    label: "BTC/USDT",
-  },
-];
+} as const;
