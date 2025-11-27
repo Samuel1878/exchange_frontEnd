@@ -1,6 +1,6 @@
 
 import { OrderBookFilterBtnWeb, TradeButton } from "./components/buttons";
-import CandleSticks from "./components/candleSticks";
+import CandleSticks from "./components/candleStick/candleSticks";
 import Header from "./components/header";
 import Trade from "./components/trade";
 import { useState } from "react";
@@ -10,37 +10,36 @@ import AggTradeView from "./components/aggTradeView";
 import OrderHistory from "./components/orderHistory";
 import LgTrade from "./components/lgTrade";
 import TradingPairs from "./components/tradingPairs";
+import AllMarketTickerProvider from "~/context/socketContext/AllMarketTickerContext";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 
 export default function ({ pair, openMobileTrade, type }) {
-   const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
-     const [isBuy, setIsBuy] = useState<boolean>(false);
-     const [isLimit, setIsLimit] = useState(false);
-     const [option, setOptions] = useState("both");
- 
+  const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
+  const [isBuy, setIsBuy] = useState<boolean>(false);
+  const [isLimit, setIsLimit] = useState(false);
+  const [option, setOptions] = useState("both");
+  const [openPairs, setOpenPairs] = useState(false);
+  const [value, setValue] = useState("0.0001");
+
   return (
     <div className="space-y-1 bg-black pb-1">
       <div className="lg:flex">
         <div className="lg:w-full">
           <div>
-            <Header pair={pair} />
+            <Header
+              pair={pair}
+              openPairs={openPairs}
+              setOpenPairs={setOpenPairs}
+            />
           </div>
           <div className="flex">
-            {/* <div className="hidden lg:flex lg:mr-1">
-              <div className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-sm flex-1 lg:max-w-200 lg:flex lg:flex-col">
-                <div className="p-2 px-4 border-b-2 border-b-gray-700">
-                  <p className="text-gray-50 font-semibold">Order Book</p>
-                </div>
-                <div className="px-4 p-2">
-                  <OrderBookFilterBtnWeb
-                    option={option}
-                    setAction={setOptions}
-                  />
-                </div>
-                <div className="px-4">
-                  <OrderBook productId={product_id} option={option} />
-                </div>
-              </div>
-            </div> */}
             <div className="md:flex-2 w-full lg:flex lg:flex-row-reverse lg:justify-between">
               <div>
                 <CandleSticks pair={pair} type={type} />
@@ -70,11 +69,61 @@ export default function ({ pair, openMobileTrade, type }) {
                       Order Book
                     </p>
                   </div>
-                  <div className="px-4 p-2">
+                  <div className="px-4 p-2 flex justify-between items-center">
                     <OrderBookFilterBtnWeb
                       option={option}
                       setAction={setOptions}
                     />
+                    <Select value={value} onValueChange={setValue}>
+                      <SelectTrigger className="w-[100px] h-10 text-gray-50 text-md font-semibold border-0 outline-0 ring-0">
+                        <SelectValue
+                          aria-label={value}
+                          className="text-gray-50 text-md font-semibold border-0 outline-0 ring-0"
+                        >
+                          {value}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent className="bg-gray-900 ring-0">
+                        <SelectGroup>
+                          <SelectItem
+                            value="1"
+                            className="text-gray-50 text-md font-semibold hover:bg-gray-900 "
+                          >
+                            1
+                          </SelectItem>
+                          <SelectItem
+                            value="0.1"
+                            className="text-gray-50 text-md font-semibold"
+                          >
+                            0.1
+                          </SelectItem>
+                          <SelectItem
+                            value="0.01"
+                            className="text-gray-50 text-md font-semibold"
+                          >
+                            0.01
+                          </SelectItem>
+                          <SelectItem
+                            value="0.001"
+                            className="text-gray-50 text-md font-semibold"
+                          >
+                            0.001
+                          </SelectItem>
+                          <SelectItem
+                            value="0.0001"
+                            className="text-gray-50 text-md font-semibold"
+                          >
+                            0.0001
+                          </SelectItem>
+                          <SelectItem
+                            value="0.00001"
+                            className="text-gray-50 text-md font-semibold"
+                          >
+                            0.00001
+                          </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="px-4">
                     <OrderBook pair={pair} option={option} />
@@ -92,11 +141,16 @@ export default function ({ pair, openMobileTrade, type }) {
               />
             </div>
           </div>
-          
         </div>
         <div className="hidden lg:flex lg:flex-col">
           <div className="w-full bg-gray-950 mt-1 ml-1 rounded-sm flex-1 lg:min-w-50 xl:w-70 2xl:w-85">
-            <TradingPairs currentPair={pair}/>
+            {/* <AllMarketTickerProvider> */}
+              <TradingPairs
+                currentPair={pair}
+                isOpen={openPairs}
+                setIsOpen={setOpenPairs}
+              />
+            {/* </AllMarketTickerProvider> */}
           </div>
           <div className="hidden lg:flex lg:flex-col flex-1 lg:ml-1 lg:mt-1 bg-gray-950 rounded-sm">
             <div className="p-2 px-4 border-b-2 border-b-gray-700 lg:border-b-gray-900">

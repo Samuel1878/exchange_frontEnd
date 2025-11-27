@@ -10,12 +10,7 @@ import Trade from "./components/trade";
 import OrderHistory from "./components/orderHistory";
 import { CoinPairs } from "~/consts/pairs";
 
-export default function ({
-  pair,
-  openMobileTrade,
-  closeMobileTrade,
-  type,
-}) {
+export default function ({ pair, openMobileTrade, closeMobileTrade, type }) {
   const ticker = useAppSelector(selectTicker);
   const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
   const [isBuy, setIsBuy] = useState<boolean>(true);
@@ -97,12 +92,12 @@ export default function ({
         setOrderBookFilter={setOrderBookFilter}
         setOpenDrawer={setOpenDrawer}
         data={[
-          { value: "0.000001" },
           { value: "0.00001" },
           { value: "0.0001" },
           { value: "0.001" },
           { value: "0.01" },
           { value: "0.1" },
+          { value: "1" },
         ]}
       />
     </div>

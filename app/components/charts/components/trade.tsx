@@ -11,7 +11,7 @@ export default function ({ isBuy, isLimit, setIsBuy, setOpenLimitDrawer ,pair}) 
   return (
     <div
       id="trde"
-      className="flex-5 flex flex-col justify-between gap-4 min-h-110"
+      className="flex-5 flex flex-col justify-between gap-4 max-h-110"
     >
       <div className="px-4 py-2 border-b-0 md:border-b-2 border-b-gray-600  flex gap-4 ">
         <div
@@ -58,8 +58,9 @@ export default function ({ isBuy, isLimit, setIsBuy, setOpenLimitDrawer ,pair}) 
           <IoMdArrowDropdown />
         </button>
         <input
-          className="outline-gray-700 outline-1 focus:outline-amber-400 rounded-md text-center h-10 w-full text-gray-50"
-          placeholder="Price (USDT)"
+          disabled={!isLimit}
+          className ={`outline-gray-700 outline-1 focus:outline-amber-400 rounded-md text-center h-10 w-full text-gray-50 ${isLimit?"bg-gray-900":"bg-gray-800"}`}
+          placeholder={isLimit?"Price (USDT)":"Market Price"}
         />
         <input
           className="outline-gray-700 outline-1 focus:outline-amber-400 rounded-md text-center h-10 w-full text-gray-50"

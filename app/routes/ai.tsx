@@ -1,5 +1,4 @@
-"use client"
-import { Bell, Megaphone, Users } from "lucide-react";
+
 import type { Route } from "./+types/home";
 import SlotCouter from "react-slot-counter";
 import { AiLists } from "~/consts/aiList";

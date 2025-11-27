@@ -87,7 +87,7 @@ export default function ByMarketPrice({ loaderData }: Route.ComponentProps) {
                             <div className="flex flex-col lg:flex-row lg:items-center md:items-start lg:justify-between lg:gap-6">
                                 <div className="space-y-2 mb-4 lg:space-x-7 lg:w-3/6">
                                     <div className="space-y-2 mb-4 lg:space-x-7">
-                                        <h1 className="text-2xl text-white">Bitcoin Price (BTC)</h1>
+                                        <h1 className="text-2xl text-white">Bitcoin Price ({loaderData.CryptoName})</h1>
                                         <div className="lg:flex lg:items-center lg:gap-4">
                                             <h4>BTC to <span className="text-green-500">USD</span>:</h4>
                                             <p className="text-sm font-thin">1 Bitcoin equals $96,254.76 USD<span className="text-red-600">-5.84%</span>1D</p>

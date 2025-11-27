@@ -17,27 +17,18 @@ export default [
       ]),
       route("ai", "./routes/ai.tsx"),
 
-      ...prefix("trade", [route(":pair", "./routes/trade.tsx")]),
-      ...prefix("charity", [
-        index("./routes/charity/charity.tsx"),
-        route(
-          "projects",
-          "./routes/charity/projects/index.tsx",
-        ),
-        route("projects/:id", "./routes/charity/projects/[type].tsx"),
-      ]),
-      route("asset", "./routes/wallet.tsx"),
-      ...prefix("finance", [
-        ...prefix("earn", [
-          index("./routes/earn/index.tsx"),
-          route(":type", "./routes/earn/subscribe/[type].tsx"),
-        ]),
-        route("loans", "./routes/loan.tsx"),
-      ]),
-      route("trends", "./routes/news/index.tsx"),
-      ...prefix("ico", [
-        index("./routes/ico/index.tsx"),
-        route("announcement/:type", "./routes/ico/announcement/[type].tsx"),
+    ...prefix("trade", [route(":pair", "./routes/trade.tsx")]),
+    ...prefix("charity", [
+      index("./routes/charity/charity.tsx"),
+      route("projects", "./routes/charity/projects/index.tsx"),
+      route("projects/:id", "./routes/charity/projects/[type].tsx"),
+    ]),
+    route("deposit", "./routes/deposit.tsx"),
+    route("asset", "./routes/wallet.tsx"),
+    ...prefix("finance", [
+      ...prefix("earn", [
+        index("./routes/earn/index.tsx"),
+        route(":type", "./routes/earn/subscribe/[type].tsx"),
       ]),
       route("deposit", "./routes/deposit.tsx"),
     ]),

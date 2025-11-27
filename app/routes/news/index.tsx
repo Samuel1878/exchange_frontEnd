@@ -1,5 +1,5 @@
+
 import FooterSection from "~/components/footer";
-import type { Route } from "./+types";
 import { useState, useEffect } from "react";
 import { Skeleton } from "~/components/ui/skeleton"
 import BlogImage from "assets/images/smart-arbirage-2.svg"
