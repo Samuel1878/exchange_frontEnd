@@ -7,14 +7,15 @@ import {
 } from "@react-router/dev/routes";
 
 export default [
-  layout("routes/layout/navBarLayout.tsx", [
-    index("routes/home.tsx"),
+  layout("routes/layout/rootLayout.tsx", [
+    layout("routes/layout/navBarLayout.tsx", [
+      index("routes/home.tsx"),
 
-    ...prefix("market", [
-      index("./routes/market/market.tsx"),
-      route(":type", "./routes/market/price/[type].tsx"),
-    ]),
-    route("ai", "./routes/ai.tsx"),
+      ...prefix("market", [
+        index("./routes/market/market.tsx"),
+        route(":type", "./routes/market/price/[type].tsx"),
+      ]),
+      route("ai", "./routes/ai.tsx"),
 
     ...prefix("trade", [route(":pair", "./routes/trade.tsx")]),
     ...prefix("charity", [
@@ -29,8 +30,11 @@ export default [
         index("./routes/earn/index.tsx"),
         route(":type", "./routes/earn/subscribe/[type].tsx"),
       ]),
-      route("loans", "./routes/loan.tsx"),
+      route("deposit", "./routes/deposit.tsx"),
     ]),
-    route("trends", "./routes/news/index.tsx"),
+    
+    // Auth routes outside navBarLayout but inside rootLayout
+    route("login", "./routes/auth/login.tsx"),
+    route("register", "./routes/auth/register.tsx"),
   ]),
 ] satisfies RouteConfig;
