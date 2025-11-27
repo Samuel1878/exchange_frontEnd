@@ -1,6 +1,5 @@
 
 import FooterSection from "~/components/footer";
-import AllMarketTickerProvider from "~/context/socketContext/AllMarketTickerContext";
 import MarketView from "~/components/marketView";
 
 export default function Dashboard() {

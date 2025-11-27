@@ -1,7 +1,7 @@
-import { ChartCandlestick, ChartLine } from "lucide-react";
+
 import { useEffect, useMemo, useRef, useState, type FC, type ReactNode } from "react";
 
-import { createChart, CrosshairMode } from "lightweight-charts";
+import {  CrosshairMode } from "lightweight-charts";
 import {
   Chart,
   LineSeries,
@@ -12,30 +12,38 @@ import {
   Pane,
   CandlestickSeries,
 } from "lightweight-charts-react-components";
-import { priceData, volumeData } from "~/consts/test";
-import rawData from "~/consts/testKline.json";
-import moment from "moment";
 import useWindowDimensions from "~/hook/windowWidth";
-import { useBasicTooltip } from "~/hook/klineTooltip";
 import TimeSeries from "./timeSeries";
 import { useKlines } from "~/hook/useKline";
 import { useKlineStore } from "~/store/useKlineStore";
 import { useLegendStore } from "~/store/useLegendStore";
 import { useLegend } from "~/hook/useLegend";
-import { dataRangeMap } from "../../util";
-// import type { FC, ReactNode } from "react";
+import { dataRangeMap, localizationFormater } from "../../util";
+import { useIndicatorStore } from "~/store/useIndicatorStore";
+
 enum Showing {
   chart = "chart",
   trade = "trade",
   info = "info",
 }
-enum Period {
+export enum Period {
   oneSecound = "1s",
   fifteenMinute = "15m",
   oneHour = "1h",
   fourHour = "4h",
   oneDay = "1d",
   oneWeek = "1w",
+  threeDay = "3d",
+  oneMonth = "1M",
+
+  oneMinute = "1m",
+  threeMinute = "3m",
+  fiveMinute = "5m",
+  thirty = "30m",
+  twoHour = "2h",
+  sixHour = "6h",
+  eightHour = "8h",
+  twelveHour = "12h",
 }
 
 type LegendProps = {
@@ -49,12 +57,13 @@ const Legend: FC<LegendProps> = ({ children }) => {
 export default function ({ pair, type }) {
   const { legendVisible, setLegendVisible } = useLegendStore();
    const { candles, histogram, reset } = useKlineStore();
+   const {indicators ,selected} = useIndicatorStore()
   const [showing, setShowing] = useState<Showing>(Showing.chart);
   const [period, setPeriod] = useState(
     type === "future" ? Period.oneSecound : Period.oneDay
   );
   useKlines(pair, period);
-
+console.log(indicators)
   const { width } = useWindowDimensions();
   const upColor = "#00c951";
   const downColor = "#fb2c36";
@@ -66,8 +75,8 @@ export default function ({ pair, type }) {
   const clonedData = structuredClone(candles);
 
   const togglePeriod = (p:Period) =>{ 
+    reset();
     setPeriod(p)
-    reset()
     useKlines(pair, period);
   }
   return (
@@ -113,7 +122,7 @@ export default function ({ pair, type }) {
             containerProps={{ style: { flexGrow: "1", position: "relative" } }}
             options={{
               width:
-                width > 1024
+                width >= 1024
                   ? width / 1.85
                   : width > 768
                     ? width * 0.65
@@ -122,6 +131,10 @@ export default function ({ pair, type }) {
               layout: {
                 background: { color: "transparent" },
                 textColor: "rgba(255, 255, 255, 0.9)",
+                panes: {
+                  enableResize: true,
+                  separatorColor: "rgba(100,100,100,.4)",
+                },
               },
               grid: {
                 vertLines: {
@@ -135,17 +148,16 @@ export default function ({ pair, type }) {
                 mode: CrosshairMode.Normal,
               },
               localization: {
-                timeFormatter: dataRangeMap[period].formatter,
+                timeFormatter: localizationFormater["locale"].formatter,
               },
               timeScale: {
                 tickMarkFormatter: dataRangeMap[period].formatter,
                 borderColor: "#485c7b",
               },
-         
             }}
             onCrosshairMove={onCrosshairMove}
           >
-            <Pane stretchFactor={2} >
+            <Pane stretchFactor={2}>
               <CandlestickSeries
                 ref={ref}
                 data={clonedData}
@@ -160,7 +172,7 @@ export default function ({ pair, type }) {
               />
               {legendData !== null && legendVisible && (
                 <Legend>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap">
                     <p className="text-gray-400 text-sm">{legendData.time}</p>
                     <p className="text-gray-400 text-xs font-medium">
                       Open{" "}
@@ -210,16 +222,16 @@ export default function ({ pair, type }) {
                   </div>
                 </Legend>
               )}
+             {/* {selected?.ma?.length ? ( <LineSeries
+                data={indicators.ma[7]}
+                options={{ color: "green", lineWidth: 1 }}
+              />):null} */}
             </Pane>
             <Pane>
               <HistogramSeries
                 data={histogram}
                 options={{ priceLineVisible: false }}
               />
-              {/* <LineSeries
-                data={volumeData}
-                options={{ color: "green", lineWidth: 1 }}
-              /> */}
             </Pane>
             <TimeScale>
               <TimeScaleFitContentTrigger deps={[period]} />

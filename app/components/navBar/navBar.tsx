@@ -14,7 +14,6 @@ import React from "react";
 import Hamburger from "hamburger-react";
 import { Link, useNavigate } from "react-router";
 
-import useWindowWidth from "~/hook/windowWidth";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -35,11 +34,7 @@ import VerticalNavBar from "./verticalNavBar";
 import { X } from "lucide-react";
 
 export default function NavigationBar() {
-  // const { width } = useWindowWidth();
-  // const isMobile = width > 768;
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
-  const menuRef = React.useRef(null);
-  const navRef = React.useRef(null);
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const navigate = useNavigate();
   const resizeHandler = () => {
@@ -65,7 +60,7 @@ export default function NavigationBar() {
         <NavigationMenuList className="hidden lg:flex">
           {topNavMenu.map((e, idx) => (
             <NavigationMenuItem
-              className="bg-gray-900 lg:bg-gray-950 hover:bg-gray-950"
+              className="bg-gray-900 lg:bg-gray-950 hover:bg-gray-950 cursor-pointer"
               key={idx}
             >
               {e.hasMore ? (
@@ -79,25 +74,26 @@ export default function NavigationBar() {
                         <li className="p-2" key={i}>
                           <NavigationMenuLink
                             // href={data.value}
+                            onClick={() => navigate(data.value)}
                             asChild
-                            className="bg-gray-900 hover:bg-gray-800  "
+                            className="bg-gray-900 hover:bg-gray-800 cursor-pointer "
                           >
-                            <Link to={data.value}>
-                              <div
-                                key={i}
-                                className="flex flex-row items-center py-4  gap-4 hover:**:first:text-amber-300 hover:**:not-first:text-gray-300"
-                              >
-                                {data.icon}
-                                <div className="flex flex-col items-start gap-y-1 ">
-                                  <p className="text-gray-100 text-lg font-bold">
-                                    {data.label}
-                                  </p>
-                                  <p className="text-gray-500 text-sm font-medium">
-                                    {data.description}
-                                  </p>
-                                </div>
+                            {/* <Link to={data.value}> */}
+                            <div
+                              key={i}
+                              className="flex flex-row items-center py-3  gap-4 hover:**:first:text-amber-300 hover:**:not-first:text-gray-300"
+                            >
+                              {data.icon}
+                              <div className="flex flex-col items-start gap-y-1">
+                                <p className="text-gray-100 text-lg font-bold">
+                                  {data.label}
+                                </p>
+                                <p className="text-gray-500 text-sm font-medium">
+                                  {data.description}
+                                </p>
                               </div>
-                            </Link>
+                            </div>
+                            {/* </Link> */}
                           </NavigationMenuLink>
                         </li>
                       ))}
@@ -105,13 +101,16 @@ export default function NavigationBar() {
                   </NavigationMenuContent>
                 </>
               ) : (
-                <NavigationMenuLink className="py-6 px-4 flex hover:**:text-amber-300 hover:bg-gray-950 ">
-                  <Link
-                    to={e.value}
+                <NavigationMenuLink
+                  onClick={() => navigate(e.value)}
+                  className="py-6 px-4 flex hover:**:text-amber-300 hover:bg-gray-950 "
+                >
+                  <div
+                 
                     className="text-gray-100 lg:text-md xl:text-lg font-bold capitalize focus:text-amber-400"
                   >
                     {e.label}
-                  </Link>
+                  </div>
                 </NavigationMenuLink>
               )}
             </NavigationMenuItem>
@@ -120,29 +119,29 @@ export default function NavigationBar() {
       </NavigationMenu>
       <div className="lg:items-center flex gap-5 xl:gap-6">
         <div className="lg:flex hidden gap-3 ">
-          <button className="bg-gray-800 p-1 px-4 rounded-md">
+          <button className="bg-gray-800 p-1 px-4 rounded-md cursor-pointer">
             {" "}
             <p className="text-gray-50 font-medium text-md">Log In</p>
           </button>
-          <button className="bg-amber-300 p-1 px-4 rounded-md">
+          <button className="bg-amber-300 p-1 px-4 rounded-md cursor-pointer">
             <p className="text-gray-950 font-medium text-md">Sign Up</p>
           </button>{" "}
         </div>
         <div className="h-5 w-0.5 hidden xl:block  bg-gray-600 mx-2" />
         <button
           onClick={() => navigate("/#download")}
-          className="hidden xl:flex items-center justify-center"
+          className="hidden xl:flex items-center justify-center cursor-pointer"
         >
           <BiDownload size={30} color="#fff" />
         </button>
         <button
           // onClick={() => navigate("#download")}
-          className="hidden xl:flex items-center justify-center"
+          className="hidden xl:flex items-center justify-center cursor-pointer"
         >
           {/* <RiGlobalFill size={30}/> */}
           <img src="../assets/icons/lang.svg" className="w-8 h-8" />
         </button>
-        <div className="flex-row flex gap-2 items-center lg:hidden">
+        <div className="flex-row flex gap-2 items-center lg:hidden cursor-pointer">
           <Hamburger
             toggled={isOpen}
             toggle={setIsOpen}

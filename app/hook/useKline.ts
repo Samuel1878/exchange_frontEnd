@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import { useKlineStore } from "~/store/useKlineStore";
 import { rafThrottle } from "~/utils/helpers";
@@ -20,9 +20,19 @@ export const useKlines = (symbol: string, interval: string) => {
   const processMessages = rafThrottle((event: { data: string }) => {
     const response = JSON.parse(event.data);
     if (response?.result === null || response?.data?.result === null) return;
-     console.log(response);
-     applyStream(interval ,response)
+    //  console.log(response);
+    applyStream(interval, response);
   });
+  useEffect(() => {
+    (async () => {
+      await fetch(
+        `http://localhost:3000/kline/${symbol.toUpperCase()}?interval=${interval}`
+      ).then((e) => {
+        applySnapShot(interval, e.json());
+      }).catch(()=> console.log("Getting kline via REST api is failed")
+      );
+    })();
+  }, [symbol, interval]);
   useEffect(() => {
     const params = [`${symbol.toLowerCase()}@kline_${interval}`];
     sendJsonMessage({ method: "SUBSCRIBE", params, id: Date.now() });
@@ -32,15 +42,4 @@ export const useKlines = (symbol: string, interval: string) => {
       console.log("UNSUBSCRIBE", params);
     };
   }, [interval, symbol]);
-    useEffect(()=>{
-      (async()=>{
-  await fetch(`http://localhost:3000/kline/${symbol.toUpperCase()}?interval=${interval}`).then((e)=>{
-            applySnapShot(interval, e.json());
-          });
-  
-
-          
-          
-      })()
-    },[symbol, interval])
 };

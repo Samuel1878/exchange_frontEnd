@@ -4,14 +4,12 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { OrderBookFilterBtn } from "./components/buttons";
 import { BottomDrawerOptions } from "./components/bottomDrawer";
 import OrderBook from "./components/orderBook/orderBook";
-import { useAppDispatch, useAppSelector } from "~/utils/redux";
-import { selectTicker } from "~/context/slices/IndividualMiniTicker";
 import Trade from "./components/trade";
 import OrderHistory from "./components/orderHistory";
 import { CoinPairs } from "~/consts/pairs";
+import { useTickersStore } from "~/store/useTickersStore";
 
 export default function ({ pair, openMobileTrade, closeMobileTrade, type }) {
-  const ticker = useAppSelector(selectTicker);
   const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
   const [isBuy, setIsBuy] = useState<boolean>(true);
   const [isLimit, setIsLimit] = useState(false);
@@ -19,7 +17,7 @@ export default function ({ pair, openMobileTrade, closeMobileTrade, type }) {
   const [openDrawer, setOpenDrawer] = useState(false);
   const orderBookRef = useRef(null);
   const [orderBookFilter, setOrderBookFilter] = useState("0.00001");
-  const dispatch = useAppDispatch();
+  const {tickers} = useTickersStore()
   const toggleAction = () => {
     if (option === "both") {
       setOptions("bid");
@@ -44,9 +42,9 @@ export default function ({ pair, openMobileTrade, closeMobileTrade, type }) {
             <span></span>
           </button>
           <p
-            className={`font-semibold text-sm ${ticker?.priceChangePercent?.startsWith("-", 0) ? "text-red-500" : "text-green-400"}`}
+            className={`font-semibold text-sm ${tickers[pair]?.priceChangePercent?.startsWith("-", 0) ? "text-red-500" : "text-green-400"}`}
           >
-            {ticker?.priceChangePercent || "0"} %
+            {tickers[pair]?.priceChangePercent || "0"} %
           </p>
         </div>
         <button onClick={closeMobileTrade}>

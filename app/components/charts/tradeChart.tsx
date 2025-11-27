@@ -10,7 +10,6 @@ import AggTradeView from "./components/aggTradeView";
 import OrderHistory from "./components/orderHistory";
 import LgTrade from "./components/lgTrade";
 import TradingPairs from "./components/tradingPairs";
-import AllMarketTickerProvider from "~/context/socketContext/AllMarketTickerContext";
 import {
   Select,
   SelectContent,

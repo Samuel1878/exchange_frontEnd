@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/button";
 import React, { useEffect, useRef, useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
+import { Bell, Users } from "lucide-react";
 export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Ai Strategy" },
@@ -343,7 +344,7 @@ export default function AI() {
                     </div>
                     <div className="text-gray-950 justify-self-end-safe">
                       <button className="text-center bg-amber-300 px-4 py-2 rounded"
-                        onClick={() => handleRowClick()}
+                        onClick={() => handleRowClick("clicked")}
                       >Copy</button>
                     </div>
                   </div>

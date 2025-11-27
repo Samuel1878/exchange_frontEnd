@@ -1,20 +1,13 @@
 import React, { useCallback, useEffect } from "react";
 import type { FunctionComponent } from "react";
 import PriceLevelRow from "./priceLevelRow";
-import { useAppSelector } from "~/utils/redux";
-import {
-  selectAsks,
-  selectBids,
-  type LevelType,
-} from "~/context/slices/orderBook";
 import DepthVisualizer from "./depthVisulizer";
 
 import { formatPrice} from "../../util/index";
-import type { aggTradeStreams } from "~/context/slices/tradeSlice";
 import { CoinPairs } from "~/consts/pairs";
 import useWindowDimensions from "~/hook/windowWidth";
 import { formatTotalPrice } from "~/utils/helpers";
-import { useOrderbookStore } from "~/store/useOrderBookStore";
+import { useOrderbookStore, type LevelType } from "~/store/useOrderBookStore";
 import { useAggTradeStore } from "~/store/useAggTradeStore";
 
 export enum OrderType {
@@ -31,15 +24,11 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
 
   option,
 }) => {
-  // const bids: LevelType[] = useAppSelector(selectBids);
-  // const asks: LevelType[] = useAppSelector(selectAsks);
+
   const {width} = useWindowDimensions();
   const {bids, asks} = useOrderbookStore();
   const {trades} = useAggTradeStore()
   let isLg = width>1024;
-  // const aggTrade: aggTradeStreams[] = useAppSelector(
-  //   (state) => state.aggTrade.aggTrade
-  // );
 
   const buildPriceLevels = (
     levels: LevelType[],

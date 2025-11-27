@@ -15,6 +15,7 @@ import { GiTimeTrap } from "react-icons/gi";
 import { GrMoney } from "react-icons/gr";
 import { GiWallet } from "react-icons/gi";
 import { FaHandHoldingHeart } from "react-icons/fa";
+import { LucideHandCoins } from "lucide-react";
 
 export type menu = {
   value: string;
@@ -124,6 +125,13 @@ export const earnMenuList: menu[] = [
 ];
 
 export const moreMenuList: menu[] = [
+  {
+    value: "ico",
+    label: "ICO",
+    icon: <LucideHandCoins size={30} color="rgba(120,130,150,1)" />,
+    description:
+      "Initial coin offerring with the best price for HODLers",
+  },
   {
     value: "trends",
     icon: <RiBarChart2Fill size={30} color="rgba(120,130,150,1)" />,

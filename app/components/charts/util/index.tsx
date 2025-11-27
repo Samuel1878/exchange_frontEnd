@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
 import type { TimeFormatterFn } from "lightweight-charts";
-type DataRange = "1s" | "15m" | "1h" | "4h" | "1d" | "1w";
+type DataRange = "1s" | "15m" | "1h" | "4h" | "1d" |
+ "1w" | "1m" | "3m" | "5m" | "30m" | "2h" | "6h"| "8h" 
+ | "12h" | "3d" | "1M";
 export const priceFormatter = (value) => {
   if (!value) {
     return "0.0000";
@@ -22,10 +24,19 @@ export const formatPrice = (arg: number): string => {
   return arg.toLocaleString("en", {
     useGrouping: true,
     minimumFractionDigits: 2,
-    maximumFractionDigits:7
+    maximumFractionDigits: 7,
   });
 };
-
+export const localizationFormater :  Record<
+"locale",
+  {
+    formatter: TimeFormatterFn<string>;
+  }
+> = {
+  "locale":{
+    formatter:(t)=>dayjs(t).format("YYYY/MMM/DD hh:mm:ss")
+  }
+}
 export const dataRangeMap: Record<
   DataRange,
   {
@@ -33,24 +44,60 @@ export const dataRangeMap: Record<
   }
 > = {
   "1s": {
-    formatter: (t) => dayjs(t).format("YYYY-MM-DD hh:mm:ss"),
+    formatter: (t) => dayjs(t).format("hh:mm:ss"),
+  },
+  "1m": {
+    formatter: (t) => dayjs(t).format("hh:mm"),
+  },
+  "3m": {
+    formatter: (t) => dayjs(t).format("hh:mm"),
+  },
+  "5m": {
+    formatter: (t) => dayjs(t).format("hh:mm"),
   },
   "15m": {
-    formatter: (t) => dayjs(t).format("YYYY-MM-DD hh:mm"),
+    formatter: (t) => dayjs(t).format("hh:mm"),
+  },
+  "30m": {
+    formatter: (t) => dayjs(t).format("DD hh:mm"),
   },
   "1h": {
-    formatter: (t) => dayjs(t).format("YYYY-MM-DD hh"),
+    formatter: (t) => dayjs(t).format("MM/DD hh"),
   },
-  "4h":{
-   formatter: (t) => dayjs(t).format("YYYY-MM-DD hh"),
+  "2h": {
+    formatter: (t) => dayjs(t).format("MM/DD hh:mm"),
+  },
+  "4h": {
+    formatter: (t) => dayjs(t).format("MM/DD hh"),
+  },
+  "6h": {
+    formatter: (t) => dayjs(t).format("MM/DD hh:mm"),
+  },
+  "8h": {
+    formatter: (t) => dayjs(t).format("MM/DD hh:mm"),
+  },
+  "12h": {
+    formatter: (t) => dayjs(t).format("YY/MM/DD hh:mm"),
   },
   "1d": {
-    formatter: (t) => dayjs(t).format("YYYY-MM-DD"),
+    formatter: (t) => dayjs(t).format("YYYY/MM/DD"),
   },
   "1w": {
     formatter: (t) => {
       const dateObj = dayjs(t);
-      return `${dateObj.format("YYYY-MM-DD")}`;
+      return `${dateObj.format("YYYY/MM/DD")}`;
+    },
+  },
+  "3d": {
+    formatter: (t) => {
+      const dateObj = dayjs(t);
+      return `${dateObj.format("YYYY/MM/DD")}`;
+    },
+  },
+  "1M": {
+    formatter: (t) => {
+      const dateObj = dayjs(t);
+      return `${dateObj.format("YYYY/MM")}`;
     },
   },
 } as const;

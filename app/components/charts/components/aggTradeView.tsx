@@ -1,5 +1,4 @@
-import type { aggTradeStreams } from "~/context/slices/tradeSlice";
-import { useAppSelector } from "~/utils/redux";
+
 import { formatPrice } from "../util";
 import moment from "moment";
 import { CoinPairs } from "~/consts/pairs";
@@ -30,10 +29,6 @@ const TradingPriceRow = (trades) => {
 };
 
 export default function ({ pair }) {
-  // const data: aggTradeStreams[] = useAppSelector(
-  //   (state) => state.aggTrade.aggTrade
-  // );
-
   const {trades} = useAggTradeStore()
   return (
     <div className="pb-4 bg-gray-900 lg:bg-gray-950 lg:rounded-md lg:min-w-55 xl:w-70 2xl:w-85">
@@ -45,9 +40,6 @@ export default function ({ pair }) {
         <p className="text-gray-500 text-sm font-semibold">Time</p>
       </div>
       <ScrollArea className="h-100 w-full pr-2 pl-4 lg:h-120 lg:pr-2">
-        {/* {trades?.map((e, i) => {
-          return <TradingPriceRow e={e} key={i} />;
-        })} */}
       {TradingPriceRow(trades)}
       </ScrollArea>
     </div>

@@ -10,8 +10,6 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import { Provider as ReduxProvider } from "react-redux";
-import store from "app/context/store";
 import AuthProvider from "./context/authProvider";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./config/i18n";
@@ -53,13 +51,9 @@ export default function App() {
   return (
     <React.StrictMode>
       <I18nextProvider i18n={i18n}>
-        <ReduxProvider store={store}>
-          <AuthProvider>
-           
-              <Outlet />
-         
-          </AuthProvider>
-        </ReduxProvider>
+        <AuthProvider>
+          <Outlet />
+        </AuthProvider>
       </I18nextProvider>
     </React.StrictMode>
   );

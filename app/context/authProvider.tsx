@@ -1,21 +1,18 @@
 "user client"
 import React, { createContext, useContext, useEffect } from "react";
-import { useAppSelector, useAppDispatch } from "../utils/redux";
-import { login, logout } from "./slices/authSlice";
 
 const AuthContext = createContext(null);
 
 const AuthProvider = ({ children }) => {
-  const dispatch = useAppDispatch();
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-  const userToken = useAppSelector((state) => state.auth.userToken);
+
+
 
   const logIn = (userData) => {
-    dispatch(login(userData)); // Dispatch login action
+
   };
 
   const logOut = () => {
-    dispatch(logout()); // Dispatch logout action
+  
   };
   useEffect(() => {
     const restoreToken = async () => {
@@ -24,7 +21,7 @@ const AuthProvider = ({ children }) => {
     restoreToken();
   }, []);
   return (
-    <AuthContext.Provider value={{ isAuthenticated, userToken, logIn, logOut }}>
+    <AuthContext.Provider value={{ logIn, logOut }}>
       {children}
     </AuthContext.Provider>
   );
