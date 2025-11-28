@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { useKlineStore } from "./useKlineStore";
 import { calcEMA, calcMA, calcWMA } from "~/utils/indicators";
+import type { LineData } from "lightweight-charts";
 
 // ---- indicator calculators imported below ----
 type Selected = {
@@ -9,9 +10,9 @@ type Selected = {
   wma?: number[];
 };
 type Indicator = {
-  7?: number[];
-  25?: number[];
-  99?: number[];
+  7?: LineData[];
+  25?: LineData[];
+  99?: LineData[];
 };
 type Indicators = {
   ma: Indicator;
@@ -43,18 +44,18 @@ export const useIndicatorStore = create<IndicatorStore>((set, get) => ({
     })),
 
   computeIndicators: () => {
-    const candles = useKlineStore.getState().candles;
-    const sel = get().selected;
+    // const candles = useKlineStore.getState().candles;
+    // const sel = get().selected;
 
-    const indicators = {
-      ma: {},
-      ema: {},
-      wma: {},
-    };
+    // const indicators = {
+    //   ma: {},
+    //   ema: {},
+    //   wma: {},
+    // };
 
-    sel.ma?.length && sel.ma.forEach((p) => (indicators.ma[p] = calcMA(candles, p)));
-    sel.ema?.length && sel.ema.forEach((p) => (indicators.ema[p] = calcEMA(candles, p)));
-    sel.wma?.length && sel.wma.forEach((p) => (indicators.wma[p] = calcWMA(candles, p)));
-    set({ indicators });
+    // sel.ma.forEach((p) => (indicators.ma[p] = calcMA(candles, p)));
+    // sel.ema.forEach((p) => (indicators.ema[p] = calcEMA(candles, p)));
+    // sel.wma.forEach((p) => (indicators.wma[p] = calcWMA(candles, p)));
+    // set({ indicators });
   },
 }));

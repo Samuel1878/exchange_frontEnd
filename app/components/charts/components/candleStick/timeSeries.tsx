@@ -333,7 +333,7 @@ export default function ({ period, setPeriod }) {
           </div>
           <div onClick={()=>{
             setSelected(focus, focus==="ma"?ma:focus==="ema"?ema:wma);
-            computeIndicators()
+            // computeIndicators()
           }} className="text-gray-950 font-bold text-md px-16 h-10 bg-amber-400 rounded-md flex justify-center items-center cursor-pointer">
                 Save
           </div>

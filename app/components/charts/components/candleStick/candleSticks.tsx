@@ -57,13 +57,12 @@ const Legend: FC<LegendProps> = ({ children }) => {
 export default function ({ pair, type }) {
   const { legendVisible, setLegendVisible } = useLegendStore();
    const { candles, histogram, reset } = useKlineStore();
-   const {indicators ,selected} = useIndicatorStore()
+   const {selected} = useIndicatorStore()
   const [showing, setShowing] = useState<Showing>(Showing.chart);
   const [period, setPeriod] = useState(
     type === "future" ? Period.oneSecound : Period.oneDay
   );
   useKlines(pair, period);
-console.log(indicators)
   const { width } = useWindowDimensions();
   const upColor = "#00c951";
   const downColor = "#fb2c36";
@@ -71,9 +70,10 @@ console.log(indicators)
    const { ref, legendData, onCrosshairMove } = useLegend(
      legendVisible
    );
-
   const clonedData = structuredClone(candles);
-
+  //  useEffect(()=>{
+  //   computeIndicators()
+  //  },[selected])
   const togglePeriod = (p:Period) =>{ 
     reset();
     setPeriod(p)
@@ -222,10 +222,6 @@ console.log(indicators)
                   </div>
                 </Legend>
               )}
-             {/* {selected?.ma?.length ? ( <LineSeries
-                data={indicators.ma[7]}
-                options={{ color: "green", lineWidth: 1 }}
-              />):null} */}
             </Pane>
             <Pane>
               <HistogramSeries
