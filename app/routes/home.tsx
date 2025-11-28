@@ -3,7 +3,7 @@ import type { Route } from "./+types/home";
 
 import { useTranslation } from "react-i18next";
 import { CiGift } from "react-icons/ci";
-import { Form } from "react-router";
+import { Form, useNavigate } from "react-router";
 import AiMiniChart from "~/components/miniCharts/aiMiniChart";
 import HomeMiniChart from "~/components/miniCharts/homeMiniChart";
 import SlotCounter from "react-slot-counter";
@@ -23,6 +23,7 @@ export default function Home() {
   const { t } = useTranslation();
   const [number, setNumber] = useState(85290471);
   const [volume, setVolume] = useState(10760109);
+  const navigate = useNavigate()
   useEffect(() => {
     setTimeout(() => {
       setNumber((prev) => (prev += Math.random() * 1019));
@@ -98,7 +99,10 @@ export default function Home() {
                   className="py-3 rounded-md w-76 px-3 text-gray-200 border-amber-50 focus:outline-1 focus:outline-amber-400"
                 />
               </Form>
-              <button className="bg-amber-300 px-14 py-3 rounded-md">
+              <button
+                className="bg-amber-300 px-14 py-3 rounded-md cursor-pointer"
+                // onClick={() => navigate("/register")}
+              >
                 <p className="font-medium text-md text-gray-950">Sign Up</p>
               </button>
             </div>
@@ -106,7 +110,7 @@ export default function Home() {
         </article>
         <article id="hero2" className="md:mt-8 lg:mt-2 space-y-4">
           {/* <AllMarketTickerProvider> */}
-            <HomeMiniChart />
+          <HomeMiniChart />
           {/* </AllMarketTickerProvider> */}
           <AiMiniChart />
         </article>

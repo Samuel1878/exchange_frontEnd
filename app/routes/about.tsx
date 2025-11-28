@@ -1,4 +1,5 @@
 import FooterSection from "~/components/footer";
+import { fairM, globalPC2, grow, trustedSection } from "~/utils";
 
 export default function About() {
     return (
@@ -9,7 +10,7 @@ export default function About() {
                         <div className="text-gray-300 p-6 md:p-5 space-y-10">
                             <div className="grid lg:grid-cols-2 gap-4">
                                 <div className="">
-                                    <img src="../../assets/images/global-pc-2.png" alt="" />
+                                    <img src={globalPC2} alt="" />
                                 </div>
                                 <div className="text-4xl text-white font-bold space-y-3 py-8">
                                     <h1>Welcome to Web3</h1>
@@ -100,7 +101,7 @@ export default function About() {
                                 <div className="grid gap-4 lg:grid-cols-2">
                                     <h1 className="text-2xl text-white font-bold lg:hidden">Putting Our Users First</h1>
                                     <div className="">
-                                        <img src="../../assets/images/trusted-section.svg" alt="" />
+                                        <img src={trustedSection} alt="" />
                                     </div>
                                     <div className="space-y-5 lg:py-10">
                                         <h1 className="text-2xl lg:text-3xl text-white font-bold hidden lg:block">Putting Our Users First</h1>
@@ -121,7 +122,7 @@ export default function About() {
                                         </p>
                                     </div>
                                     <div className="">
-                                        <img src="../../assets/images/fair-m.svg" alt="" />
+                                        <img src={fairM} alt="" />
                                         <p className="lg:hidden">
                                             We’re also committed to meeting the highest standards for regulatory compliance to maintain our responsibility to our users and further build a sustainable path forward for the blockchain industry.
                                         </p>
@@ -134,7 +135,7 @@ export default function About() {
                                    
                                     <div className="space-y-4">
                                          <h1 className="text-2xl text-white font-bold">Working at Web3</h1>
-                                        <img src="../../assets/images/grow.svg" alt="" />
+                                        <img src={grow} alt="" />
                                     </div>
                                     <div className="space-y-5 lg:py-50 justify-center">
                                         

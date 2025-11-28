@@ -15,17 +15,18 @@ import { Separator } from "~/components/ui/separator"
 import { Button } from "~/components/ui/button";
 import { ButtonGroup } from "../ui/button-group";
 import { Badge } from "../ui/badge";
+import { BTC, ETH, LTC, TRX, XRP } from "~/utils";
 const cryptoTabs = [
     { label: "currency", Id: "1", name: "By Currency" },
     { label: "product", Id: "2", name: "By Product" },
 ];
 const allTokensData = {
     currency: [
-        { symbol: "BTC", name: "Bitcoin", price: "0", interests: "0.00%", icon: <img src="../../assets/coins/miniBtc.png" width={40} /> },
-        { symbol: "ETH", name: "Ethereum", price: "0", interests: "0.00%", icon: <img src="../../assets/coins/miniEth.png" width={40} /> },
-        { symbol: "XRP", name: "XRP", price: "0", interests: "0.00%", icon: <img src="../../assets/coins/miniXrp.png" width={40} /> },
-        { symbol: "LTC", name: "lightcoin", price: "0", interests: "0.00%", icon: <img src="../../assets/coins/miniLtc.png" width={40} /> },
-        { symbol: "TRX", name: "tron", price: "0", interests: "0.00%", icon: <img src="../../assets/coins/miniTrx.png" width={40} /> },
+        { symbol: "BTC", name: "Bitcoin", price: "0", interests: "0.00%", icon: <img src={BTC} width={40} /> },
+        { symbol: "ETH", name: "Ethereum", price: "0", interests: "0.00%", icon: <img src={ETH} width={40} /> },
+        { symbol: "XRP", name: "XRP", price: "0", interests: "0.00%", icon: <img src={XRP} width={40} /> },
+        { symbol: "LTC", name: "lightcoin", price: "0", interests: "0.00%", icon: <img src={LTC} width={40} /> },
+        { symbol: "TRX", name: "tron", price: "0", interests: "0.00%", icon: <img src={TRX} width={40} /> },
 
     ],
     product: [

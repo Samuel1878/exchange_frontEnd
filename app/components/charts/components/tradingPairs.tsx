@@ -26,28 +26,7 @@ export default function ({currentPair, isOpen, setIsOpen}) {
     const [changeSort, setChangeSort] = useState(false);
     const {tickers} = useTickersStore()
      const { width } = useWindowDimensions();
-       useTickers([
-         "btcusdt@ticker",
-         "ethusdt@ticker",
-         "solusdt@ticker",
-         "xrpusdt@ticker",
-         "dogeusdt@ticker",
-         "adausdt@ticker",
-         "avaxusdt@ticker",
-         "linkusdt@ticker",
-         "dotusdt@ticker",
-         "ltcusdt@ticker",
-         "shibusdt@ticker",
-         "etcusdt@ticker",
-         "manausdt@ticker",
-         "uniusdt@ticker",
-         "bchusdt@ticker",
-         "trxusdt@ticker",
-         "xlmusdt@ticker",
-         "atomusdt@ticker",
-         "nearusdt@ticker",
-         "pepeusdt@ticker",
-       ]);
+
     const navigation = useNavigate()
     const BuildPairs = (data:Ticker[]) => {
   

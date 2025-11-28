@@ -8,6 +8,7 @@ import Trade from "./components/trade";
 import OrderHistory from "./components/orderHistory";
 import { CoinPairs } from "~/consts/pairs";
 import { useTickersStore } from "~/store/useTickersStore";
+import { Mini_Cs } from "~/utils";
 
 export default function ({ pair, openMobileTrade, closeMobileTrade, type }) {
   const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
@@ -49,7 +50,7 @@ export default function ({ pair, openMobileTrade, closeMobileTrade, type }) {
         </div>
         <button onClick={closeMobileTrade}>
           <img
-            src="../../assets/icons/mini_cs.svg"
+            src={Mini_Cs}
             color={"#f0b90b"}
             className="w-6"
           />

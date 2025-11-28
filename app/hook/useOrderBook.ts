@@ -7,13 +7,15 @@ import {
   type BinanceResponse,
 } from "~/store/useOrderBookStore";
 import { rafThrottle } from "~/utils/helpers";
+import { LOCAL_URL } from "~/consts";
 
 /**
  * Usage: useOrderbook("btcusdt", { batchMs: 100 })
  */
-export function useOrderbook(stream: string[]) {
+export function useOrderbook(stream: string[], pair) {
   const applyDiffs = useOrderbookStore((s) => s.applyDiffs);
   const reset = useOrderbookStore((s) => s.reset);
+  const setSnapshot = useOrderbookStore((s)=>s.addSnapShot)
 
   // const stream = `${symbol.toLowerCase()}@depth20@1000ms`; // or @depth for raw diffs
   const { sendJsonMessage, lastMessage } = useWebSocket(
@@ -40,6 +42,15 @@ export function useOrderbook(stream: string[]) {
     applyDiffs(response);
   });
   useEffect(() => {
+    // (async()=>{
+   
+    //   const response = await fetch(
+    //     `${LOCAL_URL}/orderbook/${pair.toUpperCase()}`
+    //   );
+    //   const snap = await response.json();
+    //   setSnapshot(snap)
+
+    // })()
     sendJsonMessage({
       method: "SUBSCRIBE",
       params: stream,

@@ -1,6 +1,7 @@
 import { Wallet } from "lucide-react";
 import { Link } from "react-router";
 import { Label } from "~/components/ui/label";
+import { Logo, metamask, trustWallet } from "~/utils";
 
 export default function Login() {
     return (
@@ -17,7 +18,7 @@ export default function Login() {
                                             to="/"
 
                                         >
-                                            <img src="../../assets/logo.png" className="w-40 z-50 lg:w-40" />
+                                            <img src={Logo} className="w-40 z-50 lg:w-40" />
                                         </Link>
                                         <h1 className="text-2xl font-extrabold">Log In</h1>
                                         <div className="text-white space-y-3">
@@ -58,7 +59,7 @@ export default function Login() {
                                         <div className="text-white">
                                             <button className="bg-gray-900 flex justify-between w-full border py-3 border-gray-800 rounded-2xl p-2 cursor-pointer">
                                                 <div className="order-first">
-                                                   <img src="../../assets/images/trustWallet.png" alt="" width={20} />
+                                                   <img src={trustWallet} alt="" width={20} />
                                                 </div>
                                                 <div>
                                                     Continue with TrustWallet
@@ -69,7 +70,7 @@ export default function Login() {
                                         <div className="text-white">
                                             <button className="bg-gray-900 flex justify-between w-full border py-3 border-gray-800 rounded-2xl p-2 cursor-pointer">
                                                 <div className="order-first">
-                                                  <img src="../../assets/images/metamask.png" alt="" width={20} />
+                                                  <img src={metamask} alt="" width={20} />
                                                 </div>
                                                 <div>
                                                     Continue with MetaMask

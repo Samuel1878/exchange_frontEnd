@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
+import { LOCAL_URL } from "~/consts";
 import { useKlineStore } from "~/store/useKlineStore";
 import { rafThrottle } from "~/utils/helpers";
 
@@ -26,7 +27,7 @@ export const useKlines = (symbol: string, interval: string) => {
   useEffect(() => {
     (async () => {
       await fetch(
-        `http://localhost:3000/kline/${symbol.toUpperCase()}?interval=${interval}`
+        `http://150.95.26.121:80/kline/${symbol.toUpperCase()}?interval=${interval}`
       ).then((e) => {
         applySnapShot(interval, e.json());
       }).catch(()=> console.log("Getting kline via REST api is failed")
