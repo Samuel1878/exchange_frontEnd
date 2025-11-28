@@ -3,13 +3,6 @@ import { useContext, useEffect, useState } from "react";
 import SlotCounter from "react-slot-counter";
 import { FaRegStar } from "react-icons/fa6";
 import { Link, useNavigate } from "react-router";
-// import { AllMarketTickerContext } from "~/context/socketContext/AllMarketTickerContext";
-// import { useAppSelector } from "~/utils/redux";
-// import {
-//   selectAllTickers,
-//   type sliceType,
-//   type TickSliceType,
-// } from "~/context/slices/allMarketTicker";
 import { CoinPairs } from "~/consts/pairs";
 import { formatPrice } from "./charts/util";
 import { formatTotalPrice } from "~/utils/helpers";
@@ -48,33 +41,6 @@ export default function () {
     "nearusdt@ticker",
     "pepeusdt@ticker",
   ]);
-  // const { switchStream } = useContext(AllMarketTickerContext);
-  // const tickers = useAppSelector(selectAllTickers);
-
-  // useEffect(() => {
-  //   switchStream([
-  //     "btcusdt@ticker",
-  //     "ethusdt@ticker",
-  //     "solusdt@ticker",
-  //     "xrpusdt@ticker",
-  //     "dogeusdt@ticker",
-  //     "adausdt@ticker",
-  //     "avaxusdt@ticker",
-  //     "linkusdt@ticker",
-  //     "dotusdt@ticker",
-  //     "ltcusdt@ticker",
-  //     "shibusdt@ticker",
-  //     "etcusdt@ticker",
-  //     "manausdt@ticker",
-  //     "uniusdt@ticker",
-  //     "bchusdt@ticker",
-  //     "trxusdt@ticker",
-  //     "xlmusdt@ticker",
-  //     "atomusdt@ticker",
-  //     "nearusdt@ticker",
-  //     "pepeusdt@ticker",
-  //   ]);
-  // }, []);
   const {tickers} = useTickersStore();
   const BuildMarketRow = (tickers) => {
     return Object?.values(tickers)?.map((ticker:Ticker) => {

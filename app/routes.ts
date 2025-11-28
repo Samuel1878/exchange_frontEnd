@@ -39,7 +39,7 @@ export default [
       route("privacy","./routes/privacy.tsx"),
       route("about","./routes/about.tsx"),
     ]),
-  
+
     route("login", "./routes/auth/login.tsx"),
     route("register", "./routes/auth/register.tsx"),
   ]),

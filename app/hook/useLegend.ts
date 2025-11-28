@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import { useCallback, useRef, useState } from "react";
-import { generateOHLCData } from "~/utils/generateSeriesData";
 import type { SeriesApiRef } from "lightweight-charts-react-components";
 import type { CandlestickData } from "lightweight-charts";
 import type {

@@ -11,24 +11,24 @@ export default function ({ isBuy, isLimit, setIsBuy, setOpenLimitDrawer ,pair}) 
   return (
     <div
       id="trde"
-      className="flex-5 flex flex-col justify-between gap-4 max-h-110"
+      className="flex-5 flex flex-col justify-between gap-2 md:gap-4 max-h-110"
     >
-      <div className="px-4 py-2 border-b-0 md:border-b-2 border-b-gray-600  flex gap-4 ">
+      <div className="border-b-0 md:border-b-2 border-b-gray-600  flex gap-4 ">
         <div
           onClick={() => setSearchParams({ type: "spot" })}
-          className={`font-semibold text-lg cursor-pointer ${type === "spot" ? "text-gray-50" : "text-gray-500"}`}
+          className={`font-semibold text-md cursor-pointer ${type === "spot" ? "text-gray-50" : "text-gray-500"}`}
         >
           Spot
         </div>
         <div
           onClick={() => setSearchParams({ type: "cross" })}
-          className={`font-semibold text-lg cursor-pointer ${type === "cross" ? "text-gray-50" : "text-gray-500"}`}
+          className={`font-semibold text-md cursor-pointer ${type === "cross" ? "text-gray-50" : "text-gray-500"}`}
         >
           Cross
         </div>
         <div
           onClick={() => setSearchParams({ type: "future" })}
-          className={`font-semibold text-lg cursor-pointer ${type === "future" ? "text-gray-50" : "text-gray-500"}`}
+          className={`font-semibold text-md cursor-pointer ${type === "future" ? "text-gray-50" : "text-gray-500"}`}
         >
           Future
         </div>

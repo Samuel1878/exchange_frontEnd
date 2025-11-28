@@ -2,9 +2,6 @@ import { useContext, useEffect, useState } from "react"
 import { TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
 import { IoClose, IoSearch } from "react-icons/io5";
 import { BsSortDown, BsSortUp, BsSortUpAlt } from "react-icons/bs";
-import { AllMarketTickerContext } from "~/context/socketContext/AllMarketTickerContext";
-import { useAppSelector } from "~/utils/redux";
-import { selectAllTickers, type sliceType, type TickSliceType } from "~/context/slices/allMarketTicker";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { CoinPairs } from "~/consts/pairs";
 import { formatPrice } from "../util";
@@ -27,10 +24,8 @@ export default function ({currentPair, isOpen, setIsOpen}) {
     const [filter, setFilter] = useState<Filter>(Filter.usdt);
     const [priceSort, setPriceSort] = useState(false);
     const [changeSort, setChangeSort] = useState(false);
-    // const {switchStream} = useContext(AllMarketTickerContext);
     const {tickers} = useTickersStore()
      const { width } = useWindowDimensions();
-  // const dispatch = useAppDispatch();
        useTickers([
          "btcusdt@ticker",
          "ethusdt@ticker",
@@ -54,31 +49,6 @@ export default function ({currentPair, isOpen, setIsOpen}) {
          "pepeusdt@ticker",
        ]);
     const navigation = useNavigate()
-      // useEffect(() => {
-      //   console.log("Send stream message for Market Data in Trade")
-      //   switchStream([
-      //     "btcusdt@ticker",
-      //     "ethusdt@ticker",
-      //     "solusdt@ticker",
-      //     "xrpusdt@ticker",
-      //     "dogeusdt@ticker",
-      //     "adausdt@ticker",
-      //     "avaxusdt@ticker",
-      //     "linkusdt@ticker",
-      //     "dotusdt@ticker",
-      //     "ltcusdt@ticker",
-      //     "shibusdt@ticker",
-      //     "etcusdt@ticker",
-      //     "manausdt@ticker",
-      //     "uniusdt@ticker",
-      //     "bchusdt@ticker",
-      //     "trxusdt@ticker",
-      //     "xlmusdt@ticker",
-      //     "atomusdt@ticker",
-      //     "nearusdt@ticker",
-      //     "pepeusdt@ticker",
-      //   ]);
-      // }, []);
     const BuildPairs = (data:Ticker[]) => {
   
           let pairs = data;

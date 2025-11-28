@@ -1,15 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router";
-import { miniCoinList } from "~/consts/miniLists";
 import { IoIosArrowForward } from "react-icons/io";
-import SlotCounter from "react-slot-counter";
-import { AllMarketTickerContext } from "~/context/socketContext/AllMarketTickerContext";
-import { useAppSelector } from "~/utils/redux";
-import {
-  selectAllTickers,
-  selectTopTickers,
-  type TickSliceType,
-} from "~/context/slices/allMarketTicker";
 import { Loader } from "lucide-react";
 import { formatPrice } from "../charts/util";
 import { CoinPairs } from "~/consts/pairs";
@@ -25,8 +16,6 @@ enum lists {
 
 export default function HomeMiniChart() {
   const [focus, setFocus] = useState<lists>(lists.coin);
-  //  const {switchStream} = useContext(AllMarketTickerContext)
-  //  const tickers = useAppSelector(selectTopTickers);
   useTickers([
     "btcusdt@ticker",
     "ethusdt@ticker",
@@ -35,15 +24,6 @@ export default function HomeMiniChart() {
     "dogeusdt@ticker",
   ]);
   const { tickers } = useTickersStore();
-  // useEffect(()=>{
-  //   switchStream([
-  //     "btcusdt@ticker",
-  //     "ethusdt@ticker",
-  //     "solusdt@ticker",
-  //     "xrpusdt@ticker",
-  //     "dogeusdt@ticker",
-  //   ]);
-  // },[]);
   const BuildMiniPrice = (tickers) => {
     return Object.values(tickers)
       .filter(

@@ -15,7 +15,6 @@ import FAQ from "~/components/homeComponents/f&q";
 import FooterSection from "~/components/footer";
 import NumberFlow from "@number-flow/react";
 import { useEffect, useState } from "react";
-import AllMarketTickerProvider from "~/context/socketContext/AllMarketTickerContext";
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Home" }, { name: "description", content: "Welcome" }];
 }

@@ -42,10 +42,10 @@ export const contacts = [
   },
 ];
 export const services = [
-  {
-    label: "deposit",
-    value: "deposit",
-  },
+  // {
+  //   label: "deposit",
+  //   value: "deposit",
+  // },
   {
     label: "market",
     value: "market",
@@ -73,6 +73,10 @@ export const services = [
   {
     label: "earn",
     value: "finance/earn",
+  },
+  {
+    label: "ICO",
+    value: "ico",
   },
 ];
 export const help = [

@@ -30,7 +30,7 @@ const FooterSection = () => {
               return (
                 <Link to={value} key={index}>
                   <div className="my-2">
-                    <p className="text-sm text-neutral-500 capitalize hover:text-amber-500 sm:text-md md:text-lg lg:text-2xl">
+                    <p className="text-sm text-neutral-500 capitalize hover:text-amber-400 sm:text-md md:text-lg lg:text-2xl">
                       {service.label}
                     </p>
                   </div>
@@ -45,7 +45,7 @@ const FooterSection = () => {
             {company.map((company, index) => (
               <Link to={`/${company.value}`} key={index}>
                 <div className="my-2">
-                  <p className="text-sm text-neutral-500 hover:text-amber-500 sm:text-md md:text-lg lg:text-2xl">
+                  <p className="text-sm text-neutral-500 hover:text-amber-400 sm:text-md md:text-lg lg:text-2xl">
                     {company.label}
                   </p>
                 </div>
@@ -59,7 +59,7 @@ const FooterSection = () => {
             {help.map((e, i) => (
               <Link to={e.value} key={i}>
                 <div className="my-2">
-                  <p className="text-sm text-neutral-500 capitalize hover:text-amber-500 sm:text-md md:text-lg lg:text-2xl">
+                  <p className="text-sm text-neutral-500 capitalize hover:text-amber-400 sm:text-md md:text-lg lg:text-2xl">
                     {e.label}
                   </p>
                 </div>
