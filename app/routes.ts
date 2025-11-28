@@ -35,6 +35,9 @@ export default [
         route("announcement/:type", "./routes/ico/announcement/[type].tsx"),
       ]),
       route("deposit", "./routes/deposit.tsx"),
+      route("term","./routes/TermsAndServer.tsx"),
+      route("privacy","./routes/privacy.tsx"),
+      route("about","./routes/about.tsx"),
     ]),
 
     route("login", "./routes/auth/login.tsx"),

@@ -43,7 +43,7 @@ const FooterSection = () => {
               Company
             </h5>
             {company.map((company, index) => (
-              <Link to="" key={index}>
+              <Link to={`/${company.value}`} key={index}>
                 <div className="my-2">
                   <p className="text-sm text-neutral-500 hover:text-amber-400 sm:text-md md:text-lg lg:text-2xl">
                     {company.label}

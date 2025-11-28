@@ -10,11 +10,43 @@ import React, { useEffect, useRef, useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
 import { Bell, Users } from "lucide-react";
+import { useFetcher } from "react-router";
 export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Ai Strategy" },
     { name: "description", content: "Welcome" },
   ];
+}
+
+export async function clientAction({ params, request }: Route.ClientActionArgs) {
+  try {
+    const formData = await request.formData();
+    const intent = formData.get("intent");
+    const amount = formData.get("amount");
+    const asset = formData.get("asset");
+
+    if (intent === "subscribe") {
+      // Your subscription logic here
+      console.log("Subscribing with:", { amount, asset });
+
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      return {
+        success: true,
+        message: "Subscription successful!",
+        data: { amount, asset }
+      };
+    }
+
+    return { success: false, error: "Unknown action" };
+  } catch (error) {
+    console.error("Error in subscription:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Subscription failed"
+    };
+  }
 }
 const chartData = [
   { mobile: 150 },
@@ -244,18 +276,18 @@ const DonationScrollNoCSS = () => {
   return (
     <div className="flex items-center gap-4 text-white px-6 py-3 lg:bg-gray-950">
 
-    
+
       <h1 className="lg:text-2xl text-sm font-bold whitespace-nowrap">
         Recommended investment
       </h1>
 
-      
+
       <div className="flex items-center gap-2 overflow-hidden h-[24px]">
 
-     
+
         <Bell size={18} />
 
-        
+
         <div className="h-[24px] overflow-hidden">
           <div
             style={{
@@ -287,6 +319,7 @@ export default function AI() {
   const [selectedTradingBot, setSelectedTradingBot] = useState(null);
   const [activeTab, setActiveTab] = useState("working");
   const [loading, setLoading] = useState(false)
+  const fetcher = useFetcher();
   const handleRowClick = (token: any) => {
 
     setOpen(true);
@@ -344,7 +377,7 @@ export default function AI() {
                     </div>
                     <div className="text-gray-950 justify-self-end-safe">
                       <button className="text-center bg-amber-300 px-4 py-2 rounded"
-                        onClick={() => handleRowClick("clicked")}
+                        onClick={() => handleRowClick("Button")}
                       >Copy</button>
                     </div>
                   </div>
@@ -393,89 +426,94 @@ export default function AI() {
                           You are using a shared parameter. As market conditions differ, these parameters cannot guarantee the same results.
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="grid gap-4">
-                        <div className="grid gap-3 text-gray-400 text-sm">
-                          <div className="grid gap-3">
-                            <div className="flex gap-2 items-center">
-                              <h1 className="text-white text-xl">BTCUSDC</h1>
-                              <Badge className="bg-gray-800 rounded">Perp</Badge>
-                              <p className="text-green-300">888888.6</p>
-                              <p className="text-green-300">+0.54%</p>
+                      <fetcher.Form method="post">
+                        <div className="grid gap-4">
+                          <div className="grid gap-3 text-gray-400 text-sm">
+                            <div className="grid gap-3">
+                              <div className="flex gap-2 items-center">
+                                <h1 className="text-white text-xl">BTCUSDC</h1>
+                                <Badge className="bg-gray-800 rounded">Perp</Badge>
+                                <p className="text-green-300">888888.6</p>
+                                <p className="text-green-300">+0.54%</p>
+                              </div>
+                              <div className="flex flex-row gap-2">
+                                <p className="text-xs text-gray-400 px-1 border-r border-gray-600">Perp</p>
+                                <p className="text-xs text-gray-400 px-1 border-r border-gray-600"><span className="text-green-300">Long 10x</span></p>
+                                <p className="text-xs text-gray-400 px-1 flex justify-center"><Users size={15} />10</p>
+                              </div>
                             </div>
-                            <div className="flex flex-row gap-2">
-                              <p className="text-xs text-gray-400 px-1 border-r border-gray-600">Perp</p>
-                              <p className="text-xs text-gray-400 px-1 border-r border-gray-600"><span className="text-green-300">Long 10x</span></p>
-                              <p className="text-xs text-gray-400 px-1 flex justify-center"><Users size={15} />10</p>
+                            <div className="text-white text-sm space-y-2">
+                              <h1 className="font-semibold">Basic info</h1>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">Runtime</p>
+                                <p>5d 5h 17m</p>
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">Direction</p>
+                                <p>Long</p>
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">24H/Total Matched Trades</p>
+                                <p>227/2364</p>
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">7D MDD</p>
+                                <p>9.08%</p>
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">Price Range(USDC)</p>
+                                <p>78,888.0 - 92,888.0</p>
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">Number of Grids / Mode</p>
+                                <p>169 / Arithmetic</p>
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">Profit/grid(fees deducted)</p>
+                                <p>0.04% - 0.06%</p>
+                              </div>
                             </div>
                           </div>
-                          <div className="text-white text-sm space-y-2">
-                            <h1 className="font-semibold">Basic info</h1>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">Runtime</p>
-                              <p>5d 5h 17m</p>
+                          <div className="text-gray-400 text-sm space-y-2">
+                            <h1 className="text-white font-semibold">Investment</h1>
+                            <div className="">
+                              <input type="number" name="amount" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-800" />
                             </div>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">Direction</p>
-                              <p>Long</p>
-                            </div>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">24H/Total Matched Trades</p>
-                              <p>227/2364</p>
-                            </div>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">7D MDD</p>
-                              <p>9.08%</p>
-                            </div>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">Price Range(USDC)</p>
-                              <p>78,888.0 - 92,888.0</p>
-                            </div>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">Number of Grids / Mode</p>
-                              <p>169 / Arithmetic</p>
-                            </div>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">Profit/grid(fees deducted)</p>
-                              <p>0.04% - 0.06%</p>
+                            <div className=""></div>
+                            <div className="space-y-2">
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">Available</p>
+                                <p>0.00 USDC</p>
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">Est. Liq. Price (Long)</p>
+                                <p>-</p>
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">Qty/Order</p>
+                                <p>-</p>
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">Total Investment</p>
+                                <p>-</p>
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <p className="text-xs text-gray-400">Margin Mode</p>
+                                <p>Cross</p>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div className="text-gray-400 text-sm space-y-2">
-                          <h1 className="text-white font-semibold">Investment</h1>
-                          <div className="">
-                            <input type="text" placeholder="Please enter your login password" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
-                          </div>
-                          <div className=""></div>
-                          <div className="space-y-2">
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">Available</p>
-                              <p>0.00 USDC</p>
-                            </div>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">Est. Liq. Price (Long)</p>
-                              <p>-</p>
-                            </div>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">Qty/Order</p>
-                              <p>-</p>
-                            </div>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">Total Investment</p>
-                              <p>-</p>
-                            </div>
-                            <div className="flex flex-row justify-between">
-                              <p className="text-xs text-gray-400">Margin Mode</p>
-                              <p>Cross</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
 
-                      <DialogFooter className="mt-4">
-                        <Button className="w-full bg-yellow-400 text-black hover:bg-yellow-300 cursor-pointer">
-                          Confirm
-                        </Button>
-                      </DialogFooter>
+                        <DialogFooter className="mt-4">
+                          <Button className="w-full bg-yellow-300 text-black hover:bg-yellow-300 cursor-pointer" type="submit"
+                            name="intent"
+                            value="subscribe"
+                          >
+                            Confirm
+                          </Button>
+                        </DialogFooter>
+                      </fetcher.Form>
                     </DialogContent>
                   </Dialog>
                 </div>
