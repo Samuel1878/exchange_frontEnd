@@ -25,11 +25,11 @@ const MobileForm = () => {
                             <SelectContent className="bg-gray-800  border-gray-700 text-white hover:bg-gray-900 w-full">
                                 <SelectGroup>
                                     <SelectLabel>Fruits</SelectLabel>
-                                    <SelectItem value="apple">Apple</SelectItem>
-                                    <SelectItem value="banana">Banana</SelectItem>
-                                    <SelectItem value="blueberry">Blueberry</SelectItem>
-                                    <SelectItem value="grapes">Grapes</SelectItem>
-                                    <SelectItem value="pineapple">Pineapple</SelectItem>
+                                    <SelectItem value="apple">1</SelectItem>
+                                    <SelectItem value="banana">2</SelectItem>
+                                    <SelectItem value="blueberry">3</SelectItem>
+                                    <SelectItem value="grapes">4</SelectItem>
+                                    <SelectItem value="pineapple">5</SelectItem>
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
