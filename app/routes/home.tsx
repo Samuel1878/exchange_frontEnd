@@ -190,11 +190,11 @@ export default function Home() {
                     {e.label}
                   </p>
                   <p
-                    className={`font-light text-sm hidden md:block text-gray-400`}
+                    className={`font-medium text-sm hidden md:block text-gray-500`}
                   >
                     {e.description}
                   </p>
-                  <button className="bg-amber-300 p-1 rounded-md w-30 hidden md:block text-gray-950 mt-6 text-md font-medium">
+                  <button onClick={()=>navigate(e.value)} className="bg-amber-300 p-1 cursor-pointer rounded-md w-30 hidden md:block text-gray-950 mt-6 text-md font-medium">
                     Learn more
                   </button>
                 </div>
@@ -210,7 +210,7 @@ export default function Home() {
                     className="object-fit w-25 h-20 self-end"
                   />
                 </div>
-                <button className="bg-amber-300 py-1 rounded-md w-30 md:hidden text-gray-950 text-sm font-normal">
+                <button onClick={()=>navigate(e.value)} className="bg-amber-300 py-1 cursor-pointer rounded-md w-30 md:hidden text-gray-950 text-sm font-normal">
                   Learn more
                 </button>
                 {e.id === 2 ? (

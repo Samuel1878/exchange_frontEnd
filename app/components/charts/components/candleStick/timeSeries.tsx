@@ -35,7 +35,7 @@ export default function ({ period, setPeriod }) {
   const [focus, setFocus] = useState("ma");
   const [ma, setMa] = useState<number[]>([7, 20, 99]);
   const [ema, setEma] = useState<number[]>([]);
-  const [wma, setWma] = useState<number[]>([]);
+  // const [wma, setWma] = useState<number[]>([]);
   const {setSelected, computeIndicators} = useIndicatorStore()
 
   return (
@@ -65,7 +65,7 @@ export default function ({ period, setPeriod }) {
                 value={e}
                 className={`w-18 pl-6 text-sm text-gray-100 font-semibold hover:bg-gray-800 ${period === e ? "bg-gray-700" : "bg-gray-800"}`}
               >
-                {e}
+               {e}
               </SelectItem>
             ))}
           </div>
@@ -77,7 +77,7 @@ export default function ({ period, setPeriod }) {
                 value={e}
                 className={` w-18 pl-6 text-sm text-gray-100 font-semibold hover:bg-gray-800 ${period === e ? "bg-gray-700" : "bg-gray-800"}`}
               >
-                {e}
+               {e}
               </SelectItem>
             ))}
           </div>
@@ -180,7 +180,10 @@ export default function ({ period, setPeriod }) {
               >
                 <div className="flex gap-2 items-center">
                   <div
-                    onClick={() => setFocus("ema")}
+                    onClick={() => {
+                      setFocus("ema");
+                      setEma([9, 21]);
+                    }}
                     className={`w-6 h-6 cursor-pointer flex justify-center items-center ${focus === "ema" ? "bg-gray-100 **:block" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
                   >
                     <FaCheck size={20} color="#111" />
@@ -252,14 +255,17 @@ export default function ({ period, setPeriod }) {
               </div>
             </div>
 
-            <div className="flex-col flex flex-1">
+            {/* <div className="flex-col flex flex-1">
               <div
                 // onClick={() => setFocus("wma")}
                 className={`flex mb-2 lg:mb-4`}
               >
                 <div className="flex gap-2 items-center">
                   <div
-                    onClick={() => setFocus("wma")}
+                    onClick={() => {
+                      setFocus("wma");
+                      setWma([7, 20]);
+                    }}
                     className={`w-6 h-6 cursor-pointer flex justify-center items-center ${focus === "wma" ? "bg-gray-100 **:block" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
                   >
                     <FaCheck size={20} color="#111" />
@@ -329,14 +335,19 @@ export default function ({ period, setPeriod }) {
                   25
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
-          <div onClick={()=>{
-            setSelected(focus, focus==="ma"?ma:focus==="ema"?ema:wma);
-            // computeIndicators()
-          }} className="text-gray-950 font-bold text-md px-16 h-10 bg-amber-400 rounded-md flex justify-center items-center cursor-pointer">
-                Save
-          </div>
+          <DialogTrigger
+            onClick={() => {
+              setSelected(
+                focus,
+                focus === "ma" ? ma : ema
+              );
+            }}
+            className="text-gray-950 font-bold text-md px-16 h-10 bg-amber-400 rounded-md flex justify-center items-center cursor-pointer"
+          >
+            Save
+          </DialogTrigger>
         </DialogContent>
       </Dialog>
       <div></div>

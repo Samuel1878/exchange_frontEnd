@@ -3,7 +3,7 @@ import moment from "moment";
 import { create } from "zustand";
 export const upColor = "#00c951";
 export const downColor = "#fb2c36";
-interface BinanceKlineStream {
+export interface BinanceKlineStream {
   e: string; // Event type
   E: number; // Event time
   s: string; // Symbol
@@ -27,7 +27,7 @@ interface BinanceKlineStream {
     B: string; // Ignore
   };
 };
-type BinanceUiKline = [
+export type BinanceUiKline = [
   number, // Kline open time
   string, // Open price
   string, // High price
@@ -55,7 +55,6 @@ export const useKlineStore = create<KlineState>((set, get)=> {
         histogram:[],
         applySnapShot:async(key, list)=> {
             const data = await list;
-            console.log("raw", data)
             let candles:CandlestickData[] = [];
             let histogram:HistogramData[] = [];
             for (let index = 0; index < data.length; index++) {
@@ -77,7 +76,6 @@ export const useKlineStore = create<KlineState>((set, get)=> {
            candles.push(c);
            histogram.push(h)
             }
-            console.log("formated", candles)
             get().candles = candles;
             get().histogram = histogram;
            

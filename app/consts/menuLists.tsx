@@ -65,8 +65,8 @@ export const topNavMenu: menu[] = [
 export const verticalNavMenu: menu[] = [
   ...topNavMenu,
   {
-    value: "f&q",
-    label: "f&q",
+    value: "/#faq",
+    label: "faq",
     icon: <AiFillQuestionCircle size={23} color="rgba(120,130,150,1)" />,
   },
   {
@@ -75,7 +75,7 @@ export const verticalNavMenu: menu[] = [
     icon: <BiSupport size={23} color="rgba(120,130,150,1)" />,
   },
   {
-    value: "download",
+    value: "/#download",
     label: "download",
     icon: <BiDownload size={23} color="rgba(120,130,150,1)" />,
   },

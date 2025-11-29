@@ -57,7 +57,7 @@ const Legend: FC<LegendProps> = ({ children }) => {
 export default function ({ pair, type }) {
   const { legendVisible, setLegendVisible } = useLegendStore();
    const { candles, histogram, reset } = useKlineStore();
-   const {selected} = useIndicatorStore()
+   const {selected, indicators} = useIndicatorStore()
   const [showing, setShowing] = useState<Showing>(Showing.chart);
   const [period, setPeriod] = useState(
     type === "future" ? Period.oneSecound : Period.oneDay
@@ -71,6 +71,7 @@ export default function ({ pair, type }) {
      legendVisible
    );
   const clonedData = structuredClone(candles);
+  const clonedHis = structuredClone(histogram)
   //  useEffect(()=>{
   //   computeIndicators()
   //  },[selected])
@@ -222,10 +223,11 @@ export default function ({ pair, type }) {
                   </div>
                 </Legend>
               )}
+              {/* <indicators.MA1.Component data={indicators.MA1.data} options={indicators.MA1.options}/> */}
             </Pane>
             <Pane>
               <HistogramSeries
-                data={histogram}
+                data={clonedHis}
                 options={{ priceLineVisible: false }}
               />
             </Pane>

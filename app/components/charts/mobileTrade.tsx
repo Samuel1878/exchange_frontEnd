@@ -10,9 +10,9 @@ import { CoinPairs } from "~/consts/pairs";
 import { useTickersStore } from "~/store/useTickersStore";
 import { Mini_Cs } from "~/utils";
 
-export default function ({ pair, openMobileTrade, closeMobileTrade, type }) {
+export default function ({ pair, openMobileTrade, closeMobileTrade, type, isBuy,setIsBuy }) {
   const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
-  const [isBuy, setIsBuy] = useState<boolean>(true);
+  // const [isBuy, setIsBuy] = useState<boolean>(true);
   const [isLimit, setIsLimit] = useState(false);
   const [option, setOptions] = useState("both");
   const [openDrawer, setOpenDrawer] = useState(false);
