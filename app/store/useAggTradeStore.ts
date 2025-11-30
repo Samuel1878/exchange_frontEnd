@@ -40,10 +40,6 @@ export const useAggTradeStore = create<AggTradeState>((set, get) => {
       return { trades: combined };
     });
   };
-  // const applySnapData = (data:Promise<RestRes[]>):AggTrade[]=> {
-
-  //     return snap;
-  // }
   return {
     trades: [],
     addSnapShot: (data) => {

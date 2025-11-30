@@ -2,25 +2,32 @@ import type { CandlestickData, LineData, UTCTimestamp } from "lightweight-charts
 
 export const calcMA = (candles:CandlestickData[], period:number):LineData[] => {
   const out = [];
-  let sum = 0;
+  // let sum = 0;
 
-  for (let i = 0; i < candles.length; i++) {
-    sum += candles[i].close;
+  // for (let i = 0; i < candles.length; i++) {
+  //   sum += candles[i].close;
 
-    if (i >= period) {
-      sum -= candles[i - period].close;
-    }
+  //   if (i >= period) {
+  //     sum -= candles[i - period].close;
+  //   }
 
-    out.push({
-      time: candles[i].time as UTCTimestamp,
-      value: i >= period - 1 ? sum / period : null,
-    });
-  }
+  //   out.push({
+  //     time: candles[i].time as UTCTimestamp,
+  //     value: sum / period,
+  //   });
+  // }
+ for (let i = period - 1; i < candles.length; i++) {
+   const sum = candles
+     .slice(i - period + 1, i + 1)
+     .reduce((acc, curr) => acc + curr.close, 0);
+   const avg = sum / period;
+   out.push({ time: candles[i].time, value: avg });
+ }
 
   return out;
 };
 // export const calcMAOnce = (close , time , period):LineData=>{
-  
+  // i >= period - 1 ? 
 //   return { time , };
 // }
 export const calcEMA = (candles: CandlestickData[], period: number): LineData[] => {
@@ -68,3 +75,24 @@ export const calcWMA = (candles: CandlestickData[], period: number): LineData[] 
 
   return out;
 };
+
+
+// 🔧 Utility: incremental MA
+export function computeIncrementalMA(candles: CandlestickData[], period: number) {
+  if (candles.length < period) return null;
+
+  let sum = 0;
+  for (let i = candles.length - period; i < candles.length; i++) {
+    sum += candles[i].close;
+  }
+  return sum / period;
+}
+
+// 🔧 Utility: incremental EMA
+export function computeIncrementalEMA(prev: number | null, close: number, period: number) {
+  const k = 2 / (period + 1);
+
+  if (!prev) return close; // first EMA fallback
+
+  return close * k + prev * (1 - k);
+}

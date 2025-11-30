@@ -106,10 +106,7 @@ export default function NavigationBar() {
                   onClick={() => navigate(e.value)}
                   className="py-6 px-4 flex hover:**:text-amber-300 hover:bg-gray-950 "
                 >
-                  <div
-                 
-                    className="text-gray-100 lg:text-md xl:text-lg font-bold capitalize focus:text-amber-400"
-                  >
+                  <div className="text-gray-100 lg:text-md xl:text-lg font-bold capitalize focus:text-amber-400">
                     {e.label}
                   </div>
                 </NavigationMenuLink>
@@ -120,11 +117,17 @@ export default function NavigationBar() {
       </NavigationMenu>
       <div className="lg:items-center flex gap-5 xl:gap-6">
         <div className="lg:flex hidden gap-3 ">
-          <button className="bg-gray-800 p-1 px-4 rounded-md cursor-pointer">
+          <button
+            className="bg-gray-800 p-1 px-4 rounded-md cursor-pointer"
+            onClick={() => navigate("login")}
+          >
             {" "}
             <p className="text-gray-50 font-medium text-md">Log In</p>
           </button>
-          <button className="bg-amber-300 p-1 px-4 rounded-md cursor-pointer">
+          <button
+            className="bg-amber-300 p-1 px-4 rounded-md cursor-pointer"
+            onClick={() => navigate("register")}
+          >
             <p className="text-gray-950 font-medium text-md">Sign Up</p>
           </button>{" "}
         </div>
@@ -162,10 +165,16 @@ export default function NavigationBar() {
             <div className="h-5"></div>
             <DrawerTitle>
               <div className="flex-row px-7 flex gap-4 my-6 justify-around items-center w-full ">
-                <button className="flex justify-center items-center rounded-lg bg-gray-700 w-full h-10">
+                <button
+                  className="flex justify-center items-center rounded-lg bg-gray-700 w-full h-10"
+                  onClick={() => navigate("login")}
+                >
                   <p className="text-neutral-50 text-lg font-medium">Log In</p>
                 </button>
-                <button className="flex justify-center items-center rounded-lg bg-amber-300 w-full h-10">
+                <button
+                  className="flex justify-center items-center rounded-lg bg-amber-300 w-full h-10"
+                  onClick={() => navigate("register")}
+                >
                   <p className="text-neutral-950 text-lg font-medium">
                     Sign Up
                   </p>

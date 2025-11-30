@@ -1,7 +1,13 @@
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FC,
+  type ReactNode,
+} from "react";
 
-import { useEffect, useMemo, useRef, useState, type FC, type ReactNode } from "react";
-
-import {  CrosshairMode } from "lightweight-charts";
+import { CrosshairMode } from "lightweight-charts";
 import {
   Chart,
   LineSeries,
@@ -11,6 +17,8 @@ import {
   TimeScaleFitContentTrigger,
   Pane,
   CandlestickSeries,
+  BarSeries,
+  type SeriesApiRef,
 } from "lightweight-charts-react-components";
 import useWindowDimensions from "~/hook/windowWidth";
 import TimeSeries from "./timeSeries";
@@ -18,8 +26,15 @@ import { useKlines } from "~/hook/useKline";
 import { useKlineStore } from "~/store/useKlineStore";
 import { useLegendStore } from "~/store/useLegendStore";
 import { useLegend } from "~/hook/useLegend";
-import { dataRangeMap, localizationFormater } from "../../util";
-import { useIndicatorStore } from "~/store/useIndicatorStore";
+import {
+  dataRangeMap,
+  localizationFormater,
+  typedObjectEntries,
+} from "../../util";
+import { useCompareSeriesStore } from "~/store/useCompareSeriesStore";
+import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
+import { useMultiLegend } from "~/hook/useLineLegend";
+// import { useCombinedLegend } from "~/hook/useUnifiedLegend";
 
 enum Showing {
   chart = "chart",
@@ -55,31 +70,68 @@ const Legend: FC<LegendProps> = ({ children }) => {
 };
 
 export default function ({ pair, type }) {
-  const { legendVisible, setLegendVisible } = useLegendStore();
-   const { candles, histogram, reset } = useKlineStore();
-   const {selected, indicators} = useIndicatorStore()
-  const [showing, setShowing] = useState<Showing>(Showing.chart);
   const [period, setPeriod] = useState(
-    type === "future" ? Period.oneSecound : Period.oneDay
-  );
-  useKlines(pair, period);
+      type === "future" ? Period.oneSecound : Period.oneDay
+    );
+  // useKlines(pair, period);
+  const { legendVisible, setLegendVisible } = useLegendStore();
+  const { visibleSeries } = useCompareSeriesStore();
+  const { candles, histogram, reset, indicators } = useKlineStore();
+  const [showing, setShowing] = useState<Showing>(Showing.chart);
   const { width } = useWindowDimensions();
   const upColor = "#00c951";
   const downColor = "#fb2c36";
   const containerRef = useRef<HTMLDivElement>(null);
-   const { ref, legendData, onCrosshairMove } = useLegend(
-     legendVisible
-   );
+  const { ref, legendData, onCrosshairMove } = useLegend(legendVisible);
   const clonedData = structuredClone(candles);
-  const clonedHis = structuredClone(histogram)
-  //  useEffect(()=>{
-  //   computeIndicators()
-  //  },[selected])
-  const togglePeriod = (p:Period) =>{ 
+  const clonedHis = structuredClone(histogram);
+  const seriesMap = typedObjectEntries(indicators);
+  const [showLegend, setShowLegend] = useState(true);
+  // const ref = useState<SeriesApiRef<"Candlestick">>();
+  const togglePeriod = (p: Period) => {
     reset();
-    setPeriod(p)
-    useKlines(pair, period);
-  }
+    setPeriod(p);
+    // useKlines(pair, period);
+  };
+  const lineRefs = useRef<Record<string, any>>({});
+
+  // ensure refs exist
+  seriesMap.forEach(([key]) => {
+    if (!lineRefs.current[key]) {
+      lineRefs.current[key] = { current: null };
+    }
+  });
+
+  // const { legend, onCrosshairMove } = useCombinedLegend({
+  //   showLegend: legendVisible,
+  //   candleRef: ref,
+  //   lineSeries: seriesMap
+  //     .filter(([key]) => visibleSeries.includes(key))
+  //     .map(([key]) => ({
+  //       id: key,
+  //       ref: lineRefs.current[key],
+  //     })),
+  // });
+    // const seriesRefs = useRef<Record<string, any>>({});
+
+    // seriesMap.forEach(([key]) => {
+    //   if (!seriesRefs.current[key]) {
+    //     seriesRefs.current[key] = { current: null };
+    //   }
+    // });
+
+    // // Prepare list for legend hook
+    // const seriesListForLegend = seriesMap
+    //   .filter(([key]) => visibleSeries.includes(key))
+    //   .map(([key]) => ({
+    //     id: key,
+    //     ref: seriesRefs.current[key],
+    //   }));
+
+    // const { legend, onCrosshairMoveMulti } = useMultiLegend(
+    //   showLegend,
+    //   seriesListForLegend
+    // );
   return (
     <section className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-lg ">
       <nav className="flex w-full p-3 pb-0 gap-4">
@@ -157,8 +209,9 @@ export default function ({ pair, type }) {
               },
             }}
             onCrosshairMove={onCrosshairMove}
+      
           >
-            <Pane stretchFactor={2}>
+            <Pane stretchFactor={3}>
               <CandlestickSeries
                 ref={ref}
                 data={clonedData}
@@ -171,59 +224,78 @@ export default function ({ pair, type }) {
                   wickUpColor: upColor,
                 }}
               />
-              {legendData !== null && legendVisible && (
-                <Legend>
-                  <div className="flex gap-2 flex-wrap">
-                    <p className="text-gray-400 text-sm">{legendData.time}</p>
-                    <p className="text-gray-400 text-xs font-medium">
-                      Open{" "}
-                      <span
-                        className="text-xs ml-1 font-medium"
-                        style={{ color: legendData.color }}
-                      >
-                        {legendData.open}
-                      </span>
-                    </p>
-                    <p className="text-gray-400 text-xs font-medium">
-                      High{" "}
-                      <span
-                        className="text-xs ml-1 font-medium"
-                        style={{ color: legendData.color }}
-                      >
-                        {legendData.high}
-                      </span>
-                    </p>
-                    <p className="text-gray-400 text-xs font-medium">
-                      Low{" "}
-                      <span
-                        className="text-xs ml-1 font-medium"
-                        style={{ color: legendData.color }}
-                      >
-                        {legendData.low}
-                      </span>
-                    </p>
-                    <p className="text-gray-400 text-xs font-medium">
-                      Close{" "}
-                      <span
-                        className="text-xs ml-1 font-medium"
-                        style={{ color: legendData.color }}
-                      >
-                        {legendData.close}
-                      </span>
-                    </p>
-                    <p className="text-gray-400 text-xs font-medium">
-                      Change{" "}
-                      <span
-                        className="text-xs ml-1 font-medium"
-                        style={{ color: legendData.color }}
-                      >
-                        {legendData.change}
-                      </span>
-                    </p>
+
+              <Legend>
+                <div className="flex gap-2 p-1 outline-0 flex-wrap hover:border-1 hover:border-gray-700 rounded-sm">
+                  <div className="cursor-pointer" onClick={setLegendVisible}>
+                    {legendVisible ? (
+                      <IoIosArrowDown color="#777" size={16} />
+                    ) : (
+                      <IoIosArrowForward color="#777" size={16} />
+                    )}
                   </div>
-                </Legend>
-              )}
-              {/* <indicators.MA1.Component data={indicators.MA1.data} options={indicators.MA1.options}/> */}
+                  {legendData !== null && legendVisible && (
+                    <>
+                      <p className="text-gray-400 text-sm">{legendData.time}</p>
+                      <p className="text-gray-400 text-xs font-medium">
+                        Open{" "}
+                        <span
+                          className="text-xs ml-1 font-medium"
+                          style={{ color: legendData.color }}
+                        >
+                          {legendData.open}
+                        </span>
+                      </p>
+                      <p className="text-gray-400 text-xs font-medium">
+                        High{" "}
+                        <span
+                          className="text-xs ml-1 font-medium"
+                          style={{ color: legendData.color }}
+                        >
+                          {legendData.high}
+                        </span>
+                      </p>
+                      <p className="text-gray-400 text-xs font-medium">
+                        Low{" "}
+                        <span
+                          className="text-xs ml-1 font-medium"
+                          style={{ color: legendData.color }}
+                        >
+                          {legendData.low}
+                        </span>
+                      </p>
+                      <p className="text-gray-400 text-xs font-medium">
+                        Close{" "}
+                        <span
+                          className="text-xs ml-1 font-medium"
+                          style={{ color: legendData.color }}
+                        >
+                          {legendData.close}
+                        </span>
+                      </p>
+                      <p className="text-gray-400 text-xs font-medium">
+                        Change{" "}
+                        <span
+                          className="text-xs ml-1 font-medium"
+                          style={{ color: legendData.color }}
+                        >
+                          {legendData.change}
+                        </span>
+                      </p>
+                    </>
+                  )}
+                </div>
+              </Legend>
+
+              {seriesMap
+                .filter(([key]) => visibleSeries.includes(key))
+                .map(([key, { Component, data, options }], index) => (
+                  <Component
+                    key={key}
+                    data={structuredClone(data)}
+                    options={options}
+                  />
+                ))}
             </Pane>
             <Pane>
               <HistogramSeries

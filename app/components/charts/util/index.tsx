@@ -30,6 +30,12 @@ export const formatPrice = (arg: number): string => {
 
 
 };
+export const typedObjectEntries = <T extends object>(
+  obj: T
+): Array<[keyof T, T[keyof T]]> => {
+  return Object.entries(obj) as Array<[keyof T, T[keyof T]]>;
+};
+
 export const localizationFormater :  Record<
 "locale",
   {

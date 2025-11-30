@@ -1,8 +1,34 @@
-import type { CandlestickData, HistogramData, UTCTimestamp } from "lightweight-charts";
+import type {
+  CandlestickData,
+  HistogramData,
+  UTCTimestamp,
+  LineData,
+} from "lightweight-charts";
 import moment from "moment";
+import {
+  LineSeries,
+  type SeriesProps,
+} from "lightweight-charts-react-components";
+import type { SeriesType } from "lightweight-charts";
+import type { ComponentType } from "react";
 import { create } from "zustand";
+import {
+  calcEMA,
+  calcMA,
+  computeIncrementalEMA,
+  computeIncrementalMA,
+} from "~/utils/indicators";
 export const upColor = "#00c951";
 export const downColor = "#fb2c36";
+type CompareSeriesType = "MA1" | "MA2" | "MA3" | "EMA1" | "EMA2" | "EMA3";
+
+type CompareSeriesMap<T extends CompareSeriesType, P extends SeriesType> = {
+  [key in T]: {
+    Component: ComponentType<SeriesProps<P>>;
+    data: LineData[];
+    options?: SeriesProps<P>["options"];
+  };
+};
 export interface BinanceKlineStream {
   e: string; // Event type
   E: number; // Event time
@@ -26,7 +52,7 @@ export interface BinanceKlineStream {
     Q: string; // Taker buy quote asset volume
     B: string; // Ignore
   };
-};
+}
 export type BinanceUiKline = [
   number, // Kline open time
   string, // Open price
@@ -42,85 +68,592 @@ export type BinanceUiKline = [
   string, // Unused field. Ignore.
 ];
 interface KlineState {
-    candles:CandlestickData[];
-    histogram:HistogramData[];
-    applySnapShot:(key:string, list:Promise<BinanceUiKline[]>) => void;
-    applyStream:(key:string, data:BinanceKlineStream)=> void;
-    reset : ()=>void
+  candles: CandlestickData[];
+  histogram: HistogramData[];
+  indicators: CompareSeriesMap<CompareSeriesType, SeriesType>;
+  // addSnapShotIndicators: (data: CandlestickData[]) => void;
+  applySnapShot: (key: string, list: Promise<BinanceUiKline[]>) => void;
+  applyStream: (key: string, data: BinanceKlineStream) => void;
+  reset: () => void;
 }
-export const useKlineStore = create<KlineState>((set, get)=> {
+export const useKlineStore = create<KlineState>((set, get) => {
+  return {
+    candles: [],
+    histogram: [],
+    indicators: {
+      MA1: {
+        data: [],
+        Component: LineSeries,
+        options: {
+          color: "#fcba03",
+          priceLineVisible: false,
+          lineWidth: 1,
+          crosshairMarkerVisible: false,
 
-    return{
-        candles:[],
-        histogram:[],
-        applySnapShot:async(key, list)=> {
-            const data = await list;
-            let candles:CandlestickData[] = [];
-            let histogram:HistogramData[] = [];
-            for (let index = 0; index < data.length; index++) {
-                const e = data[index];
-                let c = {
-                  time: e[0] as UTCTimestamp,
-                  open: Number(e[1]),
-                  high: Number(e[2]),
-                  low: Number(e[3]),
-                  close: Number(e[4]),
-                //   customValues:(e[0]).toString()
-                };  
-           let h = {
-             value: Number(e[5]),
-             time: e[0] as UTCTimestamp,
-             color: Number(e[4]) > Number(e[1]) ? upColor : downColor,
-             //  customValues:e[0]
-           };
-           candles.push(c);
-           histogram.push(h)
-            }
-            get().candles = candles;
-            get().histogram = histogram;
-           
+          lastValueVisible: false,
         },
-        applyStream:(key, data)=>{
-            const current = get().candles;
-             const his = get().histogram;
-            if (!current) return;
-            const k = data?.k;
-            const t = k.t;
-            const last = current[current?.length -1]
-            const hisCurrent = his[his?.length -1]
-            if (!last || last.time !==t) {
-               current.push({
-                 time: t as UTCTimestamp,
-                 open: Number(k?.o),
-                 high: Number(k?.h),
-                 low: Number(k?.l),
-                 close: Number(k?.c),
-               });
-                his.push({
-                  value: Number(k.v),
-                  time: t as UTCTimestamp,
-                  color: Number(k?.c) > Number(k?.o) ? upColor : downColor,
-                });
-                return
-            }else {
-                last.high = Number(k.h);
-                last.low = Number(k.l);
-                last.close = Number(k.c);
-                last.open = Number(k.o);
-                hisCurrent.color =
-                  Number(k?.c) > Number(k?.o) ? upColor : downColor;
-                 hisCurrent.time = t as UTCTimestamp;
-                 hisCurrent.value = Number(k.v);
-            }
-
-            
+      },
+      MA2: {
+        data: [],
+        Component: LineSeries,
+        options: {
+          color: "#ba03fc",
+          priceLineVisible: false,
+          lineWidth: 1,
+          crosshairMarkerVisible: false,
+          lastValueVisible: false,
         },
-        reset: ()=> {
-            set({
-                candles:[],
-                histogram:[],
+      },
+      MA3: {
+        data: [],
+        Component: LineSeries,
+        options: {
+          color: "#5203fc",
+          priceLineVisible: false,
+          lineWidth: 1,
+          crosshairMarkerVisible: false,
+          lastValueVisible: false,
+        },
+      },
+      EMA1: {
+        data: [],
+        Component: LineSeries,
+        options: {
+          color: "#039dfc",
+          priceLineVisible: false,
 
-            })
-        }
-    }
-})
+          lineWidth: 1,
+          crosshairMarkerVisible: false,
+          lastValueVisible: false,
+        },
+      },
+      EMA2: {
+        data: [],
+        Component: LineSeries,
+        options: {
+          color: "#fc6b03",
+          priceLineVisible: false,
+          lineWidth: 1,
+          crosshairMarkerVisible: false,
+          lastValueVisible: false,
+        },
+      },
+      EMA3: {
+        data: [],
+        Component: LineSeries,
+        options: {
+          color: "#fc0362",
+          priceLineVisible: false,
+          lineWidth: 1,
+          crosshairMarkerVisible: false,
+          lastValueVisible: false,
+        },
+      },
+    },
+    applySnapShot: async (key, list) => {
+      const data = await list;
+      let candles: CandlestickData[] = [];
+      let histogram: HistogramData[] = [];
+      for (const e of data) {
+        candles.push({
+          time: e[0] as UTCTimestamp,
+          open: Number(e[1]),
+          high: Number(e[2]),
+          low: Number(e[3]),
+          close: Number(e[4]),
+        });
+        histogram.push({
+          value: Number(e[5]),
+          time: e[0] as UTCTimestamp,
+          color: Number(e[4]) > Number(e[1]) ? upColor : downColor,
+        });
+      }
+      const MA1 = calcMA(candles, 7);
+      const MA2 = calcMA(candles, 25);
+      const MA3 = calcMA(candles, 99);
+
+      const EMA1 = calcEMA(candles, 9);
+      const EMA2 = calcEMA(candles, 21);
+      const EMA3 = calcEMA(candles, 55);
+
+      set({
+        candles,
+        histogram,
+        indicators: {
+          MA1: { ...get().indicators.MA1, data: MA1 },
+          MA2: { ...get().indicators.MA2, data: MA2 },
+          MA3: { ...get().indicators.MA3, data: MA3 },
+          EMA1: { ...get().indicators.EMA1, data: EMA1 },
+          EMA2: { ...get().indicators.EMA2, data: EMA2 },
+          EMA3: { ...get().indicators.EMA3, data: EMA3 },
+        },
+      });
+    },
+    applyStream: (key, data) => {
+      const { candles, histogram, indicators } = get();
+
+      const k = data.k;
+      const t = k.t as UTCTimestamp;
+      const close = Number(k.c);
+      const last = candles.at(-1);
+      const lastHis = histogram.at(-1);
+
+      if (k.x && (!last || last.time !== t)) {
+        /////PUSH NEW STREAM
+        candles.push({
+          time: t,
+          open: Number(k?.o),
+          high: Number(k?.h),
+          low: Number(k?.l),
+          close: Number(k?.c),
+        });
+        histogram.push({
+          value: Number(k.v),
+          time: t,
+          color: close > Number(k?.o) ? upColor : downColor,
+        });
+        // ---- INDICATORS: append FINAL values ----
+        // ---- MA incremental ----
+        const take = (period: number) =>
+          candles.length < period
+            ? null
+            : candles.slice(-period).reduce((a, c) => a + c.close, 0) / period;
+
+        indicators.MA1.data.push({ time: t, value: take(7) });
+        indicators.MA2.data.push({ time: t, value: take(25) });
+        indicators.MA3.data.push({ time: t, value: take(99) });
+
+        // ---- EMA incremental ----
+        const EMA = (key: CompareSeriesType, period: number) => {
+          const prev = indicators[key].data.at(-1)?.value ?? close;
+          return computeIncrementalEMA(prev, close, period);
+        };
+
+        indicators.EMA1.data.push({ time: t, value: EMA("EMA1", 9) });
+        indicators.EMA2.data.push({ time: t, value: EMA("EMA2", 21) });
+        indicators.EMA3.data.push({ time: t, value: EMA("EMA3", 55) });
+
+        set({ candles, histogram, indicators });
+        return;
+        // const MA1 = computeIncrementalMA(candles, 7);
+        // const MA2 = computeIncrementalMA(candles, 25);
+        // const MA3 = computeIncrementalMA(candles, 99);
+
+        // const lastEMA1 = indicators.EMA1.data.at(-1)?.value ?? close;
+        // const lastEMA2 = indicators.EMA2.data.at(-1)?.value ?? close;
+        // const lastEMA3 = indicators.EMA3.data.at(-1)?.value ?? close;
+
+        // indicators.MA1.data.push({ time: t, value: MA1 ?? close });
+        // indicators.MA2.data.push({ time: t, value: MA2 ?? close });
+        // indicators.MA3.data.push({ time: t, value: MA3 ?? close });
+
+        // indicators.EMA1.data.push({
+        //   time: t,
+        //   value: computeIncrementalEMA(lastEMA1, close, 9),
+        // });
+        // indicators.EMA2.data.push({
+        //   time: t,
+        //   value: computeIncrementalEMA(lastEMA2, close, 21),
+        // });
+        // indicators.EMA3.data.push({
+        //   time: t,
+        //   value: computeIncrementalEMA(lastEMA3, close, 55),
+        // });
+
+        // return;
+      }
+      if (last && last.time === t) {
+        //////UPDATING ON LIVE
+        last.high = Number(k.h);
+        last.low = Number(k.l);
+        last.close = Number(k.c);
+        last.open = Number(k.o);
+        lastHis.color = Number(k?.c) > Number(k?.o) ? upColor : downColor;
+        lastHis.time = t;
+        lastHis.value = Number(k.v);
+
+      const recalcMA = (period: number) =>
+        candles.length < period
+          ? null
+          : candles.slice(-period).reduce((a, c) => a + c.close, 0) / period;
+
+      indicators.MA1.data[indicators.MA1.data.length - 1] = {
+        time: t,
+        value: recalcMA(7),
+      };
+
+      indicators.MA2.data[indicators.MA2.data.length - 1] = {
+        time: t,
+        value: recalcMA(25),
+      };
+
+      indicators.MA3.data[indicators.MA3.data.length - 1] = {
+        time: t,
+        value: recalcMA(99),
+      };
+
+      const recalcEMA = (key: CompareSeriesType, period: number) => {
+        const prev = indicators[key].data.at(-2)?.value ?? close;
+        return computeIncrementalEMA(prev, close, period);
+      };
+
+      indicators.EMA1.data[indicators.EMA1.data.length - 1] = {
+        time: t,
+        value: recalcEMA("EMA1", 9),
+      };
+
+      indicators.EMA2.data[indicators.EMA2.data.length - 1] = {
+        time: t,
+        value: recalcEMA("EMA2", 21),
+      };
+
+      indicators.EMA3.data[indicators.EMA3.data.length - 1] = {
+        time: t,
+        value: recalcEMA("EMA3", 55),
+      };
+
+      set({ candles, histogram, indicators });
+        // const updateLiveMA = (period: number) => {
+        //   if (candles.length < period) return null;
+        //   const slice = candles.slice(-(period - 1));
+        //   const sum = slice.reduce((a, c) => a + c.close, 0);
+        //   return (sum + close) / period;
+        // };
+
+        // indicators.MA1.data[indicators.MA1.data.length - 1] = {
+        //   time: t,
+        //   value: updateLiveMA(7),
+        // };
+        // indicators.MA2.data[indicators.MA2.data.length - 1] = {
+        //   time: t,
+        //   value: updateLiveMA(25),
+        // };
+        // indicators.MA3.data[indicators.MA3.data.length - 1] = {
+        //   time: t,
+        //   value: updateLiveMA(99),
+        // };
+
+        // const lastEMA1 = indicators.EMA1.data.at(-1)?.value ?? null;
+        // const lastEMA2 = indicators.EMA2.data.at(-1)?.value ?? null;
+        // const lastEMA3 = indicators.EMA3.data.at(-1)?.value ?? null;
+
+        // indicators.EMA1.data[indicators.EMA1.data.length - 1] = {
+        //   time: t,
+        //   value: computeIncrementalEMA(lastEMA1, close, 9),
+        // };
+        // indicators.EMA2.data[indicators.EMA2.data.length - 1] = {
+        //   time: t,
+        //   value: computeIncrementalEMA(lastEMA2, close, 21),
+        // };
+        // indicators.EMA3.data[indicators.EMA3.data.length - 1] = {
+        //   time: t,
+        //   value: computeIncrementalEMA(lastEMA3, close, 55),
+        // };
+      }
+    },
+
+    reset: () =>
+      set({
+        candles: [],
+        histogram: [],
+        indicators: {
+          MA1: { ...get().indicators.MA1, data: [] },
+          MA2: { ...get().indicators.MA2, data: [] },
+          MA3: { ...get().indicators.MA3, data: [] },
+          EMA1: { ...get().indicators.EMA1, data: [] },
+          EMA2: { ...get().indicators.EMA2, data: [] },
+          EMA3: { ...get().indicators.EMA3, data: [] },
+        },
+      }),
+  };
+});
+// import type {
+//   CandlestickData,
+//   HistogramData,
+//   UTCTimestamp,
+//   LineData,
+// } from "lightweight-charts";
+// import {
+//   LineSeries,
+//   type SeriesProps,
+// } from "lightweight-charts-react-components";
+// import { create } from "zustand";
+
+// import { calcEMA, calcMA, computeIncrementalEMA } from "~/utils/indicators";
+
+// export const upColor = "#00c951";
+// export const downColor = "#fb2c36";
+
+// /* -----------------------------------------------------
+//    TYPES
+// ----------------------------------------------------- */
+
+// type CompareSeriesType = "MA1" | "MA2" | "MA3" | "EMA1" | "EMA2" | "EMA3";
+
+// type CompareSeriesMap<T extends CompareSeriesType> = {
+//   [key in T]: {
+//     Component: any;
+//     data: LineData[];
+//     options?: any;
+//   };
+// };
+
+// export interface BinanceKlineStream {
+//   k: {
+//     t: number;
+//     o: string;
+//     c: string;
+//     h: string;
+//     l: string;
+//     v: string;
+//     x: boolean;
+//   };
+// }
+
+// export type BinanceUiKline = [
+//   number, // time
+//   string,
+//   string,
+//   string,
+//   string,
+//   string,
+// ];
+
+// /* -----------------------------------------------------
+//    STORE
+// ----------------------------------------------------- */
+
+// interface KlineState {
+//   candles: CandlestickData[];
+//   histogram: HistogramData[];
+//   indicators: CompareSeriesMap<CompareSeriesType>;
+
+//   applySnapShot: (list: Promise<BinanceUiKline[]>) => void;
+//   applyStream: (data: BinanceKlineStream) => void;
+//   reset: () => void;
+// }
+
+// export const useKlineStore = create<KlineState>((set, get) => ({
+//   candles: [],
+//   histogram: [],
+
+//   indicators: {
+//     MA1: {
+//       Component: LineSeries,
+//       data: [],
+//       options: { color: "#fcba03", priceLineVisible: false, lineWidth: 1 },
+//     },
+//     MA2: {
+//       Component: LineSeries,
+//       data: [],
+//       options: { color: "#ba03fc", priceLineVisible: false, lineWidth: 1 },
+//     },
+//     MA3: {
+//       Component: LineSeries,
+//       data: [],
+//       options: { color: "#5203fc", priceLineVisible: false, lineWidth: 1 },
+//     },
+//     EMA1: {
+//       Component: LineSeries,
+//       data: [],
+//       options: { color: "#039dfc", priceLineVisible: false, lineWidth: 1 },
+//     },
+//     EMA2: {
+//       Component: LineSeries,
+//       data: [],
+//       options: { color: "#fc6b03", priceLineVisible: false, lineWidth: 1 },
+//     },
+//     EMA3: {
+//       Component: LineSeries,
+//       data: [],
+//       options: { color: "#fc0362", priceLineVisible: false, lineWidth: 1 },
+//     },
+//   },
+
+//   /* -----------------------------------------------------
+//      APPLY SNAPSHOT (REST DATA)
+//   ----------------------------------------------------- */
+
+//   applySnapShot: async (list) => {
+//     const raw = await list;
+
+//     const candles: CandlestickData[] = [];
+//     const histogram: HistogramData[] = [];
+
+//     for (let e of raw) {
+//       const c = {
+//         time: e[0] as UTCTimestamp,
+//         open: Number(e[1]),
+//         high: Number(e[2]),
+//         low: Number(e[3]),
+//         close: Number(e[4]),
+//       };
+
+//       candles.push(c);
+
+//       histogram.push({
+//         time: e[0] as UTCTimestamp,
+//         value: Number(e[5]),
+//         color: c.close >= c.open ? upColor : downColor,
+//       });
+//     }
+
+//     // Compute all indicator series fresh
+//     const MA1 = calcMA(candles, 7);
+//     const MA2 = calcMA(candles, 25);
+//     const MA3 = calcMA(candles, 99);
+
+//     const EMA1 = calcEMA(candles, 9);
+//     const EMA2 = calcEMA(candles, 21);
+//     const EMA3 = calcEMA(candles, 55);
+
+//     set({
+//       candles,
+//       histogram,
+//       indicators: {
+//         MA1: { ...get().indicators.MA1, data: MA1 },
+//         MA2: { ...get().indicators.MA2, data: MA2 },
+//         MA3: { ...get().indicators.MA3, data: MA3 },
+//         EMA1: { ...get().indicators.EMA1, data: EMA1 },
+//         EMA2: { ...get().indicators.EMA2, data: EMA2 },
+//         EMA3: { ...get().indicators.EMA3, data: EMA3 },
+//       },
+//     });
+//   },
+
+//   /* -----------------------------------------------------
+//      APPLY STREAM (REAL-TIME BINANCE)
+//   ----------------------------------------------------- */
+
+//   applyStream: (data) => {
+//     const k = data.k;
+//     const t = k.t as UTCTimestamp;
+//     const close = Number(k.c);
+
+//     const candles = [...get().candles];
+//     const histogram = [...get().histogram];
+//     const indicators = structuredClone(get().indicators);
+
+//     const last = candles.at(-1);
+
+//     // ----- CASE A: NEW FINAL CANDLE -----
+//     if (k.x && (!last || last.time !== t)) {
+//       const newCandle = {
+//         time: t,
+//         open: Number(k.o),
+//         high: Number(k.h),
+//         low: Number(k.l),
+//         close,
+//       };
+
+//       candles.push(newCandle);
+
+//       histogram.push({
+//         time: t,
+//         value: Number(k.v),
+//         color: close >= Number(k.o) ? upColor : downColor,
+//       });
+
+//       // ---- MA incremental ----
+//       const take = (period: number) =>
+//         candles.length < period
+//           ? null
+//           : candles.slice(-period).reduce((a, c) => a + c.close, 0) / period;
+
+//       indicators.MA1.data.push({ time: t, value: take(7) });
+//       indicators.MA2.data.push({ time: t, value: take(25) });
+//       indicators.MA3.data.push({ time: t, value: take(99) });
+
+//       // ---- EMA incremental ----
+//       const EMA = (key: CompareSeriesType, period: number) => {
+//         const prev = indicators[key].data.at(-1)?.value ?? close;
+//         return computeIncrementalEMA(prev, close, period);
+//       };
+
+//       indicators.EMA1.data.push({ time: t, value: EMA("EMA1", 9) });
+//       indicators.EMA2.data.push({ time: t, value: EMA("EMA2", 21) });
+//       indicators.EMA3.data.push({ time: t, value: EMA("EMA3", 55) });
+
+//       set({ candles, histogram, indicators });
+//       return;
+//     }
+
+//     // ----- CASE B: LIVE UPDATE SAME INTERVAL -----
+//     if (last && last.time === t) {
+//       const updated = {
+//         ...last,
+//         open: Number(k.o),
+//         high: Number(k.h),
+//         low: Number(k.l),
+//         close,
+//       };
+
+//       candles[candles.length - 1] = updated;
+
+//       histogram[histogram.length - 1] = {
+//         time: t,
+//         value: Number(k.v),
+//         color: close >= Number(k.o) ? upColor : downColor,
+//       };
+
+//       const recalcMA = (period: number) =>
+//         candles.length < period
+//           ? null
+//           : candles.slice(-period).reduce((a, c) => a + c.close, 0) / period;
+
+//       indicators.MA1.data[indicators.MA1.data.length - 1] = {
+//         time: t,
+//         value: recalcMA(7),
+//       };
+
+//       indicators.MA2.data[indicators.MA2.data.length - 1] = {
+//         time: t,
+//         value: recalcMA(25),
+//       };
+
+//       indicators.MA3.data[indicators.MA3.data.length - 1] = {
+//         time: t,
+//         value: recalcMA(99),
+//       };
+
+//       const recalcEMA = (key: CompareSeriesType, period: number) => {
+//         const prev = indicators[key].data.at(-2)?.value ?? close;
+//         return computeIncrementalEMA(prev, close, period);
+//       };
+
+//       indicators.EMA1.data[indicators.EMA1.data.length - 1] = {
+//         time: t,
+//         value: recalcEMA("EMA1", 9),
+//       };
+
+//       indicators.EMA2.data[indicators.EMA2.data.length - 1] = {
+//         time: t,
+//         value: recalcEMA("EMA2", 21),
+//       };
+
+//       indicators.EMA3.data[indicators.EMA3.data.length - 1] = {
+//         time: t,
+//         value: recalcEMA("EMA3", 55),
+//       };
+
+//       set({ candles, histogram, indicators });
+//     }
+//   },
+
+//   /* -----------------------------------------------------
+//      RESET ON INTERVAL CHANGE
+//   ----------------------------------------------------- */
+//   reset: () =>
+//     set({
+//       candles: [],
+//       histogram: [],
+//       indicators: {
+//         MA1: { ...get().indicators.MA1, data: [] },
+//         MA2: { ...get().indicators.MA2, data: [] },
+//         MA3: { ...get().indicators.MA3, data: [] },
+//         EMA1: { ...get().indicators.EMA1, data: [] },
+//         EMA2: { ...get().indicators.EMA2, data: [] },
+//         EMA3: { ...get().indicators.EMA3, data: [] },
+//       },
+//     }),
+// }));

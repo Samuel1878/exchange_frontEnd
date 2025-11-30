@@ -17,7 +17,7 @@ import {
 } from "~/components/ui/dialog";
 import { useState } from "react";
 import { FaAngleRight, FaCheck } from "react-icons/fa6";
-import { useIndicatorStore } from "~/store/useIndicatorStore";
+import { useCompareSeriesStore } from "~/store/useCompareSeriesStore";
 const pinned = ["Time", "1s", "15m", "1h", "4h", "1d", "1w"];
 const available = [
   "1m",
@@ -33,10 +33,10 @@ const available = [
 ];
 export default function ({ period, setPeriod }) {
   const [focus, setFocus] = useState("ma");
-  const [ma, setMa] = useState<number[]>([7, 20, 99]);
-  const [ema, setEma] = useState<number[]>([]);
+  // const [selectedSeries, setSelectedSeries] = useState<string[]>(["MA1", "MA2", "MA3"]);
+  // const [ema, setEma] = useState<string[]>([]);
   // const [wma, setWma] = useState<number[]>([]);
-  const {setSelected, computeIndicators} = useIndicatorStore()
+  const {toggleSeriesVisibility, visibleSeries} = useCompareSeriesStore()
 
   return (
     <div className="flex gap-4 p-2 pl-4 border-y-2 border-y-gray-800 lg:border-y-gray-900 items-center">
@@ -65,7 +65,7 @@ export default function ({ period, setPeriod }) {
                 value={e}
                 className={`w-18 pl-6 text-sm text-gray-100 font-semibold hover:bg-gray-800 ${period === e ? "bg-gray-700" : "bg-gray-800"}`}
               >
-               {e}
+                {e}
               </SelectItem>
             ))}
           </div>
@@ -77,7 +77,7 @@ export default function ({ period, setPeriod }) {
                 value={e}
                 className={` w-18 pl-6 text-sm text-gray-100 font-semibold hover:bg-gray-800 ${period === e ? "bg-gray-700" : "bg-gray-800"}`}
               >
-               {e}
+                {e}
               </SelectItem>
             ))}
           </div>
@@ -100,12 +100,12 @@ export default function ({ period, setPeriod }) {
                 className={`flex mb-2 lg:mb-4`}
               >
                 <div className="flex gap-2 items-center">
-                  <div
-                    onClick={() => setFocus("ma")}
+                  {/* <div
+                    // onClick={() => setFocus("ma")}
                     className={`w-6 h-6 cursor-pointer flex justify-center items-center ${focus === "ma" ? "bg-gray-100 **:block" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
                   >
                     <FaCheck size={20} color="#111" />
-                  </div>
+                  </div> */}
                   <p className="text-gray-50 font-bold text-sm lg:text-md mr-3">
                     MA (Moving Average)
                   </p>
@@ -115,11 +115,9 @@ export default function ({ period, setPeriod }) {
                 <div className="flex gap-2">
                   <div
                     onClick={() => {
-                      ma.includes(7)
-                        ? setMa((prev) => prev.filter((e) => e !== 7))
-                        : setMa((prev) => [...prev, 7]);
+                      toggleSeriesVisibility("MA1")
                     }}
-                    className={`w-6 h-6 flex justify-center items-center ${ma.includes(7) ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
+                    className={`w-6 h-6 flex justify-center items-center ${visibleSeries.includes("MA1") ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
                   >
                     <FaCheck size={20} color="#111" />
                   </div>
@@ -135,11 +133,9 @@ export default function ({ period, setPeriod }) {
                 <div className="flex gap-2">
                   <div
                     onClick={() => {
-                      ma.includes(20)
-                        ? setMa((prev) => prev.filter((e) => e !== 20))
-                        : setMa((prev) => [...prev, 20]);
+                      toggleSeriesVisibility("MA2")
                     }}
-                    className={`w-6 h-6 flex justify-center items-center ${ma.includes(20) ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
+                    className={`w-6 h-6 flex justify-center items-center ${visibleSeries.includes("MA2") ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
                   >
                     <FaCheck size={20} color="#111" />
                   </div>
@@ -155,11 +151,9 @@ export default function ({ period, setPeriod }) {
                 <div className="flex gap-2">
                   <div
                     onClick={() => {
-                      ma.includes(99)
-                        ? setMa((prev) => prev.filter((e) => e !== 99))
-                        : setMa((prev) => [...prev, 99]);
+                     toggleSeriesVisibility("MA3")
                     }}
-                    className={`w-6 h-6 flex justify-center items-center ${ma.includes(99) ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
+                    className={`w-6 h-6 flex justify-center items-center ${visibleSeries.includes("MA3") ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
                   >
                     <FaCheck size={20} color="#111" />
                   </div>
@@ -179,15 +173,15 @@ export default function ({ period, setPeriod }) {
                 className={`flex  mb-2 lg:mb-4`}
               >
                 <div className="flex gap-2 items-center">
-                  <div
+                  {/* <div
                     onClick={() => {
                       setFocus("ema");
-                      setEma([9, 21]);
+                      setSelected("EMA1");
                     }}
                     className={`w-6 h-6 cursor-pointer flex justify-center items-center ${focus === "ema" ? "bg-gray-100 **:block" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
                   >
                     <FaCheck size={20} color="#111" />
-                  </div>
+                  </div> */}
                   <p className="text-gray-50 font-bold text-sm lg:text-md mr-3">
                     EMA (Exponential Moving Average)
                   </p>
@@ -197,11 +191,9 @@ export default function ({ period, setPeriod }) {
                 <div className="flex gap-2">
                   <div
                     onClick={() => {
-                      ema.includes(9)
-                        ? setEma((prev) => prev.filter((e) => e !== 9))
-                        : setEma((prev) => [...prev, 9]);
+                      toggleSeriesVisibility("EMA1")
                     }}
-                    className={`w-6 h-6 flex justify-center items-center ${ema.includes(9) ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
+                    className={`w-6 h-6 flex justify-center items-center ${visibleSeries.includes("EMA1") ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
                   >
                     <FaCheck size={20} color="#111" />
                   </div>
@@ -217,11 +209,9 @@ export default function ({ period, setPeriod }) {
                 <div className="flex gap-2">
                   <div
                     onClick={() => {
-                      ema.includes(21)
-                        ? setEma((prev) => prev.filter((e) => e !== 21))
-                        : setEma((prev) => [...prev, 21]);
+                     toggleSeriesVisibility("EMA2")
                     }}
-                    className={`w-6 h-6 flex justify-center items-center ${ema.includes(21) ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
+                    className={`w-6 h-6 flex justify-center items-center ${visibleSeries.includes("EMA2") ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
                   >
                     <FaCheck size={20} color="#111" />
                   </div>
@@ -237,11 +227,9 @@ export default function ({ period, setPeriod }) {
                 <div className="flex gap-2">
                   <div
                     onClick={() => {
-                      ema.includes(55)
-                        ? setEma((prev) => prev.filter((e) => e !== 55))
-                        : setEma((prev) => [...prev, 55]);
+                     toggleSeriesVisibility("EMA3")
                     }}
-                    className={`w-6 h-6 flex justify-center items-center ${ema.includes(55) ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
+                    className={`w-6 h-6 flex justify-center items-center ${visibleSeries.includes("EMA3") ? "bg-gray-100 **:flex" : "border-1 **:hidden border-gray-100 bg-gray-800"} rounded-md`}
                   >
                     <FaCheck size={20} color="#111" />
                   </div>
@@ -338,12 +326,9 @@ export default function ({ period, setPeriod }) {
             </div> */}
           </div>
           <DialogTrigger
-            onClick={() => {
-              setSelected(
-                focus,
-                focus === "ma" ? ma : ema
-              );
-            }}
+            // onClick={() => {
+            //   setSelected(selectedSeries);
+            // }}
             className="text-gray-950 font-bold text-md px-16 h-10 bg-amber-400 rounded-md flex justify-center items-center cursor-pointer"
           >
             Save

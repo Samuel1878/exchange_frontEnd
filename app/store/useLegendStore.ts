@@ -2,12 +2,12 @@ import { create } from "zustand";
 
 interface LegendStore {
   legendVisible: boolean;
-  setLegendVisible: (visible: boolean) => void;
+  setLegendVisible: () => void;
 }
 
-const useLegendStore = create<LegendStore>((set) => ({
+const useLegendStore = create<LegendStore>((set, get) => ({
   legendVisible: true,
-  setLegendVisible: (visible) => set({ legendVisible: visible }),
+  setLegendVisible: () => set({ legendVisible: !get().legendVisible }),
 }));
 
 export { useLegendStore };

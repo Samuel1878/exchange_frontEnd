@@ -101,7 +101,7 @@ export default function Home() {
               </Form>
               <button
                 className="bg-amber-300 px-14 py-3 rounded-md cursor-pointer"
-                // onClick={() => navigate("/register")}
+                onClick={() => navigate("/register")}
               >
                 <p className="font-medium text-md text-gray-950">Sign Up</p>
               </button>
@@ -238,7 +238,7 @@ export default function Home() {
         <p className="text-lg font-extrabold text-neutral-50 lg:text-3xl">
           Start earning today
         </p>
-        <button className="h-10 px-8 rounded-lg bg-amber-300 text-neutral-900 text-sm font-bold lg:px-12">
+        <button className="h-10 px-8 rounded-lg bg-amber-300 text-neutral-900 text-sm font-bold lg:px-12 cursor-pointer" onClick={()=>navigate("register")}>
           Sign Up Now
         </button>
       </aside>

@@ -9,7 +9,7 @@ export async function clientLoader({ params }: Route.LoaderArgs) {
     if (!CryptoName) {
         throw new Response("Not Found", { status: 404 });
     }
-
+    
     return { CryptoName };
 
 }

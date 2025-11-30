@@ -2,15 +2,14 @@ import type { UTCTimestamp } from "lightweight-charts";
 import { memo, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
 import { LOCAL_URL } from "~/consts";
-import { useIndicatorStore } from "~/store/useIndicatorStore";
 import { useKlineStore, type BinanceUiKline } from "~/store/useKlineStore";
 import { rafThrottle } from "~/utils/helpers";
 
 export const useKlines = (symbol: string, interval: string) => {
   const applySnapShot = useKlineStore((s) => s.applySnapShot);
-  const snapLine = useIndicatorStore((s)=>s.addSnapShot)
+  const [url, setUrl] = useState("wss://stream.binance.com:9443/ws");
   const applyStream = useKlineStore((s) => s.applyStream);
-  const { sendJsonMessage } = useWebSocket(`wss://stream.binance.com:9443/ws`, {
+  const { sendJsonMessage } = useWebSocket(url, {
     share: false,
     onOpen: () => console.log("WebSocket Manager is Opened for Kline"),
     onClose: () => console.log("WebSocket Manager is closed for Kline"),
@@ -19,6 +18,10 @@ export const useKlines = (symbol: string, interval: string) => {
     reconnectInterval: (attemptNumber) =>
       Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
     onMessage: (event: WebSocketEventMap["message"]) => processMessages(event),
+    onError: (event) => {
+      setUrl("wss://stream.binance.com:433/ws");
+      console.log(event);
+    },
   });
 
   const processMessages = rafThrottle((event: { data: string }) => {
@@ -33,30 +36,12 @@ export const useKlines = (symbol: string, interval: string) => {
         `${LOCAL_URL}/kline/${symbol.toUpperCase()}?interval=${interval}`
       )
         .then((e) => {
-          const data = e.json()
+          const data = e.json();
           applySnapShot(interval, data);
           // calculate(data);
         })
         .catch(() => console.log("Getting kline via REST api is failed"));
     })();
-  }, [symbol, interval]);
-  const calculate =  async(d:Promise<BinanceUiKline[]>) => {
-    const data = await d;
-    const can = [];
-    for (let index = 0; index < data.length; index++) {
-      const e = data[index];
-      can.push({
-        time: e[0] as UTCTimestamp,
-        open: Number(e[1]),
-        high: Number(e[2]),
-        low: Number(e[3]),
-        close: Number(e[4]),
-      });
-    }
-    // snapLine(can)
-    
-  };
-  useEffect(() => {
     const params = [`${symbol.toLowerCase()}@kline_${interval}`];
     sendJsonMessage({ method: "SUBSCRIBE", params, id: Date.now() });
     console.log("SUBSCRIBED", params);
