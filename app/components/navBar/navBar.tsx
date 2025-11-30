@@ -32,6 +32,7 @@ import {
 import { BiDownload } from "react-icons/bi";
 import VerticalNavBar from "./verticalNavBar";
 import { X } from "lucide-react";
+import { LangIcon, Logo } from "~/utils";
 
 export default function NavigationBar() {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -54,7 +55,7 @@ export default function NavigationBar() {
             to="/"
             // onClick={() => setIsOpen(false)}
           >
-            <img src="../../assets/logo.png" className="w-30 z-50 lg:w-32" />
+            <img src={Logo} className="w-30 z-50 lg:w-32" />
           </Link>
         </div>
         <NavigationMenuList className="hidden lg:flex">
@@ -139,7 +140,7 @@ export default function NavigationBar() {
           className="hidden xl:flex items-center justify-center cursor-pointer"
         >
           {/* <RiGlobalFill size={30}/> */}
-          <img src="../assets/icons/lang.svg" className="w-8 h-8" />
+          <img src={LangIcon} className="w-8 h-8" />
         </button>
         <div className="flex-row flex gap-2 items-center lg:hidden cursor-pointer">
           <Hamburger

@@ -21,11 +21,14 @@ export const formatPrice = (arg: number): string => {
   if (!arg) {
     return "0.0000";
   }
+
   return arg.toLocaleString("en", {
     useGrouping: true,
     minimumFractionDigits: 2,
     maximumFractionDigits: 7,
   });
+
+
 };
 export const localizationFormater :  Record<
 "locale",

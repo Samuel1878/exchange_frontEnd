@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowLeftRight } from "lucide-react";
 import { useState } from "react";
+import { BTC, ETH, TRX } from "~/utils";
 
 interface TransferProps {
     setActiveTab: (tab: string) => void;
@@ -7,9 +8,21 @@ interface TransferProps {
     onExitTransfer: () => void;
 }
 const currencies = [
-    { code: "USDT", label: "Tether", icon: <img src="../../assets/coins/miniUsdt.png" width={30} /> },
-    { code: "BTC", label: "Bitcoin", icon: <img src="../../assets/coins/miniBtc.png" width={30} /> },
-    { code: "ETH", label: "Ethereum", icon: <img src="../../assets/coins/miniEth.png" width={30} /> },
+  {
+    code: "TRX",
+    label: "Tron",
+    icon: <img src={TRX} width={30} className="rounded-full overflow-hidden" />,
+  },
+  {
+    code: "BTC",
+    label: "Bitcoin",
+    icon: <img src={BTC} width={30} className="rounded-full overflow-hidden" />,
+  },
+  {
+    code: "ETH",
+    label: "Ethereum",
+    icon: <img src={ETH} width={30} className="rounded-full overflow-hidden" />,
+  },
 ];
 const date = new Date();
 const DepositData = [

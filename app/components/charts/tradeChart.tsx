@@ -19,9 +19,9 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 
-export default function ({ pair, openMobileTrade, type }) {
+export default function ({ pair, openMobileTrade, type, setIsBuy ,isBuy}) {
   const [openLimitDrawer, setOpenLimitDrawer] = useState(false);
-  const [isBuy, setIsBuy] = useState<boolean>(false);
+  // const [isBuy, setIsBuy] = useState<boolean>(false);
   const [isLimit, setIsLimit] = useState(false);
   const [option, setOptions] = useState("both");
   const [openPairs, setOpenPairs] = useState(false);
@@ -144,11 +144,11 @@ export default function ({ pair, openMobileTrade, type }) {
         <div className="hidden lg:flex lg:flex-col">
           <div className="w-full bg-gray-950 mt-1 ml-1 rounded-sm flex-1 lg:min-w-50 xl:w-70 2xl:w-85">
             {/* <AllMarketTickerProvider> */}
-              <TradingPairs
-                currentPair={pair}
-                isOpen={openPairs}
-                setIsOpen={setOpenPairs}
-              />
+            <TradingPairs
+              currentPair={pair}
+              isOpen={openPairs}
+              setIsOpen={setOpenPairs}
+            />
             {/* </AllMarketTickerProvider> */}
           </div>
           <div className="hidden lg:flex lg:flex-col flex-1 lg:ml-1 lg:mt-1 bg-gray-950 rounded-sm">
@@ -161,12 +161,24 @@ export default function ({ pair, openMobileTrade, type }) {
       </div>
       <OrderHistory />
 
-      <div className="fixed bottom-0 right-0 left-0 bg-gray-900 px-4 py-2 pb-4 md:hidden">
+      <div className="fixed z-50 flex gap-2 bottom-0 right-0 left-0 bg-gray-900 px-4 py-2 pb-4 md:hidden">
         <TradeButton
-          action={openMobileTrade}
-          textStyle="font-semibold"
-          style="bg-amber-400 w-full h-10"
-          label="Trade"
+          action={()=>{
+            openMobileTrade();
+            setIsBuy(true)
+          }}
+          textStyle="font-semibold text-gray-50"
+          style="bg-green-400 w-1/2 h-10"
+          label="Buy"
+        />
+        <TradeButton
+          action={()=>{
+            openMobileTrade();
+            setIsBuy(false)
+          }}
+          textStyle="font-semibold text-gray-50"
+          style="bg-red-500 w-1/2 h-10"
+          label="Sell"
         />
       </div>
       <BottomDrawerOptions

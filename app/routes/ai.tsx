@@ -11,6 +11,7 @@ import { Badge } from "~/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/components/ui/accordion";
 import { Bell, Users } from "lucide-react";
 import { useFetcher } from "react-router";
+import { smartAirBage } from "~/utils";
 export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Ai Strategy" },
@@ -355,7 +356,7 @@ export default function AI() {
                         </div>
                       </div>
                       <div className="px-8">
-                        <img src="../../assets/images/smart-arbirage-2.svg" alt="" width={200} />
+                        <img src={smartAirBage} alt="" width={200} />
                       </div>
                     </div>
                   </div>

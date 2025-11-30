@@ -1,13 +1,14 @@
 import { useTickersStore, type BinanceTickers } from "~/store/useTickersStore";
 // import { useWebSocketManager } from "./wsManager";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createBatcher, rafThrottle } from "~/utils/throttleBatcher";
 import useWebSocket from "react-use-websocket";
 
 export function useTickers (symbols: string[]){
        const applyBatch = useTickersStore((s) => s.applyBatch);
+       const [url, setUrl] = useState("wss://stream.binance.com:9443/stream")
         const { sendJsonMessage, lastMessage, readyState } = useWebSocket(
-          "wss://stream.binance.com:9443/stream",
+          url,
           {
             share: false,
             onOpen: () =>
@@ -19,6 +20,10 @@ export function useTickers (symbols: string[]){
             reconnectInterval: (attemptNumber) =>
               Math.min(Math.pow(2, attemptNumber) * 1000, 10000),
             onMessage: (event: WebSocketEventMap["message"]) => process(event),
+            onError:(event)=>{
+              console.log(event);
+              setUrl("wss://stream.binance.com:443/stream");
+            }
           }
         );
  

@@ -3,6 +3,7 @@ import canvas2 from "assets/images/canvas2.png";
 import canvas3 from "assets/images/canvas3.png";
 import canvas4 from "assets/images/canvas4.png";
 import canvas5 from "assets/images/canvas5.png";
+import { BTCETH, BTCTRX, BTCUSDT, ETHTRX, XRPSOL } from "~/utils";
 
 export const AiLists = [
   {
@@ -15,7 +16,7 @@ export const AiLists = [
     miniAmount: 500,
     operatingTime: "3h 57m",
     line: canvas1,
-    icon: <img src="../../assets/coins/btc_eth.png" width={50} />,
+    icon: <img src={BTCETH} width={50} />,
   },
   {
     id: 2,
@@ -27,7 +28,7 @@ export const AiLists = [
     miniAmount: 2500,
     operatingTime: "6h 43m",
     line: canvas2,
-    icon: <img src="../../assets/coins/btc_usdt.png" width={50} />,
+    icon: <img src={BTCUSDT} width={50} />,
   },
   {
     id: 3,
@@ -39,7 +40,7 @@ export const AiLists = [
     operatingTime: "4h 54m",
     maxDrawDown: "31%",
     line: canvas3,
-    icon: <img src="../../assets/coins/btc_trx.png" width={50} />,
+    icon: <img src={BTCTRX} width={50} />,
   },
   {
     id: 4,
@@ -51,7 +52,7 @@ export const AiLists = [
     operatingTime: "4h 16m",
     maxDrawDown: "19%",
     line: canvas4,
-    icon: <img src="../../assets/coins/eth_trx.png" width={50} />,
+    icon: <img src={ETHTRX} width={50} />,
   },
   {
     id: 5,
@@ -63,6 +64,6 @@ export const AiLists = [
     users: "61",
     maxDrawDown: "14%",
     line: canvas5,
-    icon: <img src="../../assets/coins/xrp_sol.png" width={50} />,
+    icon: <img src={XRPSOL} width={50} />,
   },
 ];

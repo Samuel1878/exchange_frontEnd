@@ -28,6 +28,7 @@ import {
   SelectItem,
 } from "~/components/ui/select";
 import { Checkbox } from "~/components/ui/checkbox";
+import { BTC, ETH, XRP } from "~/utils";
 
 const allTokensData = {
   Favorites: [
@@ -40,7 +41,9 @@ const allTokensData = {
       low: "$ 102,476.09",
       vol: "22.38K",
       turnover: "$2,322,487.86K",
-      icon: <img src="../../assets/coins/miniBtc.png" width={32} />,
+      icon: (
+        <img src={BTC} width={32} className="rounded-full overflow-hidden" />
+      ),
     },
     {
       symbol: "ETH",
@@ -51,7 +54,9 @@ const allTokensData = {
       low: "$ 102,476.09",
       vol: "22.38K",
       turnover: "$2,322,487.86K",
-      icon: <img src="../../assets/coins/miniEth.png" width={32} />,
+      icon: (
+        <img src={ETH} width={32} className="rounded-full overflow-hidden" />
+      ),
     },
     {
       symbol: "XRP",
@@ -62,7 +67,9 @@ const allTokensData = {
       low: "$ 102,476.09",
       vol: "22.38K",
       turnover: "$2,322,487.86K",
-      icon: <img src="../../assets/coins/miniXrp.png" width={32} />,
+      icon: (
+        <img src={XRP} width={32} className="rounded-full overflow-hidden" />
+      ),
     },
     {
       symbol: "ETH",
@@ -73,7 +80,9 @@ const allTokensData = {
       low: "$ 102,476.09",
       vol: "22.38K",
       turnover: "$2,322,487.86K",
-      icon: <img src="../../assets/coins/miniEth.png" width={32} />,
+      icon: (
+        <img src={ETH} width={32} className="rounded-full overflow-hidden" />
+      ),
     },
     {
       symbol: "XRP",
@@ -84,7 +93,9 @@ const allTokensData = {
       low: "$ 102,476.09",
       vol: "22.38K",
       turnover: "$2,322,487.86K",
-      icon: <img src="../../assets/coins/miniXrp.png" width={32} />,
+      icon: (
+        <img src={XRP} width={32} className="rounded-full overflow-hidden" />
+      ),
     },
   ],
 };

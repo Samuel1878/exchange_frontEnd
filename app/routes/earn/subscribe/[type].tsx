@@ -1,14 +1,10 @@
 
 import FooterSection from "~/components/footer";
 import { useState } from "react";
-import miniUsdt from "assets/coins/miniUsdt.png";
-import miniBtc from "assets/coins/miniBtc.png";
-import miniEth from "assets/coins/miniEth.png";
-import miniXrp from "assets/coins/miniXrp.png";
-import miniLtc from "assets/coins/miniLtc.png";
-import btcEth from "assets/coins/btc_eth.png";
+
 import { useFetcher } from "react-router";
 import type { Route } from "./+types/[type]";
+import { BCH, BTC, BTCETH, ETH, LTC, XRP } from "~/utils";
 interface LoaderDataParams {
   type: string | null;
 }
@@ -68,13 +64,13 @@ export default function SubscribeTypePage({
   const [loading, setLoading] = useState(false);
   const fetcher = useFetcher();
   const availableAssets = [
-    { symbol: "USDT", balance: 0, name: "Tether", coin: miniUsdt },
-    { symbol: "BUSD", balance: 800.0, name: "Binance USD", coin: miniUsdt },
-    { symbol: "BTC", balance: 0.05, name: "Bitcoin", coin: miniBtc },
-    { symbol: "ETH", balance: 2.5, name: "Ethereum", coin: miniEth },
-    { symbol: "XRP", balance: 1500, name: "Ripple", coin: miniXrp },
-    { symbol: "LTC", balance: 20, name: "Litecoin", coin: miniLtc },
-    { symbol: "BTC-ETH", balance: 1.2, name: "BTC-ETH Combo", coin: btcEth },
+    { symbol: "USDT", balance: 0, name: "Tether", coin: BTC },
+    { symbol: "BUSD", balance: 800.0, name: "Binance USD", coin: BCH },
+    { symbol: "BTC", balance: 0.05, name: "Bitcoin", coin: BTC },
+    { symbol: "ETH", balance: 2.5, name: "Ethereum", coin: ETH },
+    { symbol: "XRP", balance: 1500, name: "Ripple", coin: XRP },
+    { symbol: "LTC", balance: 20, name: "Litecoin", coin: LTC },
+    { symbol: "BTC-ETH", balance: 1.2, name: "BTC-ETH Combo", coin: BTCETH },
   ];
   const getStatusColor = (status: string) => {
     const colorMap: Record<string, string> = {
@@ -162,11 +158,11 @@ export default function SubscribeTypePage({
                       {selectedAsset === "BTC-ETH" ? (
                         <>
                           <div className="flex items-center space-x-2 mt-2 border rounded border-gray-700 bg-gray-800 p-2">
-                            <img src={miniBtc} alt="BTC" className="w-6 h-6" />
+                            <img src={BTC} alt="BTC" className="w-6 h-6 overflow-hidden rounded-full" />
                             <span className="text-gray-300">BTC</span>
                           </div>
                           <div className="flex items-center space-x-2 mt-2 border rounded border-gray-700 bg-gray-800 p-2">
-                            <img src={miniEth} alt="ETH" className="w-6 h-6" />
+                            <img src={ETH} alt="ETH" className="w-6 h-6 overflow-hidden rounded-full" />
                             <span className="text-gray-300">ETH</span>
                           </div>
                         </>

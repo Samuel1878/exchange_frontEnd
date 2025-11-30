@@ -1,9 +1,11 @@
+import { Charity_1, Charity_2, Charity_3, Charity_4 } from "~/utils";
+
 export const FeaturedProjects = [
   {
     id: 1,
     title: "Morocco Earthquake Emergency Appeal",
     description: "Providing Emergency Relief to People in Morocco",
-    imageUrl: "../assets/charity/image_1.png",
+    imageUrl: Charity_1,
     status: "Completed",
     progress: 100,
     beneficiaries: "231.43K",
@@ -13,7 +15,7 @@ export const FeaturedProjects = [
     id: 2,
     title: "Beirut Explosion Relief",
     description: "We stand with you, Lebanon",
-    imageUrl: "/assets/charity/image_2.png",
+    imageUrl: Charity_2,
     status: "Completed",
     progress: 100,
     beneficiaries: "10.06K",
@@ -23,7 +25,7 @@ export const FeaturedProjects = [
     id: 3,
     title: "Empower Bududa",
     description: "Save the landslide disaster victims in Uganda",
-    imageUrl: "/assets/charity/image_3.png",
+    imageUrl:Charity_3,
     status: "Completed",
     progress: 100,
     beneficiaries: "37.97K",
@@ -33,7 +35,7 @@ export const FeaturedProjects = [
     id: 4,
     title: "Emergency appeal: Haiti Earthquake Relief",
     description: "Join our efforts in sending much needed relief funds to Haiti in the wake of a devastating earthquake.",
-    imageUrl: "/assets/charity/image_4.png",
+    imageUrl: Charity_4,
     status: "Completed",
     progress: 100,
     beneficiaries: "54.73K",

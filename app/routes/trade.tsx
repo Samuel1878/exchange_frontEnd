@@ -9,6 +9,8 @@ import { useDepthAggTrades } from "~/hook/useAggTrade";
 
 import { useOrderbook } from "~/hook/useOrderBook";
 import { useKlines } from "~/hook/useKline";
+import { useIndicatorStore } from "~/store/useIndicatorStore";
+import { useTickers } from "~/hook/useTickers";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Trade" }, { name: "description", content: "Trading" }];
@@ -32,14 +34,37 @@ export async function clientAction({ request }: Route.ClientActionArgs) {}
 
 export default function SpotScreen({ loaderData }: Route.ComponentProps) {
   const { width } = useWindowDimensions();
+  // const { computeIndicators } = useIndicatorStore();
   const { type, pair } = loaderData;
   const [isMobileTrade, setIsMobileTrade] = useState(width < 768);
+  const [isBuy, setIsBuy] = useState(true);
   const isMobile = width < 768;
   const openMobileTrade = () => setIsMobileTrade(true);
   const closeMobileTrade = () => setIsMobileTrade(false);
   useDepthAggTrades([`${pair}@aggTrade`], pair);
-  useOrderbook([`${pair}@depth20@1000ms`]);
-
+  useOrderbook([`${pair}@depth20@1000ms`], pair);
+  useTickers([
+    "btcusdt@ticker",
+    "ethusdt@ticker",
+    "solusdt@ticker",
+    "xrpusdt@ticker",
+    "dogeusdt@ticker",
+    "adausdt@ticker",
+    "avaxusdt@ticker",
+    "linkusdt@ticker",
+    "dotusdt@ticker",
+    "ltcusdt@ticker",
+    "shibusdt@ticker",
+    "etcusdt@ticker",
+    "manausdt@ticker",
+    "uniusdt@ticker",
+    "bchusdt@ticker",
+    "trxusdt@ticker",
+    "xlmusdt@ticker",
+    "atomusdt@ticker",
+    "nearusdt@ticker",
+    "pepeusdt@ticker",
+  ]);
   return (
     <main
       className="lg:flex lg:justify-center bg-gray-900 lg:bg-black overflow-x-hidden"
@@ -49,12 +74,16 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
         <MobileChart
           pair={pair}
           type={type}
+          isBuy={isBuy}
+          setIsBuy={setIsBuy}
           openMobileTrade={openMobileTrade}
           closeMobileTrade={closeMobileTrade}
         />
       ) : (
         <ChartScreen
           pair={pair}
+          isBuy={isBuy}
+          setIsBuy={setIsBuy}
           openMobileTrade={openMobileTrade}
           type={type}
         />

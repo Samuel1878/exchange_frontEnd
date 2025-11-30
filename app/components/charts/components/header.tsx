@@ -7,6 +7,7 @@ import { FiArrowUpRight } from "react-icons/fi";
 import { BiSolidDownArrow, BiSolidUpArrow } from "react-icons/bi";
 import { useTickersStore } from "~/store/useTickersStore";
 import { useAggTradeStore } from "~/store/useAggTradeStore";
+import { BTCETH } from "~/utils";
 
 export default function ({pair , openPairs, setOpenPairs}) {
   const {tickers} = useTickersStore();
@@ -18,7 +19,7 @@ export default function ({pair , openPairs, setOpenPairs}) {
           <div className="hidden md:inline xl:mx-2 cursor-pointer">
             <FaRegStar color="#777" size={25} />
           </div>
-          <img src="../../assets/coins/btc_eth.png" className="w-10" />
+          <img src={BTCETH}className="w-10" />
           <div>
             <p className="text-md font-bold md:text-2xl text-gray-50 flex items-center">
               {CoinPairs[pair].label}

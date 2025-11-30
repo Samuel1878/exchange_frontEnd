@@ -1,10 +1,14 @@
-import { useEffect, useState } from "react";
+import type { UTCTimestamp } from "lightweight-charts";
+import { memo, useEffect, useState } from "react";
 import useWebSocket from "react-use-websocket";
-import { useKlineStore } from "~/store/useKlineStore";
+import { LOCAL_URL } from "~/consts";
+import { useIndicatorStore } from "~/store/useIndicatorStore";
+import { useKlineStore, type BinanceUiKline } from "~/store/useKlineStore";
 import { rafThrottle } from "~/utils/helpers";
 
 export const useKlines = (symbol: string, interval: string) => {
   const applySnapShot = useKlineStore((s) => s.applySnapShot);
+  const snapLine = useIndicatorStore((s)=>s.addSnapShot)
   const applyStream = useKlineStore((s) => s.applyStream);
   const { sendJsonMessage } = useWebSocket(`wss://stream.binance.com:9443/ws`, {
     share: false,
@@ -26,13 +30,32 @@ export const useKlines = (symbol: string, interval: string) => {
   useEffect(() => {
     (async () => {
       await fetch(
-        `http://localhost:3000/kline/${symbol.toUpperCase()}?interval=${interval}`
-      ).then((e) => {
-        applySnapShot(interval, e.json());
-      }).catch(()=> console.log("Getting kline via REST api is failed")
-      );
+        `${LOCAL_URL}/kline/${symbol.toUpperCase()}?interval=${interval}`
+      )
+        .then((e) => {
+          const data = e.json()
+          applySnapShot(interval, data);
+          // calculate(data);
+        })
+        .catch(() => console.log("Getting kline via REST api is failed"));
     })();
   }, [symbol, interval]);
+  const calculate =  async(d:Promise<BinanceUiKline[]>) => {
+    const data = await d;
+    const can = [];
+    for (let index = 0; index < data.length; index++) {
+      const e = data[index];
+      can.push({
+        time: e[0] as UTCTimestamp,
+        open: Number(e[1]),
+        high: Number(e[2]),
+        low: Number(e[3]),
+        close: Number(e[4]),
+      });
+    }
+    // snapLine(can)
+    
+  };
   useEffect(() => {
     const params = [`${symbol.toLowerCase()}@kline_${interval}`];
     sendJsonMessage({ method: "SUBSCRIBE", params, id: Date.now() });

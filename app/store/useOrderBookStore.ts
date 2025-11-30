@@ -14,23 +14,14 @@ export interface OrderbookState {
   lastUpdateId: number | null;
   applyDiffs: (diffs: BinanceResponse) => void;
   reset: () => void;
+  addSnapShot: (data: BinanceResponse) => void;
 }
 export interface BinanceResponse {
   lastUpdateId: number;
   bids: string[][];
   asks: string[][];
 }
-
-export const useOrderbookStore = create<OrderbookState>((set, get) => ({
-  bids: [],
-  asks: [],
-  totalLevel: 36,
-  lastUpdateId: null,
-
-  applyDiffs: (diffs: BinanceResponse) =>
-    set(
-      produce((state: OrderbookState) => {
-        function initialApply(deltas: string[][]) {
+function initialApply(deltas: string[][]) {
           let data = [];
           deltas.forEach(([price, size]) => {
             if (Number(size) >= 0) {
@@ -43,6 +34,22 @@ export const useOrderbookStore = create<OrderbookState>((set, get) => ({
           });
           return data;
         }
+export const useOrderbookStore = create<OrderbookState>((set, get) => ({
+  bids: [],
+  asks: [],
+  totalLevel: 36,
+  lastUpdateId: null,
+  addSnapShot: (data) => set((s)=> ({
+    lastUpdateId : data.lastUpdateId,
+    bids :initialApply(data.bids),
+    asks : initialApply(data.asks),
+    totalLevel:36
+    
+  })),
+  applyDiffs: (diffs: BinanceResponse) =>
+    set(
+      produce((state: OrderbookState) => {
+
         function applyDeltas(levels: LevelType[], deltas: string[][]) {
           const updated = [...levels];
 

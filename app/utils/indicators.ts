@@ -19,7 +19,10 @@ export const calcMA = (candles:CandlestickData[], period:number):LineData[] => {
 
   return out;
 };
-
+// export const calcMAOnce = (close , time , period):LineData=>{
+  
+//   return { time , };
+// }
 export const calcEMA = (candles: CandlestickData[], period: number): LineData[] => {
   const out = [];
   const k = 2 / (period + 1);
