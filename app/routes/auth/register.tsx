@@ -7,7 +7,7 @@ import { giftboxDarkMobile, Logo } from "~/utils";
 const LoginTab = [
     { symbol: "mobile", label: "Mobile Phone Registration" },
     { symbol: "email", label: "Email Registration" },
-    { symbol: "account", label: "Account Registration" }
+    { symbol: "account", label: "Account Registration" },
 ]
 const MobileForm = () => {
     const [spendselectedCurrency, setSpendSelectedCurrency] = useState("Apple");
@@ -18,7 +18,7 @@ const MobileForm = () => {
         <>
             <div className="text-white space-y-7">
                 <div className="flex flex-row gap-3">
-                    <div className="text-white">
+                    <div className="text-white basis-64">
                         <Select>
                             <SelectTrigger className="w-[180px] bg-gray-900 border lg:bg-gray-950 lg:border-gray-950 border-gray-800 rounded-lg py-6 px-3 text-gray-300 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 hover:bg-gray-900">
                                 <SelectValue placeholder="Select a fruit" />
@@ -26,11 +26,11 @@ const MobileForm = () => {
                             <SelectContent className="bg-gray-800  border-gray-700 text-white hover:bg-gray-900 w-full">
                                 <SelectGroup>
                                     <SelectLabel>Fruits</SelectLabel>
-                                    <SelectItem value="apple">Apple</SelectItem>
-                                    <SelectItem value="banana">Banana</SelectItem>
-                                    <SelectItem value="blueberry">Blueberry</SelectItem>
-                                    <SelectItem value="grapes">Grapes</SelectItem>
-                                    <SelectItem value="pineapple">Pineapple</SelectItem>
+                                    <SelectItem value="apple">1</SelectItem>
+                                    <SelectItem value="banana">2</SelectItem>
+                                    <SelectItem value="blueberry">3</SelectItem>
+                                    <SelectItem value="grapes">4</SelectItem>
+                                    <SelectItem value="pineapple">5</SelectItem>
                                 </SelectGroup>
                             </SelectContent>
                         </Select>
@@ -43,17 +43,17 @@ const MobileForm = () => {
                     <div className="text-white w-full">
                         <input type="text" placeholder="Please enter the verification code" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
                     </div>
-                    <div className="text-white">
-                        <button className="bg-gray-800 p-3 rounded px-10 cursor-pointer">Send</button>
+                    <div className="text-white basis-64">
+                        <button className="bg-gray-800 p-3 rounded px-20 cursor-pointer">Send</button>
                     </div>
                 </div>
-                <div className="text-white w-full">
+                <div className="text-white">
                     <input type="text" placeholder="Please enter your login password" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
                 </div>
-                <div className="text-white w-full">
+                <div className="text-white">
                     <input type="text" placeholder="please enter your login password again" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
                 </div>
-                <div className="text-white w-full">
+                <div className="text-white">
                     <input type="text" placeholder="Please enter the invitation code" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
                 </div>
                 <div className="flex items-start gap-3">
@@ -84,26 +84,26 @@ const EmailForm = () => {
     return (
         <>
             <div className="text-white space-y-7">
-                <div className="flex flex-row gap-3">
-                    <div className="text-white w-full">
-                        <input type="text" placeholder="Please enter your email" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
+                <div className="">
+                    <div className="text-white">
+                        <input type="text" placeholder="Please enter your Email" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
                     </div>
                 </div>
-                <div className="flex flex-row gap-3">
+                <div className="flex flex-row gap-4">
                     <div className="text-white w-full">
                         <input type="text" placeholder="Please enter the verification code" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
                     </div>
-                    <div className="text-white">
-                        <button className="bg-gray-800 p-3 rounded px-10 cursor-pointer">Send</button>
+                    <div className="text-white basis-64">
+                        <button className="bg-gray-800 p-3 rounded px-20 cursor-pointer">Send</button>
                     </div>
                 </div>
-                <div className="text-white w-full">
+                <div className="text-white">
                     <input type="text" placeholder="Please enter your login password" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
                 </div>
-                <div className="text-white w-full">
+                <div className="text-white">
                     <input type="text" placeholder="please enter your login password again" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
                 </div>
-                <div className="text-white w-full">
+                <div className="text-white">
                     <input type="text" placeholder="Please enter the invitation code" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
                 </div>
                 <div className="flex items-start gap-3">
@@ -115,12 +115,12 @@ const EmailForm = () => {
                                 Immediately Log in
                             </Link>
                         </Label>
+
                         <p className="text-sm text-gray-400">Please ensure the security of your account. When you click confirm and log in, you agree to use our
                             <Link to={`terms-service`} className="underline text-white">&nbsp;Terms of Service</Link>
                             &nbsp; and
                             <Link to={`terms-service`} className="underline text-white">  &nbsp;Privacy Notice</Link>
                         </p>
-
                     </div>
                 </div>
                 <div className="text-white">
@@ -136,7 +136,7 @@ const AccountForm = () => {
             <div className="text-white space-y-7">
                 <div className="flex flex-row gap-3">
                     <div className="text-white w-full">
-                        <input type="text" placeholder="Please enter your email" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
+                        <input type="text" placeholder="Please enter your Name" className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900" />
                     </div>
                 </div>
                 <div className="flex flex-row gap-3">
@@ -221,26 +221,26 @@ export default function Login() {
                                         </Link>
                                         <h1 className="text-2xl font-extrabold">Welcome to Web3</h1>
                                         <div className="overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] touch-pan-x pb-6">
-                                            <div className="flex flex-row justify-around space-x-4 w-max">
+                                            <div className="flex space-x-4 w-20 " role="tablist">
                                                 {LoginTab.map(({ symbol, label }) => (
-                                                    <button
-                                                        key={symbol}
-                                                        onClick={() => {
-
-                                                            setActiveTab(symbol);
-
-                                                        }}
-
-                                                        className={`px- py-1 ${activeTab === symbol
-                                                            ? "text-gray-100 border-b-2 border-b-amber-300"
-                                                            : "hover:text-gray-100"
-                                                            }`}
-                                                    >
-                                                        {label}
-                                                    </button>
+                                                    <div key={symbol} className="flex-shrink-0 w-65ss scroll-snap-align-start">
+                                                        <button
+                                                            onClick={() => setActiveTab(symbol)}
+                                                            role="tab"
+                                                            aria-selected={activeTab === symbol}
+                                                            className={`px-2 py-2 text-center transition-colors duration-300
+                                                                         ${activeTab === symbol
+                                                                    ? "text-gray-100 border-b-2 border-amber-300"
+                                                                    : "text-gray-400 hover:text-gray-100"
+                                                                }`}
+                                                        >
+                                                            {label}
+                                                        </button>
+                                                    </div>
                                                 ))}
                                             </div>
                                         </div>
+
                                         <div className="space-y-7">
                                             {loading ? (
                                                 <div className="flex flex-col items-center justify-center my-4 h-52">
