@@ -1,4 +1,5 @@
-import {
+import React, {
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -10,15 +11,11 @@ import {
 import { CrosshairMode } from "lightweight-charts";
 import {
   Chart,
-  LineSeries,
   HistogramSeries,
-  PriceScale,
   TimeScale,
   TimeScaleFitContentTrigger,
   Pane,
   CandlestickSeries,
-  BarSeries,
-  type SeriesApiRef,
 } from "lightweight-charts-react-components";
 import useWindowDimensions from "~/hook/windowWidth";
 import TimeSeries from "./timeSeries";
@@ -34,7 +31,6 @@ import {
 import { useCompareSeriesStore } from "~/store/useCompareSeriesStore";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { useMultiLegend } from "~/hook/useLineLegend";
-// import { useCombinedLegend } from "~/hook/useUnifiedLegend";
 
 enum Showing {
   chart = "chart",
@@ -71,9 +67,9 @@ const Legend: FC<LegendProps> = ({ children }) => {
 
 export default function ({ pair, type }) {
   const [period, setPeriod] = useState(
-      type === "future" ? Period.oneSecound : Period.oneDay
-    );
-  // useKlines(pair, period);
+    type === "future" ? Period.oneSecound : Period.oneDay
+  );
+  useKlines(pair, period);
   const { legendVisible, setLegendVisible } = useLegendStore();
   const { visibleSeries } = useCompareSeriesStore();
   const { candles, histogram, reset, indicators } = useKlineStore();
@@ -82,56 +78,40 @@ export default function ({ pair, type }) {
   const upColor = "#00c951";
   const downColor = "#fb2c36";
   const containerRef = useRef<HTMLDivElement>(null);
-  const { ref, legendData, onCrosshairMove } = useLegend(legendVisible);
+
   const clonedData = structuredClone(candles);
   const clonedHis = structuredClone(histogram);
   const seriesMap = typedObjectEntries(indicators);
   const [showLegend, setShowLegend] = useState(true);
-  // const ref = useState<SeriesApiRef<"Candlestick">>();
   const togglePeriod = (p: Period) => {
     reset();
     setPeriod(p);
-    // useKlines(pair, period);
   };
-  const lineRefs = useRef<Record<string, any>>({});
 
-  // ensure refs exist
-  seriesMap.forEach(([key]) => {
-    if (!lineRefs.current[key]) {
-      lineRefs.current[key] = { current: null };
-    }
-  });
+  const seriesRefs = useRef<Record<string, React.RefObject<any>>>({});
+  useEffect(() => {
+    seriesMap.forEach(([key]) => {
+      if (!seriesRefs.current[key]) {
+        seriesRefs.current[key] = React.createRef();
+      }
+    });
+  }, [seriesMap]);
 
-  // const { legend, onCrosshairMove } = useCombinedLegend({
-  //   showLegend: legendVisible,
-  //   candleRef: ref,
-  //   lineSeries: seriesMap
-  //     .filter(([key]) => visibleSeries.includes(key))
-  //     .map(([key]) => ({
-  //       id: key,
-  //       ref: lineRefs.current[key],
-  //     })),
-  // });
-    // const seriesRefs = useRef<Record<string, any>>({});
-
-    // seriesMap.forEach(([key]) => {
-    //   if (!seriesRefs.current[key]) {
-    //     seriesRefs.current[key] = { current: null };
-    //   }
-    // });
-
-    // // Prepare list for legend hook
-    // const seriesListForLegend = seriesMap
-    //   .filter(([key]) => visibleSeries.includes(key))
-    //   .map(([key]) => ({
-    //     id: key,
-    //     ref: seriesRefs.current[key],
-    //   }));
-
-    // const { legend, onCrosshairMoveMulti } = useMultiLegend(
-    //   showLegend,
-    //   seriesListForLegend
-    // );
+  const seriesListForLegend = useMemo(
+    () =>
+      seriesMap
+        .filter(([key]) => visibleSeries.includes(key))
+        .map(([key]) => ({
+          key,
+          ref: seriesRefs.current[key],
+        })),
+    [seriesMap, visibleSeries]
+  );
+  const { ref, legendData, onCrosshairMove } = useLegend(legendVisible);
+  const { legend, onCrosshairMoveMulti } = useMultiLegend(
+    showLegend,
+    seriesListForLegend
+  );
   return (
     <section className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-lg ">
       <nav className="flex w-full p-3 pb-0 gap-4">
@@ -208,8 +188,10 @@ export default function ({ pair, type }) {
                 borderColor: "#485c7b",
               },
             }}
-            onCrosshairMove={onCrosshairMove}
-      
+            onCrosshairMove={(event) => {
+              onCrosshairMove(event);
+              onCrosshairMoveMulti(event);
+            }}
           >
             <Pane stretchFactor={3}>
               <CandlestickSeries
@@ -285,12 +267,47 @@ export default function ({ pair, type }) {
                     </>
                   )}
                 </div>
+                <div className="z-20 flex gap-2 p-1 mt-2 outline-0 flex-wrap hover:border-1 hover:border-gray-700 rounded-sm">
+                  <div
+                    className="cursor-pointer"
+                    onClick={() => setShowLegend((prev) => !prev)}
+                  >
+                    {showLegend ? (
+                      <IoIosArrowDown color="#777" size={16} />
+                    ) : (
+                      <IoIosArrowForward color="#777" size={16} />
+                    )}
+                  </div>
+                  {showLegend &&
+                    Object.entries(structuredClone(legend)).map(
+                      ([key, entry]) => (
+                        <div key={key} className="mr-3">
+                          {entry ? (
+                            <div className="text-xs flex gap-2">
+                              <div className="text-xs text-gray-600 font-medium">
+                                {key}
+                              </div>
+                              <span
+                                className="text-xs font-medium"
+                                style={{ color: entry.color ?? undefined }}
+                              >
+                                {entry.value}
+                              </span>
+                            </div>
+                          ) : (
+                            <div className="text-xs text-gray-500"></div>
+                          )}
+                        </div>
+                      )
+                    )}
+                </div>
               </Legend>
 
               {seriesMap
                 .filter(([key]) => visibleSeries.includes(key))
                 .map(([key, { Component, data, options }], index) => (
                   <Component
+                    ref={seriesRefs.current[key]}
                     key={key}
                     data={structuredClone(data)}
                     options={options}

@@ -10,21 +10,19 @@ import {
   type SeriesProps,
 } from "lightweight-charts-react-components";
 import type { SeriesType } from "lightweight-charts";
-import type { ComponentType } from "react";
+import { type ComponentType } from "react";
 import { create } from "zustand";
 import {
   calcEMA,
   calcMA,
   computeIncrementalEMA,
-  computeIncrementalMA,
 } from "~/utils/indicators";
 export const upColor = "#00c951";
 export const downColor = "#fb2c36";
-type CompareSeriesType = "MA1" | "MA2" | "MA3" | "EMA1" | "EMA2" | "EMA3";
-
-type CompareSeriesMap<T extends CompareSeriesType, P extends SeriesType> = {
+export type CompareSeriesType = "MA1" | "MA2" | "MA3" | "EMA1" | "EMA2" | "EMA3";
+export type CompareSeriesMap<T extends CompareSeriesType, P extends SeriesType> = {
   [key in T]: {
-    Component: ComponentType<SeriesProps<P>>;
+    Component: ComponentType<SeriesProps<P> | any>;
     data: LineData[];
     options?: SeriesProps<P>["options"];
   };
@@ -71,7 +69,6 @@ interface KlineState {
   candles: CandlestickData[];
   histogram: HistogramData[];
   indicators: CompareSeriesMap<CompareSeriesType, SeriesType>;
-  // addSnapShotIndicators: (data: CandlestickData[]) => void;
   applySnapShot: (key: string, list: Promise<BinanceUiKline[]>) => void;
   applyStream: (key: string, data: BinanceKlineStream) => void;
   reset: () => void;
@@ -191,7 +188,6 @@ export const useKlineStore = create<KlineState>((set, get) => {
     },
     applyStream: (key, data) => {
       const { candles, histogram, indicators } = get();
-
       const k = data.k;
       const t = k.t as UTCTimestamp;
       const close = Number(k.c);
@@ -235,32 +231,6 @@ export const useKlineStore = create<KlineState>((set, get) => {
 
         set({ candles, histogram, indicators });
         return;
-        // const MA1 = computeIncrementalMA(candles, 7);
-        // const MA2 = computeIncrementalMA(candles, 25);
-        // const MA3 = computeIncrementalMA(candles, 99);
-
-        // const lastEMA1 = indicators.EMA1.data.at(-1)?.value ?? close;
-        // const lastEMA2 = indicators.EMA2.data.at(-1)?.value ?? close;
-        // const lastEMA3 = indicators.EMA3.data.at(-1)?.value ?? close;
-
-        // indicators.MA1.data.push({ time: t, value: MA1 ?? close });
-        // indicators.MA2.data.push({ time: t, value: MA2 ?? close });
-        // indicators.MA3.data.push({ time: t, value: MA3 ?? close });
-
-        // indicators.EMA1.data.push({
-        //   time: t,
-        //   value: computeIncrementalEMA(lastEMA1, close, 9),
-        // });
-        // indicators.EMA2.data.push({
-        //   time: t,
-        //   value: computeIncrementalEMA(lastEMA2, close, 21),
-        // });
-        // indicators.EMA3.data.push({
-        //   time: t,
-        //   value: computeIncrementalEMA(lastEMA3, close, 55),
-        // });
-
-        // return;
       }
       if (last && last.time === t) {
         //////UPDATING ON LIVE
@@ -272,83 +242,47 @@ export const useKlineStore = create<KlineState>((set, get) => {
         lastHis.time = t;
         lastHis.value = Number(k.v);
 
-      const recalcMA = (period: number) =>
-        candles.length < period
-          ? null
-          : candles.slice(-period).reduce((a, c) => a + c.close, 0) / period;
+        const recalcMA = (period: number) =>
+          candles.length < period
+            ? null
+            : candles.slice(-period).reduce((a, c) => a + c.close, 0) / period;
 
-      indicators.MA1.data[indicators.MA1.data.length - 1] = {
-        time: t,
-        value: recalcMA(7),
-      };
+        indicators.MA1.data[indicators.MA1.data.length - 1] = {
+          time: t,
+          value: recalcMA(7),
+        };
 
-      indicators.MA2.data[indicators.MA2.data.length - 1] = {
-        time: t,
-        value: recalcMA(25),
-      };
+        indicators.MA2.data[indicators.MA2.data.length - 1] = {
+          time: t,
+          value: recalcMA(25),
+        };
 
-      indicators.MA3.data[indicators.MA3.data.length - 1] = {
-        time: t,
-        value: recalcMA(99),
-      };
+        indicators.MA3.data[indicators.MA3.data.length - 1] = {
+          time: t,
+          value: recalcMA(99),
+        };
 
-      const recalcEMA = (key: CompareSeriesType, period: number) => {
-        const prev = indicators[key].data.at(-2)?.value ?? close;
-        return computeIncrementalEMA(prev, close, period);
-      };
+        const recalcEMA = (key: CompareSeriesType, period: number) => {
+          const prev = indicators[key].data.at(-2)?.value ?? close;
+          return computeIncrementalEMA(prev, close, period);
+        };
 
-      indicators.EMA1.data[indicators.EMA1.data.length - 1] = {
-        time: t,
-        value: recalcEMA("EMA1", 9),
-      };
+        indicators.EMA1.data[indicators.EMA1.data.length - 1] = {
+          time: t,
+          value: recalcEMA("EMA1", 9),
+        };
 
-      indicators.EMA2.data[indicators.EMA2.data.length - 1] = {
-        time: t,
-        value: recalcEMA("EMA2", 21),
-      };
+        indicators.EMA2.data[indicators.EMA2.data.length - 1] = {
+          time: t,
+          value: recalcEMA("EMA2", 21),
+        };
 
-      indicators.EMA3.data[indicators.EMA3.data.length - 1] = {
-        time: t,
-        value: recalcEMA("EMA3", 55),
-      };
+        indicators.EMA3.data[indicators.EMA3.data.length - 1] = {
+          time: t,
+          value: recalcEMA("EMA3", 55),
+        };
 
-      set({ candles, histogram, indicators });
-        // const updateLiveMA = (period: number) => {
-        //   if (candles.length < period) return null;
-        //   const slice = candles.slice(-(period - 1));
-        //   const sum = slice.reduce((a, c) => a + c.close, 0);
-        //   return (sum + close) / period;
-        // };
-
-        // indicators.MA1.data[indicators.MA1.data.length - 1] = {
-        //   time: t,
-        //   value: updateLiveMA(7),
-        // };
-        // indicators.MA2.data[indicators.MA2.data.length - 1] = {
-        //   time: t,
-        //   value: updateLiveMA(25),
-        // };
-        // indicators.MA3.data[indicators.MA3.data.length - 1] = {
-        //   time: t,
-        //   value: updateLiveMA(99),
-        // };
-
-        // const lastEMA1 = indicators.EMA1.data.at(-1)?.value ?? null;
-        // const lastEMA2 = indicators.EMA2.data.at(-1)?.value ?? null;
-        // const lastEMA3 = indicators.EMA3.data.at(-1)?.value ?? null;
-
-        // indicators.EMA1.data[indicators.EMA1.data.length - 1] = {
-        //   time: t,
-        //   value: computeIncrementalEMA(lastEMA1, close, 9),
-        // };
-        // indicators.EMA2.data[indicators.EMA2.data.length - 1] = {
-        //   time: t,
-        //   value: computeIncrementalEMA(lastEMA2, close, 21),
-        // };
-        // indicators.EMA3.data[indicators.EMA3.data.length - 1] = {
-        //   time: t,
-        //   value: computeIncrementalEMA(lastEMA3, close, 55),
-        // };
+        set({ candles, histogram, indicators });
       }
     },
 

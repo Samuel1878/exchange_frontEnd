@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+
 import { useCallback, useRef, useState } from "react";
 import type { SeriesApiRef } from "lightweight-charts-react-components";
 import type { CandlestickData } from "lightweight-charts";
@@ -22,25 +22,11 @@ type LegendData = {
   change?: string;
 };
 
-// const seriesData = generateOHLCData(40);
 
 const isCandlestickData = (
   data: CandlestickData<Time> | WhitespaceData<Time>
 ): data is CandlestickData<Time> => {
   return "close" in data && "open" in data && "high" in data && "low" in data;
-};
-
-const timeToString = (time: Time): string => {
-  if (typeof time === "number") {
-    return dayjs(time * 1000).format("YYYY-MM-DD");
-  }
-
-  if (typeof time === "object") {
-    const date = new Date(time.year, time.month - 1, time.day);
-    return dayjs(date).format("YYYY-MM-DD");
-  }
-
-  return time;
 };
 
 const mapCandlestickDataToLegendData = ({
@@ -85,7 +71,7 @@ const useLegend = (showLegend: boolean) => {
     const { candles} = useKlineStore()
   const ref = useRef<SeriesApiRef<"Candlestick">>(null);
   const [legendData, setLegendData] = useState<LegendData | null>(() =>
-   candles?.length && mapCandlestickDataToLegendData(candles[candles.length - 1])
+   candles?.length && mapCandlestickDataToLegendData(candles.at(-1))
   );
 
   const onCrosshairMove = useCallback(
