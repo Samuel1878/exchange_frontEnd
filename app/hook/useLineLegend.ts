@@ -29,15 +29,6 @@ export const useMultiLegend = (
   seriesItems: Array<{ key: string; ref: React.RefObject<any> }>
 ) => {
   const [legend, setLegend] = useState<MultiLegend>({});
-  const legendRef = useRef({});
-  const [, forceUpdate] = useState(0);
-  let frame = 0;
-
-  // const updateLegend = (next) => {
-  //   legendRef.current = next;
-  //   cancelAnimationFrame(frame);
-  //   frame = requestAnimationFrame(() => forceUpdate((x) => x + 1));
-  // };
 
   const getSeriesApiFromRef = (
     ref: React.RefObject<any>

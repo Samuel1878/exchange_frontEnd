@@ -32,10 +32,6 @@ const available = [
   "1M",
 ];
 export default function ({ period, setPeriod }) {
-  const [focus, setFocus] = useState("ma");
-  // const [selectedSeries, setSelectedSeries] = useState<string[]>(["MA1", "MA2", "MA3"]);
-  // const [ema, setEma] = useState<string[]>([]);
-  // const [wma, setWma] = useState<number[]>([]);
   const {toggleSeriesVisibility, visibleSeries} = useCompareSeriesStore()
 
   return (

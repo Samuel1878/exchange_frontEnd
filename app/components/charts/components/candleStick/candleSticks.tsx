@@ -8,7 +8,7 @@ import React, {
   type ReactNode,
 } from "react";
 
-import { CrosshairMode } from "lightweight-charts";
+import { CrosshairMode, type MouseEventParams } from "lightweight-charts";
 import {
   Chart,
   HistogramSeries,
@@ -31,6 +31,8 @@ import {
 import { useCompareSeriesStore } from "~/store/useCompareSeriesStore";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
 import { useMultiLegend } from "~/hook/useLineLegend";
+import CandleStickInfo from "./info";
+import AggTradeView from "../aggTradeView";
 
 enum Showing {
   chart = "chart",
@@ -64,7 +66,8 @@ type LegendProps = {
 const Legend: FC<LegendProps> = ({ children }) => {
   return <div className="absolute top-0 left-0 p-1 z-20">{children}</div>;
 };
-
+const upColor = "#00c951";
+const downColor = "#fb2c36";
 export default function ({ pair, type }) {
   const [period, setPeriod] = useState(
     type === "future" ? Period.oneSecound : Period.oneDay
@@ -75,10 +78,7 @@ export default function ({ pair, type }) {
   const { candles, histogram, reset, indicators } = useKlineStore();
   const [showing, setShowing] = useState<Showing>(Showing.chart);
   const { width } = useWindowDimensions();
-  const upColor = "#00c951";
-  const downColor = "#fb2c36";
   const containerRef = useRef<HTMLDivElement>(null);
-
   const clonedData = structuredClone(candles);
   const clonedHis = structuredClone(histogram);
   const seriesMap = typedObjectEntries(indicators);
@@ -112,8 +112,15 @@ export default function ({ pair, type }) {
     showLegend,
     seriesListForLegend
   );
+  const handleCrosshair = useCallback(
+    (param: MouseEventParams) => {
+      onCrosshairMoveMulti(param);
+      onCrosshairMove(param);
+    },
+    [onCrosshairMoveMulti, onCrosshairMove]
+  );
   return (
-    <section className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-lg ">
+    <section className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-none md:rounded-lg ">
       <nav className="flex w-full p-3 pb-0 gap-4">
         <div
           onClick={() => setShowing(Showing.chart)}
@@ -146,141 +153,151 @@ export default function ({ pair, type }) {
           </p>
         </div>
       </nav>
-      <TimeSeries period={period} setPeriod={togglePeriod} />
+      {showing === Showing.chart ? (
+        <TimeSeries period={period} setPeriod={togglePeriod} />
+      ) : null}
 
-      <article className="min-h-130 md:min-h-100">
+      <article
+        className="min-h-130 md:min-h-100"
+        style={{
+          height: 530,
+          width:
+            width >= 1024 ? width / 1.85 : width > 768 ? width * 0.65 : width,
+        }}
+      >
         <div className="bg-gray-900 lg:bg-gray-950">
-          <Chart
-            ref={containerRef}
-            containerProps={{ style: { flexGrow: "1", position: "relative" } }}
-            options={{
-              width:
-                width >= 1024
-                  ? width / 1.85
-                  : width > 768
-                    ? width * 0.65
-                    : width,
-              height: 530, //"300px", //chartContainerRef.current.clientHeight,
-              layout: {
-                background: { color: "transparent" },
-                textColor: "rgba(255, 255, 255, 0.9)",
-                panes: {
-                  enableResize: true,
-                  separatorColor: "rgba(100,100,100,.4)",
+          {showing === Showing.chart ? (
+            <Chart
+              ref={containerRef}
+              containerProps={{
+                style: { flexGrow: "1", position: "relative" },
+              }}
+              options={{
+                width:
+                  width >= 1024
+                    ? width / 1.85
+                    : width > 768
+                      ? width * 0.65
+                      : width,
+                height: 530, //"300px", //chartContainerRef.current.clientHeight,
+                layout: {
+                  background: { color: "transparent" },
+                  textColor: "rgba(255, 255, 255, 0.9)",
+                  panes: {
+                    enableResize: true,
+                    separatorColor: "rgba(30, 41, 57,.5)",
+                  },
                 },
-              },
-              grid: {
-                vertLines: {
-                  color: "rgba(100,100,100,.1)",
+                grid: {
+                  vertLines: {
+                    color: "rgba(30, 41, 57, .2)",
+                  },
+                  horzLines: {
+                    color: "rgba(30, 41, 57, .2)",
+                  },
                 },
-                horzLines: {
-                  color: "rgba(100,100,100,.1)",
+                crosshair: {
+                  mode: CrosshairMode.Normal,
                 },
-              },
-              crosshair: {
-                mode: CrosshairMode.Normal,
-              },
-              localization: {
-                timeFormatter: localizationFormater["locale"].formatter,
-              },
-              timeScale: {
-                tickMarkFormatter: dataRangeMap[period].formatter,
-                borderColor: "#485c7b",
-              },
-            }}
-            onCrosshairMove={(event) => {
-              onCrosshairMove(event);
-              onCrosshairMoveMulti(event);
-            }}
-          >
-            <Pane stretchFactor={3}>
-              <CandlestickSeries
-                ref={ref}
-                data={clonedData}
-                options={{
-                  upColor: upColor,
-                  downColor: downColor,
-                  borderDownColor: downColor,
-                  borderUpColor: upColor,
-                  wickDownColor: downColor,
-                  wickUpColor: upColor,
-                }}
-              />
+                localization: {
+                  timeFormatter: localizationFormater["locale"].formatter,
+                },
+                timeScale: {
+                  tickMarkFormatter: dataRangeMap[period].formatter,
+                  borderColor: "rgb(30, 41, 57)",
+                },
+              }}
+              onCrosshairMove={handleCrosshair}
+            >
+              <Pane stretchFactor={3}>
+                <CandlestickSeries
+                  ref={ref}
+                  data={clonedData}
+                  options={{
+                    upColor: upColor,
+                    downColor: downColor,
+                    borderDownColor: downColor,
+                    borderUpColor: upColor,
+                    wickDownColor: downColor,
+                    wickUpColor: upColor,
+                  }}
+                />
 
-              <Legend>
-                <div className="flex gap-2 p-1 outline-0 flex-wrap hover:border-1 hover:border-gray-700 rounded-sm">
-                  <div className="cursor-pointer" onClick={setLegendVisible}>
-                    {legendVisible ? (
-                      <IoIosArrowDown color="#777" size={16} />
-                    ) : (
-                      <IoIosArrowForward color="#777" size={16} />
+                <Legend>
+                  <div className="flex gap-2 p-1 outline-0 flex-wrap hover:border-1 hover:border-gray-700 rounded-sm">
+                    <div className="cursor-pointer" onClick={setLegendVisible}>
+                      {legendVisible ? (
+                        <IoIosArrowDown color="#777" size={16} />
+                      ) : (
+                        <IoIosArrowForward color="#777" size={16} />
+                      )}
+                    </div>
+                    {legendData !== null && legendVisible && (
+                      <>
+                        <p className="text-gray-600 text-sm">
+                          {legendData.time}
+                        </p>
+                        <p className="text-gray-600 text-xs font-medium">
+                          Open{" "}
+                          <span
+                            className="text-xs ml-1 font-medium"
+                            style={{ color: legendData.color }}
+                          >
+                            {legendData.open}
+                          </span>
+                        </p>
+                        <p className="text-gray-600 text-xs font-medium">
+                          High{" "}
+                          <span
+                            className="text-xs ml-1 font-medium"
+                            style={{ color: legendData.color }}
+                          >
+                            {legendData.high}
+                          </span>
+                        </p>
+                        <p className="text-gray-600 text-xs font-medium">
+                          Low{" "}
+                          <span
+                            className="text-xs ml-1 font-medium"
+                            style={{ color: legendData.color }}
+                          >
+                            {legendData.low}
+                          </span>
+                        </p>
+                        <p className="text-gray-600 text-xs font-medium">
+                          Close{" "}
+                          <span
+                            className="text-xs ml-1 font-medium"
+                            style={{ color: legendData.color }}
+                          >
+                            {legendData.close}
+                          </span>
+                        </p>
+                        <p className="text-gray-600 text-xs font-medium">
+                          Change{" "}
+                          <span
+                            className="text-xs ml-1 font-medium"
+                            style={{ color: legendData.color }}
+                          >
+                            {legendData.change}
+                          </span>
+                        </p>
+                      </>
                     )}
                   </div>
-                  {legendData !== null && legendVisible && (
-                    <>
-                      <p className="text-gray-400 text-sm">{legendData.time}</p>
-                      <p className="text-gray-400 text-xs font-medium">
-                        Open{" "}
-                        <span
-                          className="text-xs ml-1 font-medium"
-                          style={{ color: legendData.color }}
-                        >
-                          {legendData.open}
-                        </span>
-                      </p>
-                      <p className="text-gray-400 text-xs font-medium">
-                        High{" "}
-                        <span
-                          className="text-xs ml-1 font-medium"
-                          style={{ color: legendData.color }}
-                        >
-                          {legendData.high}
-                        </span>
-                      </p>
-                      <p className="text-gray-400 text-xs font-medium">
-                        Low{" "}
-                        <span
-                          className="text-xs ml-1 font-medium"
-                          style={{ color: legendData.color }}
-                        >
-                          {legendData.low}
-                        </span>
-                      </p>
-                      <p className="text-gray-400 text-xs font-medium">
-                        Close{" "}
-                        <span
-                          className="text-xs ml-1 font-medium"
-                          style={{ color: legendData.color }}
-                        >
-                          {legendData.close}
-                        </span>
-                      </p>
-                      <p className="text-gray-400 text-xs font-medium">
-                        Change{" "}
-                        <span
-                          className="text-xs ml-1 font-medium"
-                          style={{ color: legendData.color }}
-                        >
-                          {legendData.change}
-                        </span>
-                      </p>
-                    </>
-                  )}
-                </div>
-                <div className="z-20 flex gap-2 p-1 mt-2 outline-0 flex-wrap hover:border-1 hover:border-gray-700 rounded-sm">
-                  <div
-                    className="cursor-pointer"
-                    onClick={() => setShowLegend((prev) => !prev)}
-                  >
-                    {showLegend ? (
-                      <IoIosArrowDown color="#777" size={16} />
-                    ) : (
-                      <IoIosArrowForward color="#777" size={16} />
-                    )}
-                  </div>
-                  {showLegend &&
-                    Object.entries(structuredClone(legend)).map(
-                      ([key, entry]) => (
+                  <div className="z-20 flex gap-2 p-1 mt-2 outline-0 flex-wrap hover:border-1 hover:border-gray-700 rounded-sm">
+                    <div
+                      className="cursor-pointer"
+                      onClick={() => setShowLegend((prev) => !prev)}
+                    >
+                      {showLegend ? (
+                        <IoIosArrowDown color="#777" size={16} />
+                      ) : (
+                        <IoIosArrowForward color="#777" size={16} />
+                      )}
+                    </div>
+                    {showLegend &&
+                      Object.entries(legend)?.map(([key, entry]) => (
                         <div key={key} className="mr-3">
                           {entry ? (
                             <div className="text-xs flex gap-2">
@@ -298,32 +315,64 @@ export default function ({ pair, type }) {
                             <div className="text-xs text-gray-500"></div>
                           )}
                         </div>
-                      )
-                    )}
-                </div>
-              </Legend>
+                      ))}
+                  </div>
+                </Legend>
 
-              {seriesMap
-                .filter(([key]) => visibleSeries.includes(key))
-                .map(([key, { Component, data, options }], index) => (
-                  <Component
-                    ref={seriesRefs.current[key]}
-                    key={key}
-                    data={structuredClone(data)}
-                    options={options}
-                  />
-                ))}
-            </Pane>
-            <Pane>
-              <HistogramSeries
-                data={clonedHis}
-                options={{ priceLineVisible: false }}
-              />
-            </Pane>
-            <TimeScale>
-              <TimeScaleFitContentTrigger deps={[period]} />
-            </TimeScale>
-          </Chart>
+                {seriesMap
+                  .filter(([key]) => visibleSeries.includes(key))
+                  .map(([key, { Component, data, options }], index) => {
+                    return (
+                      <Component
+                        ref={seriesRefs.current[key]}
+                        key={key}
+                        data={structuredClone(data)}
+                        options={options}
+                      />
+                    );
+                  })}
+              </Pane>
+              <Pane>
+                <HistogramSeries
+                  data={clonedHis}
+                  options={{ priceLineVisible: false, lastValueVisible: false }}
+                />
+              </Pane>
+              <TimeScale>
+                <TimeScaleFitContentTrigger deps={[period]} />
+              </TimeScale>
+            </Chart>
+          ) : showing === Showing.trade ? (
+            <div
+              className="border-t-2 border-t-gray-800 block md:hidden pr-2"
+              style={{
+                width:
+                  width >= 1024
+                    ? width / 1.85
+                    : width > 768
+                      ? width * 0.65
+                      : width,
+                height: 530,
+              }}
+            >
+              <AggTradeView pair={pair} />
+            </div>
+          ) : (
+            <div
+              className="border-t-2 border-t-gray-800"
+              style={{
+                width:
+                  width >= 1024
+                    ? width / 1.85
+                    : width > 768
+                      ? width * 0.65
+                      : width,
+                height: 530,
+              }}
+            >
+              <CandleStickInfo pair={pair} />
+            </div>
+          )}
         </div>
       </article>
     </section>

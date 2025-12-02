@@ -36,30 +36,30 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
   const isMobile = width < 768;
   const openMobileTrade = () => setIsMobileTrade(true);
   const closeMobileTrade = () => setIsMobileTrade(false);
-  // useDepthAggTrades([`${pair}@aggTrade`], pair);
-  // useOrderbook([`${pair}@depth20@1000ms`], pair);
-  // useTickers([
-  //   "btcusdt@ticker",
-  //   "ethusdt@ticker",
-  //   "solusdt@ticker",
-  //   "xrpusdt@ticker",
-  //   "dogeusdt@ticker",
-  //   "adausdt@ticker",
-  //   "avaxusdt@ticker",
-  //   "linkusdt@ticker",
-  //   "dotusdt@ticker",
-  //   "ltcusdt@ticker",
-  //   "shibusdt@ticker",
-  //   "etcusdt@ticker",
-  //   "manausdt@ticker",
-  //   "uniusdt@ticker",
-  //   "bchusdt@ticker",
-  //   "trxusdt@ticker",
-  //   "xlmusdt@ticker",
-  //   "atomusdt@ticker",
-  //   "nearusdt@ticker",
-  //   "pepeusdt@ticker",
-  // ]);
+  useDepthAggTrades([`${pair}@aggTrade`], pair);
+  useOrderbook([`${pair}@depth20@1000ms`], pair);
+  useTickers([
+    "btcusdt@ticker",
+    "ethusdt@ticker",
+    "solusdt@ticker",
+    "xrpusdt@ticker",
+    "dogeusdt@ticker",
+    "adausdt@ticker",
+    "avaxusdt@ticker",
+    "linkusdt@ticker",
+    "dotusdt@ticker",
+    "ltcusdt@ticker",
+    "shibusdt@ticker",
+    "etcusdt@ticker",
+    "manausdt@ticker",
+    "uniusdt@ticker",
+    "bchusdt@ticker",
+    "trxusdt@ticker",
+    "xlmusdt@ticker",
+    "atomusdt@ticker",
+    "nearusdt@ticker",
+    "pepeusdt@ticker",
+  ]);
   return (
     <main
       className="lg:flex lg:justify-center bg-gray-900 lg:bg-black overflow-x-hidden"

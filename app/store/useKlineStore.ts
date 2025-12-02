@@ -69,7 +69,7 @@ interface KlineState {
   candles: CandlestickData[];
   histogram: HistogramData[];
   indicators: CompareSeriesMap<CompareSeriesType, SeriesType>;
-  applySnapShot: (key: string, list: Promise<BinanceUiKline[]>) => void;
+  applySnapShot: (key: string, list: BinanceUiKline) => void;
   applyStream: (key: string, data: BinanceKlineStream) => void;
   reset: () => void;
 }
@@ -147,8 +147,8 @@ export const useKlineStore = create<KlineState>((set, get) => {
         },
       },
     },
-    applySnapShot: async (key, list) => {
-      const data = await list;
+    applySnapShot: async (key, data) => {
+      // const data = await list;
       let candles: CandlestickData[] = [];
       let histogram: HistogramData[] = [];
       for (const e of data) {
@@ -212,7 +212,7 @@ export const useKlineStore = create<KlineState>((set, get) => {
         // ---- MA incremental ----
         const take = (period: number) =>
           candles.length < period
-            ? null
+            ? close
             : candles.slice(-period).reduce((a, c) => a + c.close, 0) / period;
 
         indicators.MA1.data.push({ time: t, value: take(7) });
@@ -244,7 +244,7 @@ export const useKlineStore = create<KlineState>((set, get) => {
 
         const recalcMA = (period: number) =>
           candles.length < period
-            ? null
+            ? close
             : candles.slice(-period).reduce((a, c) => a + c.close, 0) / period;
 
         indicators.MA1.data[indicators.MA1.data.length - 1] = {

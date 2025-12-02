@@ -64,7 +64,7 @@ export default function ({ pair, openMobileTrade, type, setIsBuy ,isBuy}) {
 
                 <div className="bg-gray-900 lg:bg-gray-950 mt-1 flex-1 lg:mr-1 rounded-sm lg:flex lg:flex-col">
                   <div className="p-2 px-4 border-b-2 border-b-gray-700 lg:border-b-gray-900">
-                    <p className="text-gray-50 font-semibold md:text-md lg:text-lg">
+                    <p className="text-gray-50 font-semibold md:text-lg">
                       Order Book
                     </p>
                   </div>

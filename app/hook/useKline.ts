@@ -32,15 +32,12 @@ export const useKlines = (symbol: string, interval: string) => {
   });
   useEffect(() => {
     (async () => {
-      await fetch(
+      const response = await fetch(
         `${LOCAL_URL}/kline/${symbol.toUpperCase()}?interval=${interval}`
       )
-        .then((e) => {
-          const data = e.json();
-          applySnapShot(interval, data);
-          // calculate(data);
-        })
-        .catch(() => console.log("Getting kline via REST api is failed"));
+      const data = await response.json();
+      applySnapShot(interval, data);
+      console.log("KLINE SNAPSHOT FETCHED");
     })();
     const params = [`${symbol.toLowerCase()}@kline_${interval}`];
     sendJsonMessage({ method: "SUBSCRIBE", params, id: Date.now() });

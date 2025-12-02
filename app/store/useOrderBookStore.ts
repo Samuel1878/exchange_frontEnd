@@ -22,34 +22,43 @@ export interface BinanceResponse {
   asks: string[][];
 }
 function initialApply(deltas: string[][]) {
-          let data = [];
-          deltas.forEach(([price, size]) => {
-            if (Number(size) >= 0) {
-              let p = Number(price);
-              let a = Number(Number(size).toFixed(6));
-              let t = Number((p * a).toFixed(2));
-              let depth = ((t / p) * 100).toString();
-              data.push({ price, p, amount: a, total: t, depth: depth });
-            }
-          });
-          return data;
-        }
+  let data = [];
+  deltas.forEach(([price, size]) => {
+    if (Number(size) >= 0) {
+      let p = Number(price);
+      let a = Number(Number(size).toFixed(6));
+      let t = Number((p * a).toFixed(2));
+      let depth = "0";
+      if (p >= 1000) {
+        depth = ((t / p) * 100).toString();
+      } else if (p < 1000) {
+        depth = ((t / p) * 10).toString();
+      } else if (p < 100) {
+        depth = (t / p).toString();
+      } else if (p < 10) {
+        depth = (t / p / 10).toString();
+      }
+
+      data.push({ price, p, amount: a, total: t, depth: depth });
+    }
+  });
+  return data;
+}
 export const useOrderbookStore = create<OrderbookState>((set, get) => ({
   bids: [],
   asks: [],
   totalLevel: 36,
   lastUpdateId: null,
-  addSnapShot: (data) => set((s)=> ({
-    lastUpdateId : data.lastUpdateId,
-    bids :initialApply(data.bids),
-    asks : initialApply(data.asks),
-    totalLevel:36
-    
-  })),
+  addSnapShot: (data) =>
+    set((s) => ({
+      lastUpdateId: data.lastUpdateId,
+      bids: initialApply(data.bids),
+      asks: initialApply(data.asks),
+      totalLevel: 36,
+    })),
   applyDiffs: (diffs: BinanceResponse) =>
     set(
       produce((state: OrderbookState) => {
-
         function applyDeltas(levels: LevelType[], deltas: string[][]) {
           const updated = [...levels];
 
@@ -58,7 +67,17 @@ export const useOrderbookStore = create<OrderbookState>((set, get) => ({
               let p = Number(price);
               let a = Number(Number(size).toFixed(6));
               let t = Number((p * a).toFixed(2));
-              let depth = ((t / p) * 100).toString();
+
+              let depth = "0";
+              if (p >= 1000) {
+                depth = ((t / p) * 100).toString();
+              } else if (p < 1000) {
+                depth = ((t / p) * 10).toString();
+              } else if (p < 100) {
+                depth = (t / p).toString();
+              } else if (p < 10) {
+                depth = (t / p / 10).toString();
+              }
               updated.push({ price: p, amount: a, total: t, depth: depth });
             }
           });
