@@ -1,6 +1,7 @@
 import { FaChevronRight } from "react-icons/fa6";
 import { Link } from "react-router";
 import { newsList } from "~/consts/news";
+import { ver_1, ver_2 } from "~/utils";
 
 export default function () {
   const article_one = newsList[0];
@@ -17,7 +18,7 @@ export default function () {
         <div
           className=" min-w-75 max-w-78 h-150 rounded-2xl p-4 overflow-hidden justify-between flex flex-col"
           style={{
-            backgroundImage: `url(${"assets/images/ver_1.svg"})`,
+            backgroundImage: `url(${ver_1})`,
             backgroundPosition: "center center",
             backgroundSize: "cover",
           }}
@@ -47,7 +48,7 @@ export default function () {
         <div
           className="min-w-75 max-w-78 h-150 rounded-2xl justify-between hidden md:flex flex-col p-4"
           style={{
-            backgroundImage: `url(${"assets/images/ver_1.svg"})`,
+            backgroundImage: `url(${ver_2})`,
             backgroundPosition: "center center",
             backgroundSize: "cover",
           }}
@@ -77,7 +78,7 @@ export default function () {
         <div
           className="min-w-75 h-150 max-w-78 rounded-2xl justify-between md:hidden lg:flex hidden flex-col p-4"
           style={{
-            backgroundImage: `url(${"assets/images/ver_1.svg"})`,
+            backgroundImage: `url(${ver_1})`,
             backgroundPosition: "center center",
             backgroundSize: "cover",
           }}

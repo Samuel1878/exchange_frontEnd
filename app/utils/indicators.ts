@@ -79,13 +79,9 @@ export const calcWMA = (candles: CandlestickData[], period: number): LineData[] 
 
 // 🔧 Utility: incremental MA
 export function computeIncrementalMA(candles: CandlestickData[], period: number) {
-  if (candles.length < period) return null;
-
-  let sum = 0;
-  for (let i = candles.length - period; i < candles.length; i++) {
-    sum += candles[i].close;
-  }
-  return sum / period;
+ candles.length < period
+          ? null
+          : candles.slice(-period).reduce((a, c) => a + c.close, 0) / period;
 }
 
 // 🔧 Utility: incremental EMA

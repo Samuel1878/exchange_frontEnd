@@ -87,10 +87,10 @@ export default function ({pair , openPairs, setOpenPairs}) {
             </p>
           </div>
         </div>
-        <p className="text-xs font-light text-gray-500 flex md:hidden cursor-pointer items-center gap-2">
+        <Link to={`/market/${pair}`} className="text-xs font-light text-gray-500 flex md:hidden cursor-pointer items-center gap-2">
           {CoinPairs[pair].names[2]} Price{" "}
           <FiArrowUpRight size={11} color="#888" />
-        </p>
+        </Link>
       </div>
       <div className="flex justify-between flex-1 md:flex-3 lg:flex-4 relative">
         <div className="space-y-2 md:flex md:flex-1 md:justify-around">

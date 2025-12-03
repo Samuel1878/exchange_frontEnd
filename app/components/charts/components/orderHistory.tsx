@@ -1,3 +1,5 @@
+import { NoData } from "~/components/noData";
+
 const OrderHistory = () => {
     return (
       <div className="w-full min-h-100 h-dvh md:min-h-120 md:max-h-150 lg:min-h-150 lg:max-h-200 bg-gray-900 rounded-md lg:bg-gray-950">
@@ -5,8 +7,8 @@ const OrderHistory = () => {
           <p className={`font-semibold text-md text-gray-50`}>Open Orders</p>
           <p className={`font-semibold text-md text-gray-50`}>Order History</p>
         </div>
-        <div className="flex">
-
+        <div className="flex justify-center items-center w-full pt-10">
+          <NoData/>
         </div>
       </div>
     );

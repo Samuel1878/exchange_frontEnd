@@ -2,243 +2,476 @@ import FooterSection from "~/components/footer";
 import type { Route } from "./+types/[type]";
 import { ArrowUpDown } from "lucide-react";
 import React from "react";
-
-
+import { getCoinDetailAPI, getPriceAPI } from "~/api/price";
+import { CoinPairs } from "~/consts/pairs";
+import { formatPrice } from "~/components/charts/util";
+import { formatNumber, formatTotalPrice } from "~/utils/helpers";
+import { TbWorld } from "react-icons/tb";
+import { PiBookOpenTextFill } from "react-icons/pi";
+import { FaCode } from "react-icons/fa";
 export async function clientLoader({ params }: Route.LoaderArgs) {
-    const CryptoName = params.type;
-    if (!CryptoName) {
-        throw new Response("Not Found", { status: 404 });
-    }
-    
-    return { CryptoName };
-
+  let loaded = false;
+  const pair = params.type;
+  if (!pair) {
+    throw new Response("Not Found", { status: 404 });
+  }
+  const coin_id = CoinPairs[pair].names[0] + "-" + CoinPairs[pair].names[2].replaceAll(" ", "-");
+  const priceData = await getPriceAPI(coin_id.toLowerCase());
+  const coinInfo = await getCoinDetailAPI(coin_id.toLowerCase());
+  loaded = true;
+  return { pair, priceData, coinInfo, loaded };
 }
 
 export async function clientAction({ params }: Route.ClientActionArgs) {
-    try {
-
-    } catch (error) {
-
-
-    }
+  try {
+  } catch (error) {}
 }
-const getProgressColor = (currentPrice: number, lowPrice: number, highPrice: number) => {
-    console.log("Low Price:", lowPrice);
-    console.log("Current Price:", currentPrice);
-    console.log("High Price:", highPrice);
+const getProgressColor = (
+  currentPrice: number,
+  lowPrice: number,
+  highPrice: number
+) => {
+  // console.log("Low Price:", lowPrice);
+  // console.log("Current Price:", currentPrice);
+  // console.log("High Price:", highPrice);
 
-    // Calculate the midpoint between low and high
-    const midpoint = (lowPrice + highPrice) / 2;
+  // Calculate the midpoint between low and high
+  const midpoint = (lowPrice + highPrice) / 2;
 
-    if (currentPrice < midpoint) return 'from-red-600 to-red-600';
-    return 'from-green-500 to-green-400';
+  if (currentPrice < midpoint) return "from-red-600 to-red-600";
+  return "from-green-500 to-green-400";
 };
 
-const ProgressComponent = () => {
-    const lowPrice = 94000.73;
-    const highPrice = 53.10;
-    const currentPrice = 96254.76;
+const ProgressComponent = ({ low, high, current }) => {
+  //   const lowPrice = 94000.73;
+  //   const highPrice = 53.1;
+  //   const currentPrice = 96254.76;
 
-    // Calculate progress percentage
-    const progress = ((currentPrice - lowPrice) / (highPrice - lowPrice)) * 100;
+  // Calculate progress percentage
+  const progress = ((current - low) / (high - low)) * 100;
 
-    return (
-        <div className="flex flex-1 justify-between items-center gap-4">
-            <p className="text-sm text-gray-600 whitespace-nowrap">Low: ${lowPrice.toLocaleString()}</p>
-            <div className="flex-1">
-                <div
-                    className="h-1 bg-green-700 rounded-full overflow-hidden"
-                >
-                    <div
-                        className={`h-full bg-gradient-to-r ${getProgressColor(currentPrice, lowPrice, highPrice)} transition-all duration-300`}
-                        style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
-                    />
-                </div>
-            </div>
-            <p className="text-sm text-gray-600 whitespace-nowrap">High: ${highPrice.toLocaleString()}</p>
+  return (
+    <div className="flex flex-1 justify-between items-center gap-4">
+      <p className="text-sm text-gray-600 whitespace-nowrap">
+        Low: ${low.toLocaleString()}
+      </p>
+      <div className="flex-1">
+        <div className="h-1 bg-green-700 rounded-full overflow-hidden">
+          <div
+            className={`h-full bg-gradient-to-r ${getProgressColor(current, low, high)} transition-all duration-300`}
+            style={{ width: `${Math.max(0, Math.min(100, progress))}%` }}
+          />
         </div>
-    );
-}
-const cryptocurrencies = [
-    {
-        symbol: "BTC",
-        name: "Bitcoin",
-        description: "Bitcoin is one of the most popular cryptocurrencies in the market. First introduced in 2009 by Satoshi Nakamoto, Bitcoin continues to be the top cryptocurrency by market capitalization. Bitcoin paved the way for many existing altcoins in the market and marked a pivotal moment for digital payment solutions. Bitcoin recorded a new all-time high of $111,970 in May 2025, pushing the crypto market capitalization to an impressive $3.5 trillion.",
-        additionalInfo: "As the world's first cryptocurrency, Bitcoin has come a long way in terms of its value. Bitcoin crossed $108K, reaching an all-time high in December 2024. There is no physical BTC token so Bitcoin operates as a digital currency. Bitcoin transactions are fully transparent and can't be censored, providing a global, censorship-resistant medium for financial exchange. It's a financial system backed by decentralized network of computers, known as 'nodes', instead of centralized banking or governmental entity, thereby promoting 'decentralization'."
-    },
-    {
-        symbol: "ETH",
-        name: "Ethereum",
-        description: "Ethereum is a decentralized blockchain platform that enables smart contracts and decentralized applications (dApps) to be built and run without any downtime, fraud, control, or interference from a third party. Ethereum is the second-largest cryptocurrency by market capitalization and has played a significant role in the development of decentralized finance (DeFi).",
-        additionalInfo: "Ethereum introduced the concept of smart contracts, which are self-executing contracts with the terms of the agreement directly written into code. The Ethereum network transitioned from Proof-of-Work to Proof-of-Stake in 2022 through 'The Merge', significantly reducing its energy consumption. Ethereum's native cryptocurrency, Ether (ETH), is used to power transactions and computational services on the network."
-    }
-];
+      </div>
+      <p className="text-sm text-gray-600 whitespace-nowrap">
+        High: ${high.toLocaleString()}
+      </p>
+    </div>
+  );
+};
 export default function ByMarketPrice({ loaderData }: Route.ComponentProps) {
-    const borrowingPeriods = [7, 15, 30, 45, 60, 90, 180];
-    return (
-        <main className="bg-gray-900 lg:bg-gray-950 overflow-x-hidden">
-            <section
-                id="hero"
-                className="flex flex-col lg:items-center"
-            >
-                <article id="hero1" className="flex flex-col gap-4 lg:gap-y-8 lg:max-w-6xl xl:min-w-6xl">
-                    <div className="lg:max-w-6xl md:max-w-7xl">
-                        <div className="text-gray-300 p-6 md:p-5 space-y-7">
-                            <div className="flex flex-col lg:flex-row lg:items-center md:items-start lg:justify-between lg:gap-6">
-                                <div className="space-y-2 mb-4 lg:space-x-7 lg:w-3/6">
-                                    <div className="space-y-2 mb-4 lg:space-x-7">
-                                        <h1 className="text-2xl text-white">Bitcoin Price ({loaderData.CryptoName})</h1>
-                                        <div className="lg:flex lg:items-center lg:gap-4">
-                                            <h4>BTC to <span className="text-green-500">USD</span>:</h4>
-                                            <p className="text-sm font-thin">1 Bitcoin equals $96,254.76 USD<span className="text-red-600">-5.84%</span>1D</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-xl font-bold lg:text-xl space-y-4">
-                                        <h1>Bitcoin Chart Performance</h1>
-                                    </div>
-                                    <div className="space-y-7">
-                                        <p className="text-sm text-gray-600">24h Low & High</p>
-                                        <ProgressComponent />
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">All Time High</p>
-                                            <p className="text-sm text-red-600">$1,920.14</p>
-                                        </div>
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">Price Change (1h)</p>
-                                            <p className="text-sm text-red-600">-0.18%</p>
-                                        </div>
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">Market Cap</p>
-                                            <p className="text-sm text-red-600">-0.18%</p>
-                                        </div>
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">24h Trading Volume</p>
-                                            <p className="text-sm text-red-600">-0.18%</p>
-                                        </div>
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">24h Volume / Market Cap</p>
-                                            <p className="text-sm text-red-600">-0.18%</p>
-                                        </div>
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">Circulating Supply</p>
-                                            <p className="text-sm text-red-600">-0.18%</p>
-                                        </div>
-                                    </div>
-                                    <div className="text-xl font-bold lg:text-xl space-y-4 mt-6">
-                                        <h1>Bitcoin Market Stats</h1>
-                                    </div>
-                                    <div className="space-y-7">
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">Popularity</p>
-                                            <p className="text-sm ">High</p>
-                                        </div>
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">Market Rank</p>
-                                            <p className="text-sm">1</p>
-                                        </div>
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">Market Cap</p>
-                                            <p className="text-sm">$1,920.14B</p>
-                                        </div>
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">24h Trading Volume</p>
-                                            <p className="text-sm">$128.98B</p>
-                                        </div>
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">24h Volume / Market Cap</p>
-                                            <p className="text-sm">0.0672</p>
-                                        </div>
-                                        <div className="flex flex-2 justify-between">
-                                            <p className="text-sm text-gray-600">Circulating Supply</p>
-                                            <p className="text-sm">19.95M BTC</p>
-                                        </div>
-                                    </div>
+  const { pair, priceData, coinInfo, loaded } = loaderData;
 
-                                </div>
-                                <div className="border border-gray-700 rounded-lg p-4 lg:p-6 w-full md:w-[400px]">
-                                    <div className="flex flex-col-2 gap-4 justify-between lg:items-center lg:flex-row">
-                                        <button>Buy BTC</button>
-                                        {/* <button>Sell BTC</button> */}
-                                    </div>
-                                    <div className="border border-gray-700 rounded-lg p-4 lg:p-6 mt-4 lg:space-y-5">
-                                        <div className="flex flex-col-2 justify-between lg:items-center lg:flex-row">
-                                            <p>You Buy</p>
-                                            <p className="border-none rounded bg-gray-950 text-gray-100 w-[100px] justify-center items-center align-middle p-1 lg:bg-gray-900">BTC</p>
-                                        </div>
-                                        <input type="text" className="w-full border-gray-300 rounded-md px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900 lg:focus:ring-gray-950" />
-                                    </div>
-                                    <div className="pt-4 lg:pt-6 text-sm font-thin">
-                                        <p className="p-2 flex"><ArrowUpDown className="border-none mr-2 rounded-2xl p-1 bg-gray-950" />1 BTC ≈ USD $96,254.76</p>
-                                    </div>
-                                    <div className="border border-gray-700 rounded-lg p-4 lg:p-6 mt-4 lg:space-y-5">
-                                        <div className="flex flex-col-2 justify-between lg:items-center lg:flex-row">
-                                            <p>You Spend</p>
-                                            <p className="border-none rounded bg-gray-950 text-gray-100 w-[100px] justify-center items-center align-middle p-1 lg:bg-gray-900">USD</p>
-                                        </div>
-                                        <input type="text" className="w-full border-gray-300 rounded-md px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900 lg:focus:ring-gray-950" />
-                                    </div>
-                                    {/* <div className="text-center mt-6 text-gray-900 font-bold">
+  return (
+    <main className="bg-gray-900 lg:bg-gray-950 overflow-x-hidden">
+      <section id="hero" className="flex flex-col lg:items-center">
+        <article
+          id="hero1"
+          className="flex flex-col gap-4 lg:gap-y-8 lg:max-w-6xl xl:min-w-6xl"
+        >
+          <div className="lg:max-w-6xl md:max-w-7xl">
+            <div className="text-gray-300 p-6 md:p-5 space-y-7">
+              <div className="flex flex-col lg:flex-row lg:items-center md:gap-4 lg:justify-between lg:gap-6">
+                {loaded ? (
+                  <div className="space-y-2 mb-4 lg:w-3/6">
+                    <div className="space-y-2 mb-4 lg:space-x-7">
+                      <h1 className="text-2xl text-white font-bold inline-flex items-center gap-2">
+                        <img src={coinInfo?.logo} width={25} />
+                        {priceData?.name} Price ({priceData?.symbol})
+                      </h1>
+                      <div className="lg:flex font-bold lg:items-center lg:gap-4">
+                        <h4>
+                          {priceData?.symbol} to{" "}
+                          <span className="text-green-500">USD</span>:
+                        </h4>
+                        <p className="text-sm font-medium lg:text-md">
+                          1 {priceData?.name} equals $
+                          {formatNumber(priceData?.quotes["USD"]?.price)} USD
+                          <span
+                            className={`ml-2 ${priceData?.quotes["USD"]?.percent_change_24h >= 0 ? "text-green-400" : "text-red-500"}`}
+                          >
+                            {priceData?.quotes["USD"]?.percent_change_24h}%
+                          </span>
+                          1D
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-xl font-bold lg:text-xl space-y-4 mt-6">
+                      <h1>Bitcoin Chart Performance</h1>
+                    </div>
+                    <div className="space-y-7">
+                      {/* <p className="text-sm text-gray-600 font-semibold">
+                        24h Low & High
+                      </p> */}
+                      {/* <ProgressComponent high={priceData?.quotes["USD"].} low={ } current={}/> */}
+                      <div className="flex flex-2 justify-between items-center">
+                        <p className="text-sm text-gray-600">All Time Price</p>
+                        <div className="text-right">
+                          <p className={`text-sm text-gray-200`}>
+                            ${formatNumber(priceData?.quotes["USD"]?.ath_price)}
+                          </p>
+                          <p
+                            className={`text-sm ${priceData?.quotes["USD"]?.percent_from_price_ath < 0 ? "text-red-500" : "text-green-400"}`}
+                          >
+                            {priceData?.quotes["USD"]?.percent_from_price_ath}%
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-2 justify-between">
+                        <p className="text-sm text-gray-600">
+                          Price Change (1h)
+                        </p>
+                        <p
+                          className={`text-sm ${priceData?.quotes["USD"].percent_change_1h < 0 ? "text-red-500" : "text-green-400"}`}
+                        >
+                          {priceData?.quotes["USD"].percent_change_1h}%
+                        </p>
+                      </div>
+                      <div className="flex flex-2 justify-between">
+                        <p className="text-sm text-gray-600">
+                          Price Change(6h)
+                        </p>
+                        <p
+                          className={`text-sm ${priceData?.quotes["USD"].percent_change_6h < 0 ? "text-red-500" : "text-green-400"}`}
+                        >
+                          {priceData?.quotes["USD"].percent_change_6h}%
+                        </p>
+                      </div>
+                      <div className="flex flex-2 justify-between">
+                        <p className="text-sm text-gray-600">
+                          Price Change(12h)
+                        </p>
+                        <p
+                          className={`text-sm ${priceData?.quotes["USD"].percent_change_12h < 0 ? "text-red-500" : "text-green-400"}`}
+                        >
+                          {priceData?.quotes["USD"].percent_change_12h}%
+                        </p>
+                      </div>
+                      <div className="flex flex-2 justify-between">
+                        <p className="text-sm text-gray-600">
+                          Price Change(24h)
+                        </p>
+                        <p
+                          className={`text-sm ${priceData?.quotes["USD"].percent_change_24h < 0 ? "text-red-500" : "text-green-400"}`}
+                        >
+                          {priceData?.quotes["USD"].percent_change_24h}%
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-xl font-bold lg:text-xl space-y-4 mt-6">
+                      <h1>Bitcoin Market Stats</h1>
+                    </div>
+                    <div className="space-y-7">
+                      <div className="flex flex-2 justify-between">
+                        <p className="text-sm text-gray-600">Popularity</p>
+                        <p className="text-sm ">#{priceData?.rank}</p>
+                      </div>
+                      <div className="flex flex-2 justify-between items-center">
+                        <p className="text-sm text-gray-600">Market Cap</p>
+                        <div className="text-right">
+                          <p className="text-sm">
+                            $
+                            {formatTotalPrice(
+                              priceData?.quotes["USD"]?.market_cap
+                            )}
+                          </p>
+                          <p
+                            className={`text-sm ${priceData?.quotes["USD"].market_cap_change_24h < 0 ? "text-red-500" : "text-green-400"}`}
+                          >
+                            {priceData?.quotes["USD"]?.market_cap_change_24h}%
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-2 justify-between items-center">
+                        <p className="text-sm text-gray-600">
+                          Volume (24hours)
+                        </p>
+                        <div className="text-right ">
+                          <p className="text-sm">
+                            $
+                            {formatTotalPrice(
+                              priceData?.quotes["USD"].volume_24h
+                            )}
+                          </p>
+                          <p
+                            className={`text-sm ${priceData?.quotes["USD"].volume_24h_change_24h < 0 ? "text-red-500" : "text-green-400"}`}
+                          >
+                            {priceData?.quotes["USD"].volume_24h_change_24h}%
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-2 justify-between">
+                        <p className="text-sm text-gray-600">
+                          Circulation Supply
+                        </p>
+                        <p className="text-sm">
+                          {formatTotalPrice(priceData?.total_supply)}
+                        </p>
+                      </div>
+                      <div className="flex flex-2 justify-between">
+                        <p className="text-sm text-gray-600">
+                          Total Maximum Supply
+                        </p>
+                        <p className="text-sm">
+                          {formatTotalPrice(priceData?.max_supply)}
+                        </p>
+                      </div>
+                      <div className="flex flex-2 justify-between">
+                        <p className="text-sm text-gray-600">
+                          Fully Diluted Market Cap
+                        </p>
+                        <p className="text-sm">
+                          {formatTotalPrice(
+                            priceData?.max_supply *
+                              priceData?.quotes["USD"].price
+                          )}
+                        </p>
+                      </div>
+                     { coinInfo?.started_at && <div className="flex flex-2 justify-between">
+                        <p className="text-sm text-gray-600">Issue Date</p>
+                        <p className="text-sm">
+                          {
+                            new Date(coinInfo?.started_at)
+                              .toISOString()
+                              .split("T")[0]
+                          }
+                        </p>
+                      </div>}
+                    </div>
+                  </div>
+                ) : (
+                  <div>Loading...</div>
+                )}
+                <div className="border border-gray-700 rounded-lg p-4 lg:p-6 w-full lg:w-[400px]">
+                  <div className="flex flex-col-2 gap-4 justify-between lg:items-center lg:flex-row">
+                    <button>Buy BTC</button>
+                    {/* <button>Sell BTC</button> */}
+                  </div>
+                  <div className="border border-gray-700 rounded-lg p-4 lg:p-6 mt-4 lg:space-y-5">
+                    <div className="flex flex-col-2 justify-between lg:items-center lg:flex-row">
+                      <p>You Buy</p>
+                      <p className="border-none rounded bg-gray-950 text-gray-100 w-[100px] justify-center items-center align-middle p-1 lg:bg-gray-900">
+                        BTC
+                      </p>
+                    </div>
+                    <input
+                      type="text"
+                      className="w-full border-gray-300 rounded-md px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900 lg:focus:ring-gray-950"
+                    />
+                  </div>
+                  <div className="pt-4 lg:pt-6 text-sm font-thin">
+                    <p className="p-2 flex">
+                      <ArrowUpDown className="border-none mr-2 rounded-2xl p-1 bg-gray-950" />
+                      1 {priceData?.symbol} ≈ USD $
+                      {formatNumber(priceData?.quotes["USD"].price)}
+                    </p>
+                  </div>
+                  <div className="border border-gray-700 rounded-lg p-4 lg:p-6 mt-4 lg:space-y-5">
+                    <div className="flex flex-col-2 justify-between lg:items-center lg:flex-row">
+                      <p>You Spend</p>
+                      <p className="border-none rounded bg-gray-950 text-gray-100 w-[100px] justify-center items-center align-middle p-1 lg:bg-gray-900">
+                        USD
+                      </p>
+                    </div>
+                    <input
+                      type="text"
+                      className="w-full border-gray-300 rounded-md px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900 lg:focus:ring-gray-950"
+                    />
+                  </div>
+                  {/* <div className="text-center mt-6 text-gray-900 font-bold">
                                         <button className="bg-amber-300 w-full p-3 rounded">Buy BTC</button>
                                     </div> */}
-                                </div>
-                            </div>
-                            <div className="space-y-2 mb-4 lg:space-x-7">
-                                <div className="text-2xl font-bold lg:text-2xl space-y-4">
-                                    <h1>Price of Bitcoin Today</h1>
-                                    <p className="text-sm font-thin">The live price of Bitcoin
-                                        is $96,254.76 per (BTC / USD) with a current market cap of
-                                        $1,920.14B USD. 24-hour trading volume is $128.98B USD.
-                                        BTC to USD price is updated in real-time.
-                                        Bitcoin is -5.84% in the last 24 hours with a circulating supply of 19.95M.
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="space-y-2 mb-4 lg:space-x-7">
-                                <div className="text-xl font-bold lg:text-xl space-y-4">
-                                    <h1>BTC Price History USD</h1>
-                                </div>
-                                <table className="min-w-full text-sm">
-                                    <thead className="text-sm font-thin text-gray-400">
-                                        <tr className="text-sm font-thin">
-                                            <th className="text-left px-4 py-2">Date Comparison</th>
-                                            <th className="text-right px-4 py-2">Amount Change	</th>
-                                            <th className="text-right px-4 py-2">% Change</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {borrowingPeriods.map((period) => (
-                                            <tr key={period} className="text-amber-50 border-gray-700 even:bg-gray-800 hover:bg-gray-700 hover:rounded" >
-                                                <td className="items-center px-4 py-3">
-                                                    {period} Days Ago
-                                                </td>
-                                                <td className="text-right px-4 py-3">
-                                                    $-5,970.81
-                                                </td>
-                                                <td className="text-right px-4 py-3"> -0.249%
-                                                </td>
-                                            </tr>
-                                        ))}
-
-
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="space-y-2 mb-4 lg:space-y-7">
-                                {cryptocurrencies
-                                    .filter(crypto => crypto.symbol === loaderData.CryptoName)
-                                    .map((crypto) => (
-                                        <div key={crypto.symbol}>
-                                            <h1 className="text-xl text-white">What is {crypto.name} ({crypto.symbol})?</h1>
-                                            <p>{crypto.description}</p>
-                                            <p>{crypto.additionalInfo}</p>
-                                        </div>
-                                    ))}
-                            </div>
-                        </div>
+                </div>
+              </div>
+              <div className="space-y-2 mb-4 lg:space-x-7">
+                <div className="text-2xl font-bold lg:text-2xl space-y-4">
+                  <h1>Price of {priceData?.name} Today</h1>
+                  <p className="text-sm text-gray-500 font-light">
+                    The live price of {priceData?.name} is $
+                    {formatNumber(priceData?.quotes["USD"].price)} per (
+                    {priceData?.symbol} / USD) with a current market cap of $
+                    {formatTotalPrice(priceData?.quotes["USD"].market_cap)} USD.
+                    24-hour trading volume is $
+                    {formatTotalPrice(priceData?.quotes["USD"].volume_24h)} USD.{" "}
+                    {priceData?.symbol} to USD price is updated in real-time.{" "}
+                    {priceData?.name} is{" "}
+                    {priceData?.quotes["USD"].percent_change_24h}% in the last
+                    24 hours with a circulating supply of{" "}
+                    {formatTotalPrice(priceData?.total_supply)}.
+                  </p>
+                </div>
+              </div>
+              <div className="space-y-2 mb-4 lg:space-x-7">
+                <div className="text-xl font-bold lg:text-xl space-y-4">
+                  <h1>{priceData?.symbol} Price History USD</h1>
+                </div>
+                <table className="min-w-full text-sm">
+                  <thead className="text-sm font-thin text-gray-400">
+                    <tr className="text-sm font-thin">
+                      <th className="text-left px-4 py-2">Date Comparison</th>
+                      <th className="text-left px-4 py-2">Proximate Price</th>
+                      <th className="text-right px-4 py-2">% Change</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="text-amber-50 hover:bg-gray-800 hover:rounded">
+                      <td className="items-center px-4 py-3">7 Days Ago</td>
+                      <td className="items-center px-4 py-3">
+                        $
+                        {formatNumber(
+                          priceData?.quotes["USD"]?.price /
+                            (1 +
+                              priceData?.quotes["USD"]?.percent_change_7d / 100)
+                        )}
+                      </td>
+                      <td
+                        className={`text-right px-4 py-3 ${priceData?.quotes["USD"]?.percent_change_7d < 0 ? "text-red-500" : "text-green-400"}`}
+                      >
+                        {priceData?.quotes["USD"]?.percent_change_7d}%
+                      </td>
+                    </tr>
+                    <tr className="text-amber-50 hover:bg-gray-800 hover:rounded">
+                      <td className="items-center px-4 py-3">30 Days Ago</td>
+                      <td className="items-center px-4 py-3">
+                        $
+                        {formatNumber(
+                          priceData?.quotes["USD"]?.price /
+                            (1 +
+                              priceData?.quotes["USD"]?.percent_change_30d /
+                                100)
+                        )}
+                      </td>
+                      <td
+                        className={`text-right px-4 py-3 ${priceData?.quotes["USD"]?.percent_change_30d < 0 ? "text-red-500" : "text-green-400"}`}
+                      >
+                        {priceData?.quotes["USD"]?.percent_change_30d}%
+                      </td>
+                    </tr>
+                    <tr className="text-amber-50 hover:bg-gray-800 hover:rounded">
+                      <td className="items-center px-4 py-3">1 Years ago</td>
+                      <td className="items-center px-4 py-3">
+                        $
+                        {formatNumber(
+                          priceData?.quotes["USD"]?.price /
+                            (1 +
+                              priceData?.quotes["USD"]?.percent_change_1y / 100)
+                        )}
+                      </td>
+                      <td
+                        className={`text-right px-4 py-3 ${priceData?.quotes["USD"]?.percent_change_1y < 0 ? "text-red-500" : "text-green-400"}`}
+                      >
+                        {priceData?.quotes["USD"]?.percent_change_1y}%
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="space-y-2 mb-4 lg:space-y-7">
+                <h1 className="text-xl text-white">Description</h1>
+                <p className="text-sm lg:text-lg text-gray-500">
+                  {coinInfo?.description}
+                </p>
+              </div>
+              <div className="space-y-2 mb-4 lg:space-y-7">
+                <h1 className="text-xl text-white">Resource</h1>
+                <div>
+                  {coinInfo?.links?.website && (
+                    <div className="flex gap-2 items-center mb-2">
+                      <TbWorld size={20} color="#666" />
+                      <a
+                        href={coinInfo?.links?.website[0]}
+                        target="_blank"
+                        className="text-amber-400 text-lg"
+                      >
+                        Official {priceData?.name} Website
+                      </a>
                     </div>
-                </article>
-            </section>
-            <FooterSection />
-        </main>
-    )
+                  )}
+                  {coinInfo?.whitepaper?.link && (
+                    <div className="flex gap-2 items-center mb-2">
+                      <PiBookOpenTextFill size={20} color="#666" />
+
+                      <a
+                        href={coinInfo?.whitepaper?.link}
+                        target="_blank"
+                        className="text-amber-400 text-lg"
+                      >
+                        White paper
+                      </a>
+                    </div>
+                  )}
+                  {coinInfo?.links?.source_code && (
+                    <div className="flex gap-2 items-center mb-6">
+                      <FaCode size={20} color="#666" />
+                      <a
+                        href={coinInfo?.links?.source_code[0]}
+                        target="_blank"
+                        className="text-amber-400 text-lg"
+                      >
+                        Source Code
+                      </a>
+                    </div>
+                  )}
+
+                  {coinInfo?.links?.explorer && (
+                    <div>
+                      <p className="text-sm lg:text-lg text-gray-500">
+                        Explorer:{" "}
+                        <a
+                          href={coinInfo?.links?.explorer[0]}
+                          target="_blank"
+                          className="pb-1 mb-1 ml-2 text-amber-400 underline"
+                        >
+                          {coinInfo?.links?.explorer[0]}
+                        </a>
+                      </p>
+                    </div>
+                  )}
+                  {coinInfo?.links?.reddit && (
+                    <div>
+                      <p className="text-sm lg:text-lg text-gray-500">
+                        Reddit:{" "}
+                        <a
+                          href={coinInfo?.links?.reddit[0]}
+                          target="_blank"
+                          className="pb-1 mb-1 ml-2 text-amber-400 underline"
+                        >
+                          {coinInfo?.links?.reddit[0]}
+                        </a>
+                      </p>
+                    </div>
+                  )}
+                  {coinInfo?.links?.youtube && (
+                    <div>
+                      <p className="text-sm lg:text-lg text-gray-500">
+                        Youtube:{" "}
+                        <a
+                          href={coinInfo?.links?.youtube[0]}
+                          target="_blank"
+                          className="pb-1 ml-2 mb-1 text-amber-400 underline"
+                        >
+                          {coinInfo?.links?.youtube[0]}
+                        </a>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+      <FooterSection />
+    </main>
+  );
 }

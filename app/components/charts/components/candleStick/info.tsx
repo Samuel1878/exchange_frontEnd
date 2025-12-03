@@ -1,135 +1,10 @@
+
 import { useEffect, useState } from "react";
 import { FaRankingStar } from "react-icons/fa6";
+import { getCoinDetailAPI, getPriceAPI, type AssetData, type CoinDetail } from "~/api/price";
 import { LOCAL_URL } from "~/consts";
 import { CoinPairs } from "~/consts/pairs";
 import { formatTotalPrice } from "~/utils/helpers";
-export interface AssetQuote {
-  price: number;
-  volume_24h: number;
-  volume_24h_change_24h: number;
-  market_cap: number;
-  market_cap_change_24h: number;
-  percent_change_15m: number;
-  percent_change_30m: number;
-  percent_change_1h: number;
-  percent_change_6h: number;
-  percent_change_12h: number;
-  percent_change_24h: number;
-  percent_change_7d: number;
-  percent_change_30d: number;
-  percent_change_1y: number;
-  ath_price: number | null;
-  ath_date: string | null;
-  percent_from_price_ath: number | null;
-}
-
-export interface AssetData {
-  id: string;
-  name: string;
-  symbol: string;
-  rank: number;
-  circulating_supply: number;
-  total_supply: number;
-  max_supply: number | null;
-  beta_value: number;
-  first_data_at: string;
-  last_updated: string;
-  quotes: Record<string, AssetQuote>;
-}
-export interface CoinTag {
-  id: string;
-  name: string;
-  coin_counter: number;
-  ico_counter: number;
-}
-
-export interface CoinTeamMember {
-  id: string;
-  name: string;
-  position: string;
-}
-
-export interface CoinParent {
-  id: string;
-  name: string;
-  symbol: string;
-}
-
-export interface CoinContract {
-  contract: string;
-  platform: string;
-  type: string;
-}
-
-export interface CoinLinks {
-  explorer: string[];
-  facebook: string[];
-  reddit: string[];
-  source_code: string[];
-  website: string[];
-  youtube: string[];
-  medium: string[] | null;
-}
-
-export interface CoinExtendedLinkStats {
-  subscribers?: number;
-  contributors?: number;
-  stars?: number;
-}
-
-export interface CoinExtendedLink {
-  url: string;
-  type: string;
-  stats?: CoinExtendedLinkStats;
-}
-
-export interface CoinWhitepaper {
-  link: string;
-  thumbnail: string;
-}
-
-export interface CoinDetail {
-  id: string;
-  name: string;
-  symbol: string;
-
-  parent?: CoinParent | null;
-
-  rank: number;
-  is_new: boolean;
-  is_active: boolean;
-  type: string;
-
-  logo: string;
-  tags: CoinTag[];
-  team: CoinTeamMember[];
-
-  description: string;
-  message: string;
-
-  open_source: boolean;
-  hardware_wallet: boolean;
-
-  started_at: string;
-
-  development_status: string;
-  proof_type: string;
-  org_structure: string;
-  hash_algorithm: string;
-
-  contract: string;
-  platform: string;
-
-  contracts: CoinContract[];
-
-  links: CoinLinks;
-  links_extended: CoinExtendedLink[];
-
-  whitepaper: CoinWhitepaper;
-
-  first_data_at: string;
-  last_data_at: string;
-}
 
 export default function CandleStickInfo({pair}:{pair: string}) {
   const [loading, setLoading] = useState(true);
@@ -137,31 +12,11 @@ export default function CandleStickInfo({pair}:{pair: string}) {
   const [info, setInfo] = useState<CoinDetail>(null);
   useEffect(() => {
     (async () => {
-      const coin_id = CoinPairs[pair].names[0] + "-" + CoinPairs[pair].names[2];
-      const response = await fetch(
-        LOCAL_URL + "/price/" + coin_id.toLowerCase(),
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      response.json().then((res) => {
-        setData(res);
-      });
-      const info_response = await fetch(
-        LOCAL_URL + "/info/" + coin_id.toLowerCase(),
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      info_response.json().then((res) => {
-        setInfo(res);
-      });
+      const coin_id = CoinPairs[pair].names[0] + "-" + CoinPairs[pair].names[2].replaceAll(" ", "-");
+      const response = await getPriceAPI(coin_id.toLowerCase());
+      const response_info = await getCoinDetailAPI(coin_id.toLowerCase());
+      setData(response);
+      setInfo(response_info);
     })();
     setLoading(false);
   }, []);
@@ -277,25 +132,25 @@ export default function CandleStickInfo({pair}:{pair: string}) {
               <p className="text-gray-500 flex">Website</p>
               <div className="flex gap-2 flex-wrap
                ">
-                <a
+   {  info?.links?.website&&           <a
                   target="_blank"
                   href={info?.links?.website[0] ?? null}
                   className="text-xs p-2 bg-gray-800 rounded-md"
                 >
                   Official Website
-                </a>
-                <a
+                </a>}
+               {info?.whitepaper?.link&& <a
                   target="_blank"
                   href={info?.whitepaper?.link}
                   className="text-xs p-2 bg-gray-800 rounded-md"
                 >
                   Whitepaper
-                </a>
+                </a>}
               </div>
             </div>
             <div className="flex w-full justify-between items-center mb-4 ">
               <p className="text-gray-500 ">Block Explorer</p>
-              <div className="flex gap-2 ">
+             { info?.links?.explorer && <div className="flex gap-2 ">
                 <a
                   target="_blank"
                   href={info?.links?.explorer[0] ?? null}
@@ -303,7 +158,7 @@ export default function CandleStickInfo({pair}:{pair: string}) {
                 >
                   blockchain.info
                 </a>
-              </div>
+              </div>}
             </div>
             <div className="flex w-full justify-between items-center mb-4 flex-wrap ">
               <p className="text-gray-500 ">Research</p>

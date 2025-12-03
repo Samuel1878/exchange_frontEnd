@@ -6,6 +6,7 @@ export interface LevelType {
   amount: number;
   total: number;
   depth: string;
+  cumulative: number;
 }
 export interface OrderbookState {
   bids: LevelType[];
@@ -23,23 +24,27 @@ export interface BinanceResponse {
 }
 function initialApply(deltas: string[][]) {
   let data = [];
+  let maxQty = 0;
+  for (let i = 0; i < deltas.length; i++) {
+    const qty = deltas[i][1];
+    if (Number(qty) > maxQty) maxQty = Number(qty);
+  }
+  let cum = 0;
   deltas.forEach(([price, size]) => {
     if (Number(size) >= 0) {
       let p = Number(price);
       let a = Number(Number(size).toFixed(6));
       let t = Number((p * a).toFixed(2));
-      let depth = "0";
-      if (p >= 1000) {
-        depth = ((t / p) * 100).toString();
-      } else if (p < 1000) {
-        depth = ((t / p) * 10).toString();
-      } else if (p < 100) {
-        depth = (t / p).toString();
-      } else if (p < 10) {
-        depth = (t / p / 10).toString();
-      }
-
-      data.push({ price, p, amount: a, total: t, depth: depth });
+      cum += t;
+      let depth = ((a / maxQty) * 100).toString();
+      data.push({
+        price,
+        p,
+        amount: a,
+        total: t,
+        depth: depth,
+        cumulative: cum,
+      });
     }
   });
   return data;
@@ -61,24 +66,26 @@ export const useOrderbookStore = create<OrderbookState>((set, get) => ({
       produce((state: OrderbookState) => {
         function applyDeltas(levels: LevelType[], deltas: string[][]) {
           const updated = [...levels];
-
+          let cumulative = 0;
+          let maxQty = 0;
+          for (let i = 0; i < deltas.length; i++) {
+            const qty = deltas[i][1];
+            if (Number(qty) > maxQty) maxQty = Number(qty);
+          }
           deltas.forEach(([price, size]) => {
             if (Number(size) >= 0) {
               let p = Number(price);
               let a = Number(Number(size).toFixed(6));
               let t = Number((p * a).toFixed(2));
-
-              let depth = "0";
-              if (p >= 1000) {
-                depth = ((t / p) * 100).toString();
-              } else if (p < 1000) {
-                depth = ((t / p) * 10).toString();
-              } else if (p < 100) {
-                depth = (t / p).toString();
-              } else if (p < 10) {
-                depth = (t / p / 10).toString();
-              }
-              updated.push({ price: p, amount: a, total: t, depth: depth });
+              cumulative += t;
+              let depth = ((a / maxQty) * 100).toString();
+              updated.push({
+                price: p,
+                amount: a,
+                total: t,
+                depth: depth,
+                cumulative: cumulative,
+              });
             }
           });
 
@@ -110,61 +117,3 @@ export const useOrderbookStore = create<OrderbookState>((set, get) => ({
       lastUpdateId: null,
     }),
 }));
-
-// import {create} from "zustand";
-// import {produce} from "immer";
-
-// type Level = [price: number, qty: number];
-
-// interface OrderbookState {
-//   bids: Record<number, number>; // price -> qty
-//   asks: Record<number, number>;
-//   lastUpdateId: number | null;
-
-//   setSnapshot: (snap: {
-//     lastUpdateId: number;
-//     bids: Level[];
-//     asks: Level[];
-//   }) => void;
-//   applyDiffs: (diffs: any[]) => void; // apply batched diffs
-//   reset: () => void;
-// }
-
-// export const useOrderbookStore = create<OrderbookState>((set, get) => ({
-//   bids: {},
-//   asks: {},
-//   lastUpdateId: null,
-//   setSnapshot: ({ lastUpdateId, bids, asks }) =>
-//     set(() => ({
-//       lastUpdateId,
-//       bids: Object.fromEntries(bids.map(([p, q]) => [p, q])),
-//       asks: Object.fromEntries(asks.map(([p, q]) => [p, q])),
-//     })),
-//   applyDiffs: (diffs) =>
-//     set(
-//       produce((state: OrderbookState) => {
-//         for (const d of diffs) {
-//           const { U, u, b = [], a = [] } = d; // Binance depth diff
-//           if (!state.lastUpdateId) continue;
-//           // basic sequence check - more robust checks needed in production
-//           if (u <= state.lastUpdateId) continue;
-//           // apply bids
-//           for (const [p, q] of b) {
-//             const price = Number(p);
-//             const qty = Number(q);
-//             if (qty === 0) delete state.bids[price];
-//             else state.bids[price] = qty;
-//           }
-//           // apply asks
-//           for (const [p, q] of a) {
-//             const price = Number(p);
-//             const qty = Number(q);
-//             if (qty === 0) delete state.asks[price];
-//             else state.asks[price] = qty;
-//           }
-//           state.lastUpdateId = u;
-//         }
-//       })
-//     ),
-//   reset: () => set({ bids: {}, asks: {}, lastUpdateId: null }),
-// }));

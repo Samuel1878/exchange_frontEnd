@@ -34,10 +34,13 @@ import { useMultiLegend } from "~/hook/useLineLegend";
 import CandleStickInfo from "./info";
 import AggTradeView from "../aggTradeView";
 
+import OrderBook from "../orderBook/orderBook";
+
 enum Showing {
   chart = "chart",
   trade = "trade",
   info = "info",
+  depth = "depth",
 }
 export enum Period {
   oneSecound = "1s",
@@ -83,6 +86,7 @@ export default function ({ pair, type }) {
   const clonedHis = structuredClone(histogram);
   const seriesMap = typedObjectEntries(indicators);
   const [showLegend, setShowLegend] = useState(true);
+  // const [originalView, setOriginalView] = useState(true);
   const togglePeriod = (p: Period) => {
     reset();
     setPeriod(p);
@@ -122,36 +126,56 @@ export default function ({ pair, type }) {
   return (
     <section className="bg-gray-900 lg:bg-gray-950 mt-1 rounded-none md:rounded-lg ">
       <nav className="flex w-full p-3 pb-0 gap-4">
-        <div
-          onClick={() => setShowing(Showing.chart)}
-          className="cursor-pointer"
-        >
-          <p
-            className={`font-medium text-sm md:text-lg ${showing === Showing.chart ? "text-gray-100 border-b-3 border-amber-400" : "text-gray-500 "}`}
+        {/* <div className="flex flex-1 gap-4"> */}
+          <div
+            onClick={() => setShowing(Showing.chart)}
+            className="cursor-pointer"
           >
-            Chart
-          </p>
-        </div>
-        <div
-          className="md:hidden cursor-pointer"
-          onClick={() => setShowing(Showing.trade)}
-        >
-          <p
-            className={` font-medium text-sm ${showing === Showing.trade ? "text-gray-100 border-b-3 border-amber-400" : "text-gray-500 "}`}
+            <p
+              className={`font-medium text-sm md:text-lg ${showing === Showing.chart ? "text-gray-100 border-b-3 border-amber-400" : "text-gray-500 "}`}
+            >
+              Chart
+            </p>
+          </div>
+          <div
+            className="md:hidden cursor-pointer"
+            onClick={() => setShowing(Showing.trade)}
           >
-            Trades
-          </p>
-        </div>
-        <div
-          onClick={() => setShowing(Showing.info)}
-          className="cursor-pointer"
-        >
-          <p
-            className={`font-medium text-sm md:text-lg ${showing === Showing.info ? "text-gray-100 border-b-3 border-amber-400" : "text-gray-500 "}`}
+            <p
+              className={` font-medium text-sm ${showing === Showing.trade ? "text-gray-100 border-b-3 border-amber-400" : "text-gray-500 "}`}
+            >
+              Trades
+            </p>
+          </div>
+          <div
+            onClick={() => setShowing(Showing.info)}
+            className="cursor-pointer"
           >
-            Info
-          </p>
-        </div>
+            <p
+              className={`font-medium text-sm md:text-lg ${showing === Showing.info ? "text-gray-100 border-b-3 border-amber-400" : "text-gray-500 "}`}
+            >
+              Info
+            </p>
+          </div>
+          {/* <div className="flex gap-4">
+            <div
+              className={`cursor-pointer font-medium text-sm md:text-lg ${showing === Showing.chart ? "text-gray-100" : "text-gray-600"}`}
+              onClick={() => {
+                setShowing(Showing.chart);
+              }}
+            >
+              Original View
+            </div>
+            <div
+              className={`cursor-pointer font-medium text-sm md:text-lg ${showing === Showing.depth ? "text-gray-100" : "text-gray-600"}`}
+              onClick={() => {
+                setShowing(Showing.depth);
+              }}
+            >
+              Depth
+            </div>
+          </div> */}
+        {/* </div> */}
       </nav>
       {showing === Showing.chart ? (
         <TimeSeries period={period} setPeriod={togglePeriod} />
@@ -342,7 +366,8 @@ export default function ({ pair, type }) {
                 <TimeScaleFitContentTrigger deps={[period]} />
               </TimeScale>
             </Chart>
-          ) : showing === Showing.trade ? (
+          ) : null}
+          {showing === Showing.trade ? (
             <div
               className="border-t-2 border-t-gray-800 block md:hidden pr-2"
               style={{
@@ -357,7 +382,8 @@ export default function ({ pair, type }) {
             >
               <AggTradeView pair={pair} />
             </div>
-          ) : (
+          ) : null}
+          {showing === Showing.info ? (
             <div
               className="border-t-2 border-t-gray-800"
               style={{
@@ -372,7 +398,23 @@ export default function ({ pair, type }) {
             >
               <CandleStickInfo pair={pair} />
             </div>
-          )}
+          ) : null}
+          {showing === Showing.depth ? (
+            <div
+              className="border-t-2 border-t-gray-800"
+              style={{
+                width:
+                  width >= 1024
+                    ? width / 1.85
+                    : width > 768
+                      ? width * 0.65
+                      : width,
+                height: 530,
+              }}
+            >
+              <OrderBook pair={pair} option="both" type="depth" />
+            </div>
+          ) : null}
         </div>
       </article>
     </section>

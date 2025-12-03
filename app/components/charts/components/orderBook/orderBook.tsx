@@ -18,17 +18,18 @@ export enum OrderType {
 interface OrderBookProps {
   pair: string;
   option;
+  type?:string;
 }
 const OrderBook: FunctionComponent<OrderBookProps> = ({
   pair,
-
+  type="partial",
   option,
 }) => {
 
   const {width} = useWindowDimensions();
   const {bids, asks} = useOrderbookStore();
   const {trades} = useAggTradeStore()
-  let isLg = width>1024;
+  let isLg = width>=1024;
 
   const buildPriceLevels = (
     levels: LevelType[],
@@ -60,7 +61,7 @@ const OrderBook: FunctionComponent<OrderBookProps> = ({
           <PriceLevelRow
             key={level.amount + level.total}
             total={formatTotalPrice(level.total)}
-            size={level.amount.toFixed(6)}
+            size={formatPrice(level.amount)}
             price={formatPrice(level.price)}
             type={orderType}
           />

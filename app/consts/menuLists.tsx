@@ -80,7 +80,7 @@ export const verticalNavMenu: menu[] = [
     icon: <BiDownload size={23} color="rgba(120,130,150,1)" />,
   },
   {
-    value: "language",
+    value: "/",
     label: "language",
 
     icon: <RiGlobalFill size={23} color="rgba(120,130,150,1)" />,

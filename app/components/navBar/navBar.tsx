@@ -163,32 +163,27 @@ export default function NavigationBar() {
           </DrawerClose>
           <DrawerHeader>
             <div className="h-5"></div>
-            <DrawerTitle>
-              <div className="flex-row px-7 flex gap-4 my-6 justify-around items-center w-full ">
-                <button
-                  className="flex justify-center items-center rounded-lg bg-gray-700 w-full h-10"
-                  onClick={() => navigate("login")}
-                >
-                  <p className="text-neutral-50 text-lg font-medium">Log In</p>
-                </button>
-                <button
-                  className="flex justify-center items-center rounded-lg bg-amber-300 w-full h-10"
-                  onClick={() => navigate("register")}
-                >
-                  <p className="text-neutral-950 text-lg font-medium">
-                    Sign Up
-                  </p>
-                </button>
-              </div>
-            </DrawerTitle>
+            <DrawerTitle></DrawerTitle>
+            <div className="flex-row px-7 flex gap-4 my-4 justify-around items-center w-full ">
+              <button
+                className="flex justify-center items-center rounded-lg bg-gray-700 w-full h-10"
+                onClick={() => navigate("login")}
+              >
+                <p className="text-neutral-50 text-lg font-medium">Log In</p>
+              </button>
+              <button
+                className="flex justify-center items-center rounded-lg bg-amber-300 w-full h-10"
+                onClick={() => navigate("register")}
+              >
+                <p className="text-neutral-950 text-lg font-medium">Sign Up</p>
+              </button>
+            </div>
           </DrawerHeader>
-          <DrawerDescription className="h-auto">
+          <DrawerDescription className="h-dvh overflow-y-auto px-4">
             {verticalNavMenu?.map((e, i) => (
               <VerticalNavBar key={i} e={e} i={i} toggleMenu={toggleMenu} />
             ))}
           </DrawerDescription>
-
-          <DrawerFooter>{/* <Button>Submit</Button> */}</DrawerFooter>
         </DrawerContent>
       </Drawer>
     </nav>

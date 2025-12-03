@@ -9,6 +9,7 @@ export const useKlines = (symbol: string, interval: string) => {
   const applySnapShot = useKlineStore((s) => s.applySnapShot);
   const [url, setUrl] = useState("wss://stream.binance.com:9443/ws");
   const applyStream = useKlineStore((s) => s.applyStream);
+
   const { sendJsonMessage } = useWebSocket(url, {
     share: false,
     onOpen: () => console.log("WebSocket Manager is Opened for Kline"),
@@ -31,14 +32,14 @@ export const useKlines = (symbol: string, interval: string) => {
     applyStream(interval, response);
   });
   useEffect(() => {
-    (async () => {
-      const response = await fetch(
-        `${LOCAL_URL}/kline/${symbol.toUpperCase()}?interval=${interval}`
-      )
-      const data = await response.json();
-      applySnapShot(interval, data);
-      console.log("KLINE SNAPSHOT FETCHED");
-    })();
+      (async () => {
+        const response = await fetch(
+          `${LOCAL_URL}/kline/${symbol.toUpperCase()}?interval=${interval}`
+        );
+        const data = await response.json();
+        applySnapShot(interval, data);
+        console.log("KLINE SNAPSHOT FETCHED");
+      })();
     const params = [`${symbol.toLowerCase()}@kline_${interval}`];
     sendJsonMessage({ method: "SUBSCRIBE", params, id: Date.now() });
     console.log("SUBSCRIBED", params);
@@ -47,4 +48,4 @@ export const useKlines = (symbol: string, interval: string) => {
       console.log("UNSUBSCRIBE", params);
     };
   }, [interval, symbol]);
-};
+}

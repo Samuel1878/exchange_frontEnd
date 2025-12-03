@@ -1,17 +1,16 @@
-import { useContext, useEffect, useState } from "react"
-import { TiArrowSortedUp, TiArrowSortedDown } from "react-icons/ti";
+import {useState } from "react"
 import { IoClose, IoSearch } from "react-icons/io5";
-import { BsSortDown, BsSortUp, BsSortUpAlt } from "react-icons/bs";
+import { BsSortDown, BsSortUpAlt } from "react-icons/bs";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { CoinPairs } from "~/consts/pairs";
 import { formatPrice } from "../util";
 import { Coins } from "~/utils";
 import { useNavigate } from "react-router";
 import useWindowDimensions from "~/hook/windowWidth";
-import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "~/components/ui/drawer";
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerTitle } from "~/components/ui/drawer";
 import { X } from "lucide-react";
-import { useTickersStore, type Ticker, type Tickers } from "~/store/useTickersStore";
-import { useTickers } from "~/hook/useTickers";
+import { useTickersStore, type Ticker } from "~/store/useTickersStore";
+import { useKlineStore } from "~/store/useKlineStore";
 enum Filter {
     usdt = "usdt",
     spot = "spot",
@@ -21,6 +20,7 @@ enum Filter {
 }
 export default function ({currentPair, isOpen, setIsOpen}) {
     const [search, setSearch] = useState<string>("");
+    const reset = useKlineStore((s) => s.reset);
     const [filter, setFilter] = useState<Filter>(Filter.usdt);
     const [priceSort, setPriceSort] = useState(false);
     const [changeSort, setChangeSort] = useState(false);
@@ -45,7 +45,10 @@ export default function ({currentPair, isOpen, setIsOpen}) {
           } 
        
        return pairs?.map((e: Ticker, i) => (
-         <div key={i} className="flex justify-between my-4 lg:my-3 cursor-pointer" onClick={()=>navigation(`/trade/${e?.symbol?.toLowerCase()}?type=${filter===Filter.usdt?Filter.spot:filter}`)}>
+         <div key={i} className="flex justify-between my-4 lg:my-3 cursor-pointer" onClick={()=>{
+          reset();
+          navigation(`/trade/${e?.symbol?.toLowerCase()}?type=${filter===Filter.usdt?Filter.spot:filter}`)
+          }}>
            <p className="font-semibold text-xs text-gray-50 flex gap-1">
              <img
                src={Coins[CoinPairs[e?.symbol?.toLowerCase()]?.names[0]]}
@@ -68,7 +71,7 @@ export default function ({currentPair, isOpen, setIsOpen}) {
     }
     return (
       <>
-        {width > 1024 ? (
+        {width >= 1024 ? (
           <aside className="">
             <div className="p-3 pb-1 border-b-2 border-gray-900">
               <div className="h-10 w-full border-2 border-gray-800 rounded-md hover:border-amber-400 flex items-center">
