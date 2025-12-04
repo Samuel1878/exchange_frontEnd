@@ -127,7 +127,11 @@ export interface CoinDetail {
   first_data_at: string;
   last_data_at: string;
 }
-
+interface AvgPriceResponse {
+  mins: number;
+  price:string;
+  closeTime: number;
+}
 export const getPriceAPI = async (coin_id: string): Promise<AssetData|null> => {
   try {
     const response = await axios.get(`${LOCAL_URL}/price/${coin_id}`);
@@ -151,5 +155,20 @@ export const getCoinDetailAPI = async (coin_id: string):Promise<CoinDetail|null>
       console.log(error);
     return null;
   
+  }
+};
+
+
+export const getAvgPriceAPI = async (
+  symbol: string
+): Promise<AvgPriceResponse | null> => {
+  try {
+    const response = await axios.get(`${LOCAL_URL}/avgprice/${symbol}`);
+    if (response.status !== 200) return null;
+    const data = await response.data;
+    return data;
+  } catch (error) {
+    console.log(error);
+    return null;
   }
 };

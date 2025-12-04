@@ -1,0 +1,394 @@
+import { TitleSuffix } from "~/consts";
+import type { Route } from "./+types/convert";
+import { BsCurrencyExchange } from "react-icons/bs";
+import { Link, useNavigate } from "react-router";
+import { useCallback, useEffect, useState } from "react";
+import { TbTransferVertical } from "react-icons/tb";
+import { Coins } from "~/utils";
+import { FaCaretDown, FaSortDown } from "react-icons/fa";
+import FooterSection from "~/components/footer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerTitle,
+  DrawerTrigger,
+} from "~/components/ui/drawer";
+import { Star, X } from "lucide-react";
+import { getAvgPriceAPI } from "~/api/price";
+import { AltCoins, StableCoins } from "~/consts/pairs";
+export const clientLoader = async ({ params }: Route.ClientLoaderArgs) => {
+  const coin = params.coin;
+  if (!coin) {
+    return { coin: "usdt" };
+  }
+  return { coin };
+};
+const RenderDrawerCoinItem = useCallback(({
+  symbol,
+  name,
+  onSelect,
+}: {
+  symbol: string;
+  name: string;
+  onSelect: (symbol: string) => void;
+}) => {
+  return (
+    <div
+      className="flex flex-row justify-between items-center p-2 rounded-md hover:bg-gray-700 cursor-pointer"
+      onClick={() => onSelect(symbol)}
+    >
+      <div className="flex flex-row gap-2 items-center">
+        <img
+          src={Coins[symbol as keyof typeof AltCoins]}
+          className="w-8 h-8 rounded-full"
+        />
+        <div className="flex flex-col">
+          <p className="text-gray-50 font-bold">{symbol.toUpperCase()}</p>
+          <p className="text-gray-500 text-sm font-semibold">{name}</p>
+        </div>
+      </div>
+      <Star size={16} color="rgba(200,200,200,0.6)" />
+    </div>
+  );
+},[]);
+
+export default function Convert({ loaderData }: Route.ComponentProps) {
+  const { coin } = loaderData;
+  const [coins, setCoins] = useState(Coins);
+  const [fromCoins, setFromCoins] = useState(null);
+  const [toCoins, setToCoins] = useState(null);
+  const [toCoin, setToCoin] = useState("");
+  const [fromCoin, setFromCoin] = useState(coin);
+  const [fromAmount, setFromAmount] = useState(0);
+  const [toAmount, setToAmount] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isFromStable, setIsFromStable] = useState<boolean>(
+    Object.keys(StableCoins).includes(coin.toLowerCase())
+  );
+  const [rate, setRate] = useState(0);
+  const [openDrawer, setOpenDrawer] = useState<{
+    state: boolean;
+    value: "from" | "to" | "";
+  }>({ state: false, value: "" });
+  const navigate = useNavigate();
+  useEffect(() => {
+    setFromCoin(coin);
+    if (Object.keys(StableCoins).includes(coin.toLowerCase())) {
+      setToCoin("btc");
+      setToCoins(AltCoins);
+      setFromCoins(StableCoins);
+      setIsFromStable(true);
+    } else {
+      setToCoin("usdt");
+      setToCoins(StableCoins);
+      setFromCoins(AltCoins);
+      setIsFromStable(false);
+    }
+    if (!coin) {
+      return;
+    }
+  }, [coin]);
+  const switchFnc = () => {
+    const temp = fromCoin;
+    setFromCoin(toCoin);
+
+    setToCoin(temp);
+    let tempAmount = fromAmount;
+    setFromAmount(toAmount);
+    setToAmount(tempAmount);
+    navigate(`/trade/convert/${toCoin}`);
+  };
+  // useEffect(() => {
+  //   setFromAmount(0);
+  //   setToAmount(0);
+  //     // const interval = setInterval(async() => {
+  //         // Mock rate update
+  //        (async()=>{
+  //          const pair = fromCoin==="usdt" ? toCoin.toUpperCase()+fromCoin.toUpperCase():`${fromCoin.toUpperCase()}${toCoin.toUpperCase()}`;
+  //         console.log("Updating rate...");
+  //         const newRate = await getAvgPriceAPI(`${pair}`);
+  //         setRate(newRate ? Number(newRate?.price) : 0);
+  //         console.log("New rate:", newRate);})()
+  //     // }, 60000);
+  //     // return () => clearInterval(interval);
+  // }, [toCoin, fromCoin]);
+
+  useEffect(() => {
+    if (fromAmount && fromAmount > 0) {
+      setToAmount(parseFloat((fromAmount * rate).toFixed(6)));
+    } else {
+      setToAmount(0);
+    }
+  }, [fromAmount]);
+  useEffect(() => {
+    if (openDrawer.value === "from") {
+      if (searchTerm === "") {
+        setFromCoins(isFromStable ? StableCoins : AltCoins);
+        return;
+      }
+      setFromCoins((prevCoins) => {
+        const filteredCoins = {};
+        Object.keys(fromCoins).forEach((key) => {
+          if (key.toLowerCase().includes(searchTerm.toLowerCase())) {
+            filteredCoins[key as keyof typeof StableCoins] =
+              fromCoins[key as keyof typeof StableCoins];
+          }
+        });
+        return filteredCoins;
+      });
+    } else if (openDrawer.value === "to") {
+      if (searchTerm === "") {
+        setToCoins(isFromStable ? AltCoins : StableCoins);
+        return;
+      }
+      setToCoins((prevCoins) => {
+        const filteredCoins = {};
+        Object.keys(toCoins).forEach((key) => {
+          if (key.toLowerCase().includes(searchTerm.toLowerCase())) {
+            filteredCoins[key as keyof typeof StableCoins] =
+              toCoins[key as keyof typeof StableCoins];
+          }
+        });
+        return filteredCoins;
+      });
+    }
+  }, [searchTerm]);
+  return (
+    <>
+      <main className="flex items-center w-full h-full flex-col  bg-gray-900 lg:bg-gray-950 overflow-x-hidden pt-10 pb-10">
+        <div className="w-full p-4 lg:max-w-6xl">
+          <h1 className="text-lg font-bold text-gray-100">
+            {TitleSuffix} Convert {fromCoin.toUpperCase()} to{" "}
+            {toCoin.toUpperCase()}
+          </h1>
+          <p className="text-sm font-medium text-gray-400 my-3">
+            Instant Price | Guaranteed Price | Any Pair
+          </p>
+
+          <Link
+            to={`/trade/${coin === "usdt" ? toCoin + coin : coin + "usdt"}?type=spot`}
+            className="cursor-pointer flex gap-2 font-semibold text-gray-200 items-center"
+          >
+            <BsCurrencyExchange size={15} color="rgba(120,130,150,1)" /> Trade
+            Spot
+          </Link>
+          <div className="flex flex-col w-full my-6 relative lg:items-center">
+            <div className="w-full h-40 bg-gray-800 rounded-md p-4 lg:w-1/2 lg:bg-gray-950 lg:border-2 lg:border-gray-700 border-0">
+              <div className="flex w-full justify-between items-center">
+                <p className="text-xs text-gray-500 font-medium">From</p>
+                <p className="text-xs text-gray-500 font-medium">
+                  Availiable Balance -- {fromCoin.toUpperCase()}
+                </p>
+              </div>
+              <div className="flex justify-between items-center mt-2">
+                <div
+                  className="flex gap-2 cursor-pointer items-center"
+                  onClick={() => setOpenDrawer({ state: true, value: "from" })}
+                >
+                  <img
+                    src={Coins[fromCoin.toUpperCase()]}
+                    className="w-7 rounded-full"
+                  />
+                  <p className="text-gray-50 font-semibold text-lg">
+                    {fromCoin.toUpperCase()}
+                  </p>
+                  <FaCaretDown size={40} color="#d7d7d7" />
+                </div>
+
+                <input
+                  value={fromAmount}
+                  onChange={(e) =>
+                    setFromAmount(e.target.value as unknown as number)
+                  }
+                  inputMode="numeric"
+                  className="w-full outline-0 text-right h-18 text-gray-50 font-bold text-2xl placeholder:text-gray-600"
+                  placeholder="0.01 - 100,000 USD"
+                />
+                <button className="pl-3 ml-3 cursor-pointer border-l-2 border-gray-700 text-amber-400 font-semibold text-sm">
+                  Max
+                </button>
+              </div>
+              <div className="flex justify-end mt-2 text-xs text-gray-600">
+                ≈ ${30}
+              </div>
+            </div>
+            <div className="relative h-4 flex justify-center items-center ">
+              <button
+                className=" rounded-full bg-gray-900 p-3 cursor-pointer lg:rounded-2xl lg:bg-gray-950 lg:border-2 lg:border-gray-700 border-0"
+                onClick={switchFnc}
+              >
+                <TbTransferVertical size={18} color="rgba(120,130,150,1)" />
+              </button>
+            </div>
+            <div className="w-full h-40 bg-gray-800 rounded-md p-4 lg:w-1/2 lg:bg-gray-950 lg:border-2 lg:border-gray-700 border-0">
+              <div className="flex w-full justify-between items-center">
+                <p className="text-xs text-gray-500 font-medium">To</p>
+                <p className="text-xs text-gray-500 font-medium">
+                  Availiable Balance -- {toCoin.toUpperCase()}
+                </p>
+              </div>
+              <div className="flex justify-between items-center mt-2">
+                <div
+                  className="flex gap-2 items-center cursor-pointer"
+                  onClick={() => setOpenDrawer({ state: true, value: "to" })}
+                >
+                  <img
+                    src={Coins[toCoin.toUpperCase()]}
+                    className="w-7 rounded-full"
+                  />
+                  <p className="text-gray-50 font-semibold text-lg">
+                    {toCoin.toUpperCase()}
+                  </p>
+                  <FaCaretDown size={40} color="#d7d7d7" />
+                </div>
+                <input
+                  inputMode="numeric"
+                  className="w-full outline-0 text-right h-18 text-gray-50 font-bold text-2xl placeholder:text-gray-600"
+                  placeholder="0.01 - 100,000 USD"
+                  value={toAmount}
+                  onChange={(e) =>
+                    setToAmount(e.target.value as unknown as number)
+                  }
+                />
+              </div>
+              <div className="flex justify-end mt-2 text-xs text-gray-600">
+                ≈ ${30}
+              </div>
+            </div>
+            <button
+              className="w-full bg-amber-300 h-12 mt-8 rounded-md text-gray-900 font-semibold disabled:opacity-20 lg:w-1/2 cursor-pointer"
+              disabled={!(fromAmount && fromAmount > 0)}
+            >
+              {fromAmount && toAmount ? `Preview Convert` : "Enter an amount"}
+            </button>
+          </div>
+
+          <section className="mt-10">
+            <h2 className="text-gray-100 font-bold text-lg mb-4">
+              Convert other alt-coins
+            </h2>
+            <p className="text-gray-400 text-sm">
+              Easily convert {fromCoin.toUpperCase()} to a variety of
+              cryptocurrencies with competitive rates and instant transactions.
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-6">
+              {Object.values(AltCoins)
+                .filter(
+                  (c) => c.symbol.toLowerCase() !== fromCoin.toLowerCase()
+                )
+                .map((c, index) => (
+                  <Link
+                    to={`/trade/convert/${c.symbol.toLowerCase()}`}
+                    key={index}
+                    className="flex flex-row gap-2 items-center p-4 rounded-md hover:bg-gray-800 lg:hover:bg-gray-900 transition-colors cursor-pointer"
+                  >
+                    <img
+                      src={Coins[c.symbol as keyof typeof AltCoins]}
+                      className="w-8 h-8 rounded-full"
+                    />
+                    <p className="text-gray-50 font-bold">{c.symbol}</p>
+                    <p className="text-gray-500 text-sm font-semibold">
+                      {c.name}
+                    </p>
+                  </Link>
+                ))}
+            </div>
+          </section>
+          <section className="mt-10">
+            <h2 className="text-gray-100 font-bold text-lg mb-4">
+              How to Convert Crypto on {TitleSuffix}?
+            </h2>
+            <ol className="list-decimal list-inside text-gray-400 flex flex-col gap-3">
+              <li>
+                Choose the cryptocurrency you want to convert from and to by
+                selecting them from the dropdown menus.
+              </li>
+              <li>
+                Enter the amount of cryptocurrency you wish to convert in the
+                "From" field. The equivalent amount in the "To" field will be
+                calculated automatically.
+              </li>
+              <li>
+                Click on the "Preview Convert" button to review the conversion
+                details, including fees and exchange rates.
+              </li>
+              <li>
+                If everything looks good, confirm the conversion to complete the
+                process. The converted cryptocurrency will be credited to your
+                account shortly.
+              </li>
+            </ol>
+          </section>
+        </div>
+        <Drawer
+          open={openDrawer.state}
+          onOpenChange={(val) => setOpenDrawer({ state: val, value: "" })}
+        >
+          <DrawerContent className="bg-gray-800 min-h-2/3">
+            <div className="p-4">
+              <div>
+                <DrawerTrigger className="absolute top-4 right-4 cursor-pointer">
+                  <X size={24} color="rgba(200,200,200,1)" />
+                </DrawerTrigger>
+              </div>
+              <DrawerTitle className="text-lg font-bold text-gray-100 mb-4">
+                Select a coin to{" "}
+                {openDrawer.value === "from" ? "convert from" : "convert to"}
+              </DrawerTitle>
+              <input
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                type="search"
+                placeholder="Search coin"
+                className="w-full mb-4 p-2 rounded-md outline-0 border-2 border-gray-400  text-gray-100"
+              />
+              <div className="flex flex-col gap-4">
+                {openDrawer.value === "from"
+                  ? fromCoins &&
+                    Object.keys(fromCoins).map((c) => {
+                      const coinData = fromCoins[c as keyof typeof StableCoins];
+                      return (
+                        <RenderDrawerCoinItem
+                          key={c}
+                          symbol={coinData.symbol}
+                          name={coinData.name}
+                          onSelect={(symbol) => {
+                            setFromCoin(symbol);
+                            setOpenDrawer({ state: false, value: "" });
+                          }}
+                        />
+                      );
+                    })
+                  : toCoins &&
+                    Object.keys(toCoins).map((c) => {
+                      const coinData = toCoins[c as keyof typeof StableCoins];
+                      return (
+                        <RenderDrawerCoinItem
+                          key={c}
+                          symbol={coinData.symbol}
+                          name={coinData.name}
+                          onSelect={(symbol) => {
+                            setToCoin(symbol);
+                            setOpenDrawer({ state: false, value: "" });
+                          }}
+                        />
+                      );
+                    })}
+                {/* {Object.keys(coins)
+                  .filter((c) =>
+                    openDrawer.value === "from"
+                      ? c.toLowerCase() !== toCoin.toLowerCase()
+                      : c.toLowerCase() !== fromCoin.toLowerCase()
+                  )
+                  .map((c, index) => (
+                    
+                  ))} */}
+              </div>
+            </div>
+          </DrawerContent>
+        </Drawer>
+      </main>
+      <FooterSection />
+    </>
+  );
+}

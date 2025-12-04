@@ -116,20 +116,20 @@ export default function NavigationBar() {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="lg:items-center flex gap-5 xl:gap-6">
-        <div className="lg:flex hidden gap-3 ">
+        <div className="flex gap-3 items-center ">
           <button
-            className="bg-gray-800 p-1 px-4 rounded-md cursor-pointer"
+            className="bg-gray-800 h-8 px-4 rounded-sm cursor-pointer hidden lg:flex items-center justify-center"
             onClick={() => navigate("login")}
           >
             {" "}
-            <p className="text-gray-50 font-medium text-md">Log In</p>
+            <p className="text-gray-50 font-medium text-sm">Log In</p>
           </button>
           <button
-            className="bg-amber-300 p-1 px-4 rounded-md cursor-pointer"
+            className="bg-amber-300 h-8 px-4 rounded-sm cursor-pointer"
             onClick={() => navigate("register")}
           >
-            <p className="text-gray-950 font-medium text-md">Sign Up</p>
-          </button>{" "}
+            <p className="text-gray-800 font-medium text-sm">Sign Up</p>
+          </button>
         </div>
         <div className="h-5 w-0.5 hidden xl:block  bg-gray-600 mx-2" />
         <button

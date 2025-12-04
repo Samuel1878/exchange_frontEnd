@@ -6,6 +6,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
 } from "react-router";
 
 import type { Route } from "./+types/root";
@@ -14,6 +15,7 @@ import AuthProvider from "./context/authProvider";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./config/i18n";
 import React from "react";
+import GlobalLoader from "./components/loading/globalLoading";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -48,10 +50,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const navigation = useNavigation();
+  const isLoading = navigation.state === "loading" || navigation.state === "submitting";
   return (
     <React.StrictMode>
       <I18nextProvider i18n={i18n}>
         <AuthProvider>
+          {
+            isLoading && <GlobalLoader/>
+          }
           <Outlet />
         </AuthProvider>
       </I18nextProvider>

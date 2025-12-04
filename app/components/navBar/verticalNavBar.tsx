@@ -25,6 +25,7 @@ export default function VerticalNavBar({
       setOpen({ opening: true, value: e.value });
       return;
     } else {
+
       navigate(`${e.value}`);
       toggleMenu();
     }
@@ -55,6 +56,7 @@ export default function VerticalNavBar({
         ? open.value &&
           dropdownMenus[open.value]?.map((v: menu, index: number) => (
             <Link
+              
               onClick={toggleMenu}
               to={v.value}
               key={index}

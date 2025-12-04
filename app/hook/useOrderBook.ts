@@ -42,21 +42,19 @@ export function useOrderbook(stream: string[], pair) {
     applyDiffs(response);
   });
   useEffect(() => {
-    // (async()=>{
-   
-    //   const response = await fetch(
-    //     `${LOCAL_URL}/orderbook/${pair.toUpperCase()}`
-    //   );
-    //   const snap = await response.json();
-    //   setSnapshot(snap)
-
-    // })()
+    (async () => {
+      const response = await fetch(
+        `${LOCAL_URL}/orderbook/${pair.toUpperCase()}`
+      );
+      const snap = await response.json();
+      setSnapshot(snap);
+    })();
     sendJsonMessage({
       method: "SUBSCRIBE",
       params: stream,
       id: Date.now(),
     });
-    console.log("SUBSCRIBE", stream)
+    console.log("SUBSCRIBE", stream);
 
     return () => {
       // unsubscribe
@@ -66,9 +64,8 @@ export function useOrderbook(stream: string[], pair) {
           params: stream,
           id: Date.now(),
         });
-        reset();
-        console.log("UNSCRIBE", stream)
+        console.log("UNSCRIBE", stream);
       } catch {}
     };
-  }, [stream.join(",")]);
+  }, [pair]);
 }

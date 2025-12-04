@@ -101,3 +101,99 @@ export const CoinPairs = {
     names: ["PEPE", "USDT", "Pepe", "Tether"],
   },
 };
+export const StableCoins = {
+  usdt: {
+    name: "Tether",
+    symbol: "USDT",
+  },
+  usdc: {
+    name: "USD Coin",
+    symbol: "USDC",
+  },
+};
+export const AltCoins = {
+  btc: {
+    name: "Bitcoin",
+    symbol: "BTC",
+  },
+  eth: {
+    name: "Ethereum",
+    symbol: "ETH",
+  },
+  sol: {
+    name: "Solana",
+    symbol: "SOL",
+  },
+  xrp: {
+    name: "Ripple",
+    symbol: "XRP",
+  },
+  doge: {
+    name: "Dogecoin",
+    symbol: "DOGE",
+  },
+  ada: {
+    name: "Cardano",
+    symbol: "ADA",
+  },
+  avax: {
+    name: "Avalanche",
+    symbol: "AVAX",
+  },
+  link: {
+    name: "Chainlink",
+    symbol: "LINK",
+  },
+  dot: {
+    name: "Polkadot",
+    symbol: "DOT",
+  },
+  ltc: {
+    name: "Litecoin",
+    symbol: "LTC",
+  },
+  shib: {
+    name: "Shiba Inu",
+    symbol: "SHIB",
+  },
+  etc: {
+    name: "Ethereum Classic",
+    symbol: "ETC",
+  },
+  mana: {
+    name: "Decentraland",
+    symbol: "MANA",
+  },
+  uni: {
+    name: "Uniswap",
+    symbol: "UNI",
+  },
+  bch: {
+    name: "Bitcoin Cash",
+    symbol: "BCH",
+  },
+  trx: {
+    name: "Tron",
+    symbol: "TRX",
+  },
+  xlm: {
+    name: "Stellar Lumens",
+    symbol: "XLM",
+  },
+  atom: {
+    name: "Cosmos",
+    symbol: "ATOM",
+  },
+  near: {
+    name: "NEAR Protocol",
+    symbol: "NEAR",
+  },
+  pepe: {
+    name: "pepe",
+    symbol: "PEPE",
+  },
+};
+export const AllCoinNames = {
+  ...AltCoins,
+  ...StableCoins,
+};

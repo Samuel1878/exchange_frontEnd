@@ -1,5 +1,5 @@
 import { GiReceiveMoney } from "react-icons/gi";
-import { RiGlobalFill } from "react-icons/ri";
+import { RiExchange2Fill, RiGlobalFill } from "react-icons/ri";
 
 import { IoGrid } from "react-icons/io5";
 import { BiSupport } from "react-icons/bi";
@@ -88,6 +88,12 @@ export const verticalNavMenu: menu[] = [
 ];
 
 export const tradeMenuList: menu[] = [
+  {
+    value: "trade/convert/usdt",
+    label: "Convert",
+    description: "The easiest way to trade at all sizes",
+    icon: <RiExchange2Fill size={30} color="rgba(120,130,150,1)" />,
+  },
   {
     value: "trade/btcusdt?type=future",
     label: "Future",

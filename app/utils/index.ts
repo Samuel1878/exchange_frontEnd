@@ -77,8 +77,8 @@ import vip_banner from "assets/images/vip_banner.svg";
 import vipInsDark from "assets/images/vip-ins-dark.svg";
 import whatsapp from "assets/images/whatsapp.png";
 import x from "assets/images/x.png";
-
-
+import USDT from "assets/coins/usdt.png";
+import USDC from "assets/coins/USDC.png";
 import BTCETH from "assets/coins/btc_eth.png";
 import BTCTRX from "assets/coins/btc_trx.png";
 import ETHTRX from "assets/coins/eth_trx.png";
@@ -167,6 +167,8 @@ export const Coins = {
   ATOM: ATOM,
   NEAR: NEAR,
   PEPE: PEPE,
+  USDT:USDT,
+  USDC:USDC,
 } 
 export {
   ADA,

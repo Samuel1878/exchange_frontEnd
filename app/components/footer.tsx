@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 const FooterSection = () => {
   const { t, i18n } = useTranslation();
   return (
-    <footer className="flex flex-col lg:items-center">
+    <footer className="flex flex-col lg:items-center bg-gray-900 lg:bg-gray-950">
       <div className="flex flex-col lg:flex-row-reverse w-full md:p-4 mt-10 lg:max-w-6xl">
         <div id="footer" className="flex flex-row justify-between lg:flex-2/3">
           <div className="flex flex-col pl-5 py-4">

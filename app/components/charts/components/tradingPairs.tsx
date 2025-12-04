@@ -21,6 +21,7 @@ enum Filter {
 export default function ({currentPair, isOpen, setIsOpen}) {
     const [search, setSearch] = useState<string>("");
     const reset = useKlineStore((s) => s.reset);
+    const resetOrderBook = useKlineStore((s) => s.reset);
     const [filter, setFilter] = useState<Filter>(Filter.usdt);
     const [priceSort, setPriceSort] = useState(false);
     const [changeSort, setChangeSort] = useState(false);
@@ -47,6 +48,7 @@ export default function ({currentPair, isOpen, setIsOpen}) {
        return pairs?.map((e: Ticker, i) => (
          <div key={i} className="flex justify-between my-4 lg:my-3 cursor-pointer" onClick={()=>{
           reset();
+          resetOrderBook();
           navigation(`/trade/${e?.symbol?.toLowerCase()}?type=${filter===Filter.usdt?Filter.spot:filter}`)
           }}>
            <p className="font-semibold text-xs text-gray-50 flex gap-1">
