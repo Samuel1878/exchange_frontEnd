@@ -16,54 +16,31 @@ import {
 import { Star, X } from "lucide-react";
 import { getAvgPriceAPI } from "~/api/price";
 import { AltCoins, StableCoins } from "~/consts/pairs";
+import { formatPrice, priceFormatter } from "~/components/charts/util";
 export const clientLoader = async ({ params }: Route.ClientLoaderArgs) => {
-  const coin = params.coin;
-  if (!coin) {
-    return { coin: "usdt" };
+  const from = params.from;
+  const to = params.to;
+  if (!from) {
+    throw new Error("No Params");
   }
-  return { coin };
+  if (!to) {
+    return { from, to: "usdt" };
+  }
+  return { from, to };
 };
-const RenderDrawerCoinItem = useCallback(({
-  symbol,
-  name,
-  onSelect,
-}: {
-  symbol: string;
-  name: string;
-  onSelect: (symbol: string) => void;
-}) => {
-  return (
-    <div
-      className="flex flex-row justify-between items-center p-2 rounded-md hover:bg-gray-700 cursor-pointer"
-      onClick={() => onSelect(symbol)}
-    >
-      <div className="flex flex-row gap-2 items-center">
-        <img
-          src={Coins[symbol as keyof typeof AltCoins]}
-          className="w-8 h-8 rounded-full"
-        />
-        <div className="flex flex-col">
-          <p className="text-gray-50 font-bold">{symbol.toUpperCase()}</p>
-          <p className="text-gray-500 text-sm font-semibold">{name}</p>
-        </div>
-      </div>
-      <Star size={16} color="rgba(200,200,200,0.6)" />
-    </div>
-  );
-},[]);
 
 export default function Convert({ loaderData }: Route.ComponentProps) {
-  const { coin } = loaderData;
-  const [coins, setCoins] = useState(Coins);
+  const { from, to } = loaderData;
   const [fromCoins, setFromCoins] = useState(null);
+  const [ready, setReady] = useState<boolean>(false);
   const [toCoins, setToCoins] = useState(null);
   const [toCoin, setToCoin] = useState("");
-  const [fromCoin, setFromCoin] = useState(coin);
-  const [fromAmount, setFromAmount] = useState(0);
-  const [toAmount, setToAmount] = useState(0);
+  const [fromCoin, setFromCoin] = useState("");
+  const [fromAmount, setFromAmount] = useState("");
+  const [toAmount, setToAmount] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isFromStable, setIsFromStable] = useState<boolean>(
-    Object.keys(StableCoins).includes(coin.toLowerCase())
+    Object.keys(StableCoins).includes(from.toLowerCase())
   );
   const [rate, setRate] = useState(0);
   const [openDrawer, setOpenDrawer] = useState<{
@@ -72,54 +49,63 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
   }>({ state: false, value: "" });
   const navigate = useNavigate();
   useEffect(() => {
-    setFromCoin(coin);
-    if (Object.keys(StableCoins).includes(coin.toLowerCase())) {
-      setToCoin("btc");
+    setReady(false);
+    setRate(0);
+    setToAmount("");
+    setFromAmount("");
+    setFromCoin(from);
+    setToCoin(to);
+    if (Object.keys(StableCoins).includes(from?.toLowerCase())) {
+      setIsFromStable(true);
       setToCoins(AltCoins);
       setFromCoins(StableCoins);
-      setIsFromStable(true);
+      setReady(true);
+      return;
     } else {
-      setToCoin("usdt");
+      setIsFromStable(false);
       setToCoins(StableCoins);
       setFromCoins(AltCoins);
-      setIsFromStable(false);
+      setReady(true);
     }
-    if (!coin) {
-      return;
-    }
-  }, [coin]);
-  const switchFnc = () => {
-    const temp = fromCoin;
-    setFromCoin(toCoin);
+  }, [from, to]);
 
-    setToCoin(temp);
-    let tempAmount = fromAmount;
-    setFromAmount(toAmount);
-    setToAmount(tempAmount);
-    navigate(`/trade/convert/${toCoin}`);
+  const switchFnc = ({ from, to }) => {
+    setFromAmount("");
+    setToAmount("");
+    navigate(`/trade/convert/${from}/${to}`);
   };
-  // useEffect(() => {
-  //   setFromAmount(0);
-  //   setToAmount(0);
-  //     // const interval = setInterval(async() => {
-  //         // Mock rate update
-  //        (async()=>{
-  //          const pair = fromCoin==="usdt" ? toCoin.toUpperCase()+fromCoin.toUpperCase():`${fromCoin.toUpperCase()}${toCoin.toUpperCase()}`;
-  //         console.log("Updating rate...");
-  //         const newRate = await getAvgPriceAPI(`${pair}`);
-  //         setRate(newRate ? Number(newRate?.price) : 0);
-  //         console.log("New rate:", newRate);})()
-  //     // }, 60000);
-  //     // return () => clearInterval(interval);
-  // }, [toCoin, fromCoin]);
+
 
   useEffect(() => {
-    if (fromAmount && fromAmount > 0) {
-      setToAmount(parseFloat((fromAmount * rate).toFixed(6)));
+    // const interval = setInterval(async() => {
+    // Mock rate update
+  const fetchPrice = async () => {
+    const pair = isFromStable
+      ? toCoin.toUpperCase() + fromCoin.toUpperCase()
+      : fromCoin.toUpperCase() + toCoin.toUpperCase();
+
+    console.log("Updating rate...");
+    const newRate = await getAvgPriceAPI(`${pair}`);
+    setRate(newRate ? Number(newRate?.price) : 0);
+    console.log("New rate:", newRate);
+  };
+    ready && fetchPrice();
+    // }, 60000);
+    // return () => clearInterval(interval);
+  }, [ready]);
+
+  useEffect(() => {
+    if (fromAmount && Number(fromAmount) > 0 && rate !== 0) {
+      setToAmount(
+        (isFromStable
+          ? Number(fromAmount) / rate
+          : Number(fromAmount) * rate
+        ).toFixed(6)
+      );
     } else {
-      setToAmount(0);
+      setToAmount("");
     }
-  }, [fromAmount]);
+  }, [fromAmount, rate]);
   useEffect(() => {
     if (openDrawer.value === "from") {
       if (searchTerm === "") {
@@ -153,6 +139,37 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
       });
     }
   }, [searchTerm]);
+  const RenderDrawerCoinItem = useCallback(
+    ({
+      symbol,
+      name,
+      onSelect,
+    }: {
+      symbol: string;
+      name: string;
+      onSelect: (symbol: string) => void;
+    }) => {
+      return (
+        <div
+          className="flex flex-row justify-between items-center p-2 rounded-md hover:bg-gray-700 cursor-pointer"
+          onClick={() => onSelect(symbol)}
+        >
+          <div className="flex flex-row gap-2 items-center">
+            <img
+              src={Coins[symbol as keyof typeof AltCoins]}
+              className="w-8 h-8 rounded-full"
+            />
+            <div className="flex flex-col">
+              <p className="text-gray-50 font-bold">{symbol.toUpperCase()}</p>
+              <p className="text-gray-500 text-sm font-semibold">{name}</p>
+            </div>
+          </div>
+          <Star size={16} color="rgba(200,200,200,0.6)" />
+        </div>
+      );
+    },
+    []
+  );
   return (
     <>
       <main className="flex items-center w-full h-full flex-col  bg-gray-900 lg:bg-gray-950 overflow-x-hidden pt-10 pb-10">
@@ -166,7 +183,9 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
           </p>
 
           <Link
-            to={`/trade/${coin === "usdt" ? toCoin + coin : coin + "usdt"}?type=spot`}
+            to={`/trade/${
+              isFromStable ? toCoin + fromCoin : fromCoin + toCoin
+            }?type=spot`}
             className="cursor-pointer flex gap-2 font-semibold text-gray-200 items-center"
           >
             <BsCurrencyExchange size={15} color="rgba(120,130,150,1)" /> Trade
@@ -197,9 +216,7 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
 
                 <input
                   value={fromAmount}
-                  onChange={(e) =>
-                    setFromAmount(e.target.value as unknown as number)
-                  }
+                  onChange={(e) => setFromAmount(e.target.value)}
                   inputMode="numeric"
                   className="w-full outline-0 text-right h-18 text-gray-50 font-bold text-2xl placeholder:text-gray-600"
                   placeholder="0.01 - 100,000 USD"
@@ -209,18 +226,18 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
                 </button>
               </div>
               <div className="flex justify-end mt-2 text-xs text-gray-600">
-                ≈ ${30}
+                ≈ ${isFromStable ? fromAmount : toAmount}
               </div>
             </div>
             <div className="relative h-4 flex justify-center items-center ">
               <button
                 className=" rounded-full bg-gray-900 p-3 cursor-pointer lg:rounded-2xl lg:bg-gray-950 lg:border-2 lg:border-gray-700 border-0"
-                onClick={switchFnc}
+                onClick={() => switchFnc({ from: to, to: from })}
               >
                 <TbTransferVertical size={18} color="rgba(120,130,150,1)" />
               </button>
             </div>
-            <div className="w-full h-40 bg-gray-800 rounded-md p-4 lg:w-1/2 lg:bg-gray-950 lg:border-2 lg:border-gray-700 border-0">
+            <div className="w-full h-40 bg-gray-800 rounded-md group p-4 lg:w-1/2 lg:bg-gray-950 lg:border-2 lg:border-gray-700 border-0">
               <div className="flex w-full justify-between items-center">
                 <p className="text-xs text-gray-500 font-medium">To</p>
                 <p className="text-xs text-gray-500 font-medium">
@@ -246,18 +263,24 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
                   className="w-full outline-0 text-right h-18 text-gray-50 font-bold text-2xl placeholder:text-gray-600"
                   placeholder="0.01 - 100,000 USD"
                   value={toAmount}
-                  onChange={(e) =>
-                    setToAmount(e.target.value as unknown as number)
-                  }
+                  onChange={(e) => setToAmount(e.target.value)}
                 />
               </div>
               <div className="flex justify-end mt-2 text-xs text-gray-600">
-                ≈ ${30}
+                ≈ ${Number(isFromStable ? fromAmount : toAmount) - 0.01}
               </div>
             </div>
+            <div className="flex justify-between items-center w-full lg:w-1/2 my-5">
+              <p className="text-gray-500 text-sm">Rate</p>
+              <p className="text-gray-500 text-sm">
+                1 {isFromStable ? toCoin.toUpperCase() : fromCoin.toUpperCase()}{" "}
+                ≈ {priceFormatter(rate)}{" "}
+                {isFromStable ? fromCoin.toUpperCase() : toCoin.toUpperCase()}
+              </p>
+            </div>
             <button
-              className="w-full bg-amber-300 h-12 mt-8 rounded-md text-gray-900 font-semibold disabled:opacity-20 lg:w-1/2 cursor-pointer"
-              disabled={!(fromAmount && fromAmount > 0)}
+              className="w-full bg-amber-300 h-12 rounded-md text-gray-900 font-semibold disabled:opacity-20 lg:w-1/2 cursor-pointer"
+              disabled={!(fromAmount && Number(fromAmount) > 0)}
             >
               {fromAmount && toAmount ? `Preview Convert` : "Enter an amount"}
             </button>
@@ -278,7 +301,7 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
                 )
                 .map((c, index) => (
                   <Link
-                    to={`/trade/convert/${c.symbol.toLowerCase()}`}
+                    to={`/trade/convert/${c.symbol.toLowerCase()}/usdt`}
                     key={index}
                     className="flex flex-row gap-2 items-center p-4 rounded-md hover:bg-gray-800 lg:hover:bg-gray-900 transition-colors cursor-pointer"
                   >
@@ -353,7 +376,10 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
                           symbol={coinData.symbol}
                           name={coinData.name}
                           onSelect={(symbol) => {
-                            setFromCoin(symbol);
+                            navigate(
+                              "/trade/convert/" +
+                                `${symbol.toLowerCase()}/${toCoin.toLowerCase()}`
+                            );
                             setOpenDrawer({ state: false, value: "" });
                           }}
                         />
@@ -368,21 +394,15 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
                           symbol={coinData.symbol}
                           name={coinData.name}
                           onSelect={(symbol) => {
-                            setToCoin(symbol);
+                            navigate(
+                              "/trade/convert/" +
+                                `${fromCoin.toLowerCase()}/${symbol.toLowerCase()}`
+                            );
                             setOpenDrawer({ state: false, value: "" });
                           }}
                         />
                       );
                     })}
-                {/* {Object.keys(coins)
-                  .filter((c) =>
-                    openDrawer.value === "from"
-                      ? c.toLowerCase() !== toCoin.toLowerCase()
-                      : c.toLowerCase() !== fromCoin.toLowerCase()
-                  )
-                  .map((c, index) => (
-                    
-                  ))} */}
               </div>
             </div>
           </DrawerContent>
