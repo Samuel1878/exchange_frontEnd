@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router";
 import { useCallback, useEffect, useState } from "react";
 import { TbTransferVertical } from "react-icons/tb";
 import { Coins } from "~/utils";
-import { FaCaretDown, FaSortDown } from "react-icons/fa";
+import { FaCaretDown } from "react-icons/fa";
 import FooterSection from "~/components/footer";
 import {
   Drawer,
@@ -49,6 +49,7 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
   }>({ state: false, value: "" });
   const navigate = useNavigate();
   useEffect(() => {
+    console.log("False")
     setReady(false);
     setRate(0);
     setToAmount("");
@@ -60,12 +61,14 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
       setToCoins(AltCoins);
       setFromCoins(StableCoins);
       setReady(true);
+      console.log("true")
       return;
     } else {
       setIsFromStable(false);
       setToCoins(StableCoins);
       setFromCoins(AltCoins);
       setReady(true);
+            console.log("true");
     }
   }, [from, to]);
 
@@ -77,22 +80,18 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
 
 
   useEffect(() => {
-    // const interval = setInterval(async() => {
-    // Mock rate update
-  const fetchPrice = async () => {
-    const pair = isFromStable
-      ? toCoin.toUpperCase() + fromCoin.toUpperCase()
-      : fromCoin.toUpperCase() + toCoin.toUpperCase();
+    const fetchPrice = async () => {
+      const pair = isFromStable
+        ? toCoin.toUpperCase() + fromCoin.toUpperCase()
+        : fromCoin.toUpperCase() + toCoin.toUpperCase();
 
-    console.log("Updating rate...");
-    const newRate = await getAvgPriceAPI(`${pair}`);
-    setRate(newRate ? Number(newRate?.price) : 0);
-    console.log("New rate:", newRate);
-  };
+      console.log("Updating rate...");
+      const newRate = await getAvgPriceAPI(`${pair}`);
+      setRate(newRate ? Number(newRate?.price) : 0);
+      console.log("New rate:", newRate);
+    };
     ready && fetchPrice();
-    // }, 60000);
-    // return () => clearInterval(interval);
-  }, [ready]);
+  }, [fromCoin , toCoin]);
 
   useEffect(() => {
     if (fromAmount && Number(fromAmount) > 0 && rate !== 0) {
@@ -174,11 +173,11 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
     <>
       <main className="flex items-center w-full h-full flex-col  bg-gray-900 lg:bg-gray-950 overflow-x-hidden pt-10 pb-10">
         <div className="w-full p-4 lg:max-w-6xl">
-          <h1 className="text-lg font-bold text-gray-100">
+          <h1 className="text-lg font-bold text-gray-100 md:text-xl lg:text-4xl">
             {TitleSuffix} Convert {fromCoin.toUpperCase()} to{" "}
             {toCoin.toUpperCase()}
           </h1>
-          <p className="text-sm font-medium text-gray-400 my-3">
+          <p className="text-sm font-medium text-gray-400 my-3 md:text-md lg:text-lg">
             Instant Price | Guaranteed Price | Any Pair
           </p>
 
@@ -218,7 +217,7 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
                   value={fromAmount}
                   onChange={(e) => setFromAmount(e.target.value)}
                   inputMode="numeric"
-                  className="w-full outline-0 text-right h-18 text-gray-50 font-bold text-2xl placeholder:text-gray-600"
+                  className="w-full outline-0 text-right h-18 text-gray-50 font-bold text-2xl placeholder:text-gray-600 placeholder:text-lg"
                   placeholder="0.01 - 100,000 USD"
                 />
                 <button className="pl-3 ml-3 cursor-pointer border-l-2 border-gray-700 text-amber-400 font-semibold text-sm">
@@ -260,7 +259,7 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
                 </div>
                 <input
                   inputMode="numeric"
-                  className="w-full outline-0 text-right h-18 text-gray-50 font-bold text-2xl placeholder:text-gray-600"
+                  className="w-full outline-0 text-right h-18 text-gray-50 font-bold text-2xl placeholder:text-gray-600 placeholder:text-lg"
                   placeholder="0.01 - 100,000 USD"
                   value={toAmount}
                   onChange={(e) => setToAmount(e.target.value)}
@@ -287,10 +286,10 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
           </div>
 
           <section className="mt-10">
-            <h2 className="text-gray-100 font-bold text-lg mb-4">
+            <h2 className="text-gray-100 font-bold text-lg mb-4 lg:text-2xl">
               Convert other alt-coins
             </h2>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 text-sm lg:text-lg">
               Easily convert {fromCoin.toUpperCase()} to a variety of
               cryptocurrencies with competitive rates and instant transactions.
             </p>
@@ -318,7 +317,7 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
             </div>
           </section>
           <section className="mt-10">
-            <h2 className="text-gray-100 font-bold text-lg mb-4">
+            <h2 className="text-gray-100 font-bold text-lg mb-4 lg:text-xl">
               How to Convert Crypto on {TitleSuffix}?
             </h2>
             <ol className="list-decimal list-inside text-gray-400 flex flex-col gap-3">

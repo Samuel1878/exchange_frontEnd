@@ -39,9 +39,9 @@ export default function VerticalNavBar({
         >
           <div className="flex gap-4 items-center">
             {e.icon}
-            <p className="text-gray-500 font-medium text-sm capitalize">
+            <div className="text-gray-500 font-medium text-sm capitalize">
               {e.label}
-            </p>
+            </div>
           </div>
           {e.hasMore ? (
             open.opening ? (
@@ -56,15 +56,14 @@ export default function VerticalNavBar({
         ? open.value &&
           dropdownMenus[open.value]?.map((v: menu, index: number) => (
             <Link
-              
               onClick={toggleMenu}
               to={v.value}
               key={index}
               className="py-4 px-23 flex items-start w-full hover:bg-gray-800 transition-colors hover:**:text-neutral-100"
             >
-              <p className="text-gray-500 font-medium text-sm capitalize">
+              <div className="text-gray-500 font-medium text-sm capitalize">
                 {v.label}
-              </p>
+              </div>
             </Link>
           ))
         : null}
