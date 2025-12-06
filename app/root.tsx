@@ -48,6 +48,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
     </html>
   );
 }
+// export function HydrateFallback() {
+//   return <div className="w-full h-full bg-gray-900 lg:bg-gray-950 flex items-center justify-center">
+//       <div className="text-amber-300 text-3xl font-bold">Welcome to Binance</div>
+//   </div>
+// }
 
 export default function App() {
   const navigation = useNavigation();

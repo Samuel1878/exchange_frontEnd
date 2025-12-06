@@ -186,7 +186,7 @@ export default function Home() {
                   <p className="text-xl text-amber-400 font-bold md:text-2xl mb-3">
                     {e.title}
                   </p>
-                  <p className="text-lg text-gray-50 font-medium font-serif md:text-xl ">
+                  <p className="text-lg text-gray-50 font-medium md:text-xl mb-2">
                     {e.label}
                   </p>
                   <p
