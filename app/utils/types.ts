@@ -12,23 +12,21 @@ export interface UserData {
   Phone: string;
   KycStatus: string;
   AccountLevel: string;
-  UserWallet: Wallet[];
+  UserWallet: UserWallet[];
 }
-
-export interface Wallet {
+export interface UserWallet {
   Id: number;
   UserId: number;
   AccountTypeId: number;
   AccountBalance: string;
   AvailableBalance: string;
   LockedBalance: string;
-  Currency: string;
   Status: string;
   CreatedAt: string;
   UpdatedAt: string;
   AccountType: AccountType;
+  UserAsset: UserAsset[];
 }
-
 export interface AccountType {
   Id: number;
   TypeName: string;
@@ -36,4 +34,14 @@ export interface AccountType {
   InterestRate: string;
   CreatedAt: string;
   UpdatedAt: string;
+}
+export interface UserAsset {
+  Id: number;
+  UserId: number;
+  UserAccountId: number;
+  AvailableBalance: string;
+  LockedBalance: string;
+  Currency: string;
+  CreatedAt: string | null;
+  UpdatedAt: string | null;
 }

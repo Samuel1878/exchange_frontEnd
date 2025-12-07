@@ -2,9 +2,7 @@ import type { Config } from "@react-router/dev/config";
 
 export default {
   ssr: false,
-  routeDiscovery: {
-    mode: "lazy",
-    manifestPath: "/__manifest",
+  future: {
+    v8_middleware: true,
   },
-
 } satisfies Config;

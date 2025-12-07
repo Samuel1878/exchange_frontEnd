@@ -5,6 +5,7 @@ import {
   Link,
   redirect,
   useActionData,
+  useNavigate,
   useNavigation,
 } from "react-router";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -15,6 +16,7 @@ import {
   LoadCanvasTemplateNoReload,
   validateCaptcha,
 } from "react-simple-captcha";
+import { toast } from "sonner";
 import {
   //   type CountryIso2,
   defaultCountries,
@@ -33,6 +35,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
+import { registerAPI, type RegisterPayload } from "~/api/authAPI";
+import { useAuthStore } from "~/store/useUserDataStore";
+import type { LoginResponse } from "~/utils/types";
 
 const LoginTab = [
   { symbol: "mobile", label: "Mobile Phone" },
@@ -46,6 +51,7 @@ type ActionResponse = {
   ok?: boolean;
   message?: string;
   errors?: Record<string, string>;
+  data?: LoginResponse;
 };
 
 const INPUT_CLASSES =
@@ -62,7 +68,11 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       <div className="text-white w-full relative">
         {label && <label className="sr-only">{label}</label>}
         <input ref={ref} {...props} className={INPUT_CLASSES} />
-        {error && <p className="text-xs text-rose-400 mt-1 absolute bottom--">!{error}</p>}
+        {error && (
+          <p className="text-xs text-rose-400 mt-1 absolute bottom--">
+            !{error}
+          </p>
+        )}
       </div>
     );
   }
@@ -139,103 +149,95 @@ function FormContainer({ children }: { children: React.ReactNode }) {
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
   const data = await request.formData();
-
   const password1 = String(data.get("password1") ?? "");
   const password2 = String(data.get("password2") ?? "");
   const email = String(data.get("email") ?? "");
   const phone = String(data.get("phone") ?? "");
   const userName = String(data.get("userName") ?? "");
   const type = String(data.get("type") ?? "");
-
+  const payload = {
+    UserName: userName,
+    Email: email,
+    PasswordHash: password1,
+    Phone: phone,
+    InvitationCode: 0,
+  };
   const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i; // simple, reliable email check
   const phoneRe = /^\+?[0-9]{7,15}$/; // E.164-like: optional +, 7-15 digits (no formatting)
   const userNameRe = /^[A-Za-z0-9_.-]{3,20}$/; // alphanumeric + . _ - , length 3-20
   const passwordRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/; // min 8, upper, lower, digit, special
 
   const errors: Record<string, string> = {};
-
   if (type === "phone") {
     if (!phone) errors.phone = "Phone number is required for phone sign up.";
   } else if (type === "email") {
     if (!email) errors.email = "Email is required for email sign up.";
   } else {
     if (!userName) errors.userName = "Username is required.";
-    if (!email && !phone)
-      errors.contact = "Please provide either email or phone number.";
+    // if (!email && !phone)
+    //   errors.contact = "Please provide either email or phone number.";
   }
-
-  // Password presence
   if (!password1) errors.password1 = "Password is required.";
-
-  // If any required-field errors, return them immediately (step 1)
   if (Object.keys(errors).length > 0) {
     return { ok: false, errors };
   }
-
-  // 2) Type-specific format checks (step-by-step)
   if (email) {
     if (!emailRe.test(email)) errors.email = "Enter a valid email address.";
   }
-
   if (phone) {
-    // normalize common separators (strip spaces, hyphens, parentheses) for validation,
-    // but keep original in errors if desired
     const normalizedPhone = phone.replace(/[\s()-]/g, "");
     if (!phoneRe.test(normalizedPhone)) {
       errors.phone =
         "Phone must be 7–15 digits and may start with +. Remove spaces or special chars.";
     }
   }
-
   if (userName) {
     if (!userNameRe.test(userName))
       errors.userName =
         "Username: 3–20 chars; letters, numbers, ., _, - allowed (no spaces).";
   }
-
-  // 3) Password complexity
   if (password1 && !passwordRe.test(password1)) {
     errors.password1 =
       "Password must be ≥8 chars, include upper & lower case, a number and a special character.";
   }
-
-  // 4) Passwords match
   if (password1 && password2 && password1 !== password2) {
     errors.password2 = "Passwords don't match.";
   }
-
-  // If we have any validation errors, return them (step 4)
+  if (Object.keys(errors).length > 0) {
+    return { ok: false, errors };
+  }
   if (Object.keys(errors).length > 0) {
     return { ok: false, errors };
   }
 
-  // 5) Cross-field / business checks (example: uniqueness)
-  // NOTE: replace the following with real DB/API checks.
-  // Example: check username or email availability
-  // const isTaken = await db.isUserNameTaken(userName);
-  // if (isTaken) errors.userName = "Username already taken.";
 
-  // For demo: fake server-side credential check (remove in real registration)
-  // If you are performing "registration", don't validate with a "test account".
-  // This block below is purely example to show server-side rejection.
-  if (email === "test@mail.com") {
-    errors.email = "This email is reserved / already in use.";
+  // const response = await registerAPI({UserName:userName, Email:email, PasswordHash:password1, Phone:phone, InvitationCode:0})
+  // if (response.status) {
+  //   toast.success("Registration Success")
+  //   console.log(response)
+  //   throw redirect("/");
+  //     return { ok: true, message: response?.message };
+  // } else {
+  //   toast.error(response?.message)
+  //   return {ok:false, message: response?.message}
+  // }
+
+  const resp = await registerAPI(payload);
+  if (resp) {
+    return {ok:true, data:resp};
   }
-
-  if (Object.keys(errors).length > 0) {
-    return { ok: false, errors };
-  }
-
-  // 6) All validation passed -> perform registration logic (DB, API, etc.)
-  // const newUser = await createUser({ userName, email, phone, password: password1 });
-
-  // Example: on success, redirect
-  return redirect("/dashboard");
+   toast.error("Registration Failed");
+  return {
+    ok: false,
+    message:  "Registration failed",
+  };
 }
 
 export default function Registration() {
   const [activeTab, setActiveTab] = useState("mobile");
+  const { login } = useAuthStore();
   const navigation = useNavigation();
+  const navigate = useNavigate()
   const loading = navigation.state === "submitting";
   const [value, setValue] = useState("");
   const { inputValue, handlePhoneValueChange, inputRef, country, setCountry } =
@@ -250,7 +252,18 @@ export default function Registration() {
   const { seconds, start, disabled } = useSendCode(60);
   const actionData = useActionData() as ActionResponse | undefined;
   const errors = actionData?.errors ?? null;
-
+  const message = actionData?.message ?? null;
+  const userData = actionData?.data ?? null;
+  useEffect(() => {
+  
+    if (userData){
+        console.log(userData);
+     
+         login(userData.data, userData.accessToken);
+          navigate("/")
+       
+    }
+  }, [userData]);
   async function handleSend() {
     // TODO: hook this up to actual send API
     start(60);
@@ -276,12 +289,15 @@ export default function Registration() {
       )),
     [activeTab]
   );
+
+
   useEffect(() => {
-    activeTab ==="account"&& loadCaptchaEnginge(6);
-  }, [activeTab]);
+    activeTab === "account" && loadCaptchaEnginge(6);
+  }, [activeTab, actionData]);
   return (
     <>
       <main className="bg-gray-900 lg:bg-gray-950 min-h-screen overflow-x-hidden">
+        {}
         <section id="hero" className="flex flex-col lg:items-center">
           <article
             id="hero1"
@@ -390,7 +406,12 @@ export default function Registration() {
                       </div>
                     </div>
 
-                    <Form className="space-y-7" method="post" replace>
+                    <Form
+                      className="space-y-7"
+                      method="post"
+                      replace
+                      onSubmit={(e)=>console.log("EVENT", e)}
+                    >
                       {loading ? (
                         <div className="flex flex-col items-center justify-center my-4 h-52">
                           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>

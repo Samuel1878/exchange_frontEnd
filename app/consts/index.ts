@@ -8,3 +8,4 @@ export const LOCAL_URL = "https://api.auno.site";
 export const API_URL = "https://www.auno.site";
 
 export const TitleSuffix = "Binance";
+export const ACTION_URL ="http://150.95.82.150:4000";

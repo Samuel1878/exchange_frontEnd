@@ -11,11 +11,11 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
-import AuthProvider from "./context/authProvider";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./config/i18n";
 import React from "react";
 import GlobalLoader from "./components/loading/globalLoading";
+import { Toaster } from "./components/ui/sonner";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -41,6 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <Toaster />
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -53,19 +54,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
 //       <div className="text-amber-300 text-3xl font-bold">Welcome to Binance</div>
 //   </div>
 // }
+async function timingMiddleware({ context }, next) {
+  const start = performance.now();
+  await next();
+  const duration = performance.now() - start;
+  console.log(`Navigation took ${duration}ms`);
+}
 
+export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
+  timingMiddleware,
+];
 export default function App() {
   const navigation = useNavigation();
   const isLoading = navigation.state === "loading" || navigation.state === "submitting";
   return (
     <React.StrictMode>
       <I18nextProvider i18n={i18n}>
-        <AuthProvider>
           {
             isLoading && <GlobalLoader/>
           }
           <Outlet />
-        </AuthProvider>
       </I18nextProvider>
     </React.StrictMode>
   );

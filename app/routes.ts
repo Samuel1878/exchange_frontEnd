@@ -24,7 +24,7 @@ export default [
         route("projects", "./routes/charity/projects/index.tsx"),
         route("projects/:id", "./routes/charity/projects/[type].tsx"),
       ]),
-      route("asset", "./routes/wallet.tsx"),
+      route("wallet", "./routes/wallet.tsx"),
       ...prefix("finance", [
         ...prefix("earn", [
           index("./routes/earn/index.tsx"),

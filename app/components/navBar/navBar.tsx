@@ -121,7 +121,7 @@ export default function NavigationBar() {
             className="bg-gray-800 h-8 px-4 rounded-sm cursor-pointer hidden lg:flex items-center justify-center"
             onClick={() => navigate("login")}
           >
-            {" "}
+            
             <p className="text-gray-50 font-medium text-sm">Log In</p>
           </button>
           <button

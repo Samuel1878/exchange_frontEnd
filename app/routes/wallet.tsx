@@ -20,7 +20,15 @@ import SpotAccount from "~/components/wallet/SpotAccount";
 import Transfer from "~/components/wallet/Transfer";
 import AssetAccount from "~/components/wallet/AssetAccount";
 import Nfts from "~/components/wallet/Nfts";
-
+import { useAuthStore } from "~/store/useUserDataStore";
+import { redirect } from "react-router";
+export const clientLoader = async () => {
+  const loggedIn = useAuthStore.getState().isLoggedIn;
+  if (!loggedIn) {
+    throw redirect("/login");
+  }
+  return null;
+};
 export default function WalletOverview() {
   const [activeTab, setActiveTab] = useState("overview");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
