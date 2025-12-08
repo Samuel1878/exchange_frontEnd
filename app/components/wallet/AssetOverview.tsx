@@ -109,7 +109,7 @@ const AssetOverview = () => {
     }, [startDate, endDate]);
 
     return (
-        <div className="lg:border border-gray-700 rounded-2xl lg:p-4 text-white">
+        <div className="lg:p-4 text-white bg-gray-900 lg:bg-gray-950 mt-10">
             <div className="space-y-7 text-xl ">
                 <div className="flex gap-2">
                     <h1>Total asset Valuation : {isPriceVisible ? totalPrice : hiddenPrice}</h1> <button

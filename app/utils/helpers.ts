@@ -73,3 +73,7 @@ export const typedObjectEntries = <T extends object>(
   return Object.entries(obj) as Array<[keyof T, T[keyof T]]>;
 };
 
+export const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i; // simple, reliable email check
+ export const phoneRe = /^\+?[0-9]{7,15}$/; // E.164-like: optional +, 7-15 digits (no formatting)
+ export const userNameRe = /^[A-Za-z0-9_.-]{3,20}$/; // alphanumeric + . _ - , length 3-20
+ export const passwordRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/; // min 8, upper, lower, digit, special

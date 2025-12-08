@@ -35,9 +35,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { registerAPI, type RegisterPayload } from "~/api/authAPI";
+import { registerAPI } from "~/api/authAPI";
 import { useAuthStore } from "~/store/useUserDataStore";
 import type { LoginResponse } from "~/utils/types";
+import { emailRe, passwordRe, phoneRe, userNameRe } from "~/utils/helpers";
 
 const LoginTab = [
   { symbol: "mobile", label: "Mobile Phone" },
@@ -47,7 +48,7 @@ const LoginTab = [
 
 type LoginTabKey = (typeof LoginTab)[number]["symbol"];
 
-type ActionResponse = {
+export type ActionResponse = {
   ok?: boolean;
   message?: string;
   errors?: Record<string, string>;
@@ -62,7 +63,7 @@ type FormInputProps = React.ComponentPropsWithoutRef<"input"> & {
   error?: string | null;
 };
 
-const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
+export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
   ({ label, error, ...props }, ref) => {
     return (
       <div className="text-white w-full relative">
@@ -79,7 +80,7 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
 );
 FormInput.displayName = "FormInput";
 
-const SubmitButton = ({
+export const SubmitButton = ({
   children,
   loading,
 }: {
@@ -143,8 +144,8 @@ function SendCodeButton({
   );
 }
 
-function FormContainer({ children }: { children: React.ReactNode }) {
-  return <div className="text-white space-y-7">{children}</div>;
+export function FormContainer({ children }: { children: React.ReactNode }) {
+  return <div className="text-white space-y-7 mr-">{children}</div>;
 }
 
 export async function clientAction({ request }: Route.ClientActionArgs) {
@@ -162,11 +163,6 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     Phone: phone,
     InvitationCode: 0,
   };
-  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i; // simple, reliable email check
-  const phoneRe = /^\+?[0-9]{7,15}$/; // E.164-like: optional +, 7-15 digits (no formatting)
-  const userNameRe = /^[A-Za-z0-9_.-]{3,20}$/; // alphanumeric + . _ - , length 3-20
-  const passwordRe = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/; // min 8, upper, lower, digit, special
-
   const errors: Record<string, string> = {};
   if (type === "phone") {
     if (!phone) errors.phone = "Phone number is required for phone sign up.";
@@ -206,22 +202,9 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
   if (Object.keys(errors).length > 0) {
     return { ok: false, errors };
   }
-  if (Object.keys(errors).length > 0) {
-    return { ok: false, errors };
-  }
-
-
-  // const response = await registerAPI({UserName:userName, Email:email, PasswordHash:password1, Phone:phone, InvitationCode:0})
-  // if (response.status) {
-  //   toast.success("Registration Success")
-  //   console.log(response)
-  //   throw redirect("/");
-  //     return { ok: true, message: response?.message };
-  // } else {
-  //   toast.error(response?.message)
-  //   return {ok:false, message: response?.message}
+  // if (Object.keys(errors).length > 0) {
+  //   return { ok: false, errors };
   // }
-
   const resp = await registerAPI(payload);
   if (resp) {
     return {ok:true, data:resp};
@@ -410,7 +393,7 @@ export default function Registration() {
                       className="space-y-7"
                       method="post"
                       replace
-                      onSubmit={(e)=>console.log("EVENT", e)}
+                      onSubmit={(e) => console.log("EVENT", e)}
                     >
                       {loading ? (
                         <div className="flex flex-col items-center justify-center my-4 h-52">
@@ -423,7 +406,7 @@ export default function Registration() {
                         <>
                           {activeTab === "mobile" && (
                             <FormContainer>
-                              <div className="h-12 w-full items-center bg-gray-900 lg:bg-gray-950 flex gap-2 ">
+                              <div className="h-12 w-full items-center bg-gray-900 lg:bg-gray-950 flex gap-2 relative">
                                 <Select
                                   onValueChange={(e) => setCountry(e)}
                                   defaultValue={"us"}
@@ -452,7 +435,9 @@ export default function Registration() {
                                               }}
                                             />
                                             <p>{country.name}</p>
-                                            <p>+{country.dialCode}</p>
+                                            <p className="ml-1">
+                                              +{country.dialCode}
+                                            </p>
                                           </SelectItem>
                                         );
                                       })}
@@ -467,8 +452,13 @@ export default function Registration() {
                                   type="tel"
                                   ref={inputRef}
                                   name="phone"
-                                  className="w-full h-full pl-2 min-w-2/3 outline-0 bg-gray-900 lg:bg-gray-950  border-1 border-gray-800 rounded-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900"
+                                  className="w-full h-full pl-2 outline-0 bg-gray-900 lg:bg-gray-950  border-1 border-gray-800 rounded-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900"
                                 />
+                                {errors && errors?.phone && (
+                                  <p className="text-xs text-rose-400 absolute -bottom-5 right-0">
+                                    {errors?.phone}
+                                  </p>
+                                )}
                               </div>
                               <input
                                 type="hidden"

@@ -6,35 +6,29 @@ export interface LoginResponse {
 }
 
 export interface UserData {
-  Id: number;
   UserName: string;
   Email: string;
+  PasswordHash: string;
   Phone: string;
-  KycStatus: string;
-  AccountLevel: string;
+  KycStatus: "pending" | "verified" | string;
+  AccountLevel: "basic" | "vip" | string;
+  InvitationCode: string | null;
+  CreatedAt: string; // ISO date
+  UpdatedAt: string; // ISO date
+  Id: number;
   UserWallet: UserWallet[];
 }
+
 export interface UserWallet {
   Id: number;
   UserId: number;
-  AccountTypeId: number;
-  AccountBalance: string;
-  AvailableBalance: string;
-  LockedBalance: string;
-  Status: string;
+  WalletType: "financial" | "spot" | "funding" | string;
+  Status: "active" | "disabled" | string;
   CreatedAt: string;
   UpdatedAt: string;
-  AccountType: AccountType;
   UserAsset: UserAsset[];
 }
-export interface AccountType {
-  Id: number;
-  TypeName: string;
-  Description: string;
-  InterestRate: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-}
+
 export interface UserAsset {
   Id: number;
   UserId: number;
@@ -42,6 +36,6 @@ export interface UserAsset {
   AvailableBalance: string;
   LockedBalance: string;
   Currency: string;
-  CreatedAt: string | null;
-  UpdatedAt: string | null;
+  CreatedAt: string;
+  UpdatedAt: string;
 }

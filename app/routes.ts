@@ -24,7 +24,8 @@ export default [
         route("projects", "./routes/charity/projects/index.tsx"),
         route("projects/:id", "./routes/charity/projects/[type].tsx"),
       ]),
-      route("wallet", "./routes/wallet.tsx"),
+      // route("wallet", "./routes/wallet.tsx"),
+
       ...prefix("finance", [
         ...prefix("earn", [
           index("./routes/earn/index.tsx"),
@@ -38,11 +39,11 @@ export default [
         route("announcement/:type", "./routes/ico/announcement/[type].tsx"),
       ]),
       route("deposit", "./routes/deposit.tsx"),
-      route("term","./routes/TermsAndServer.tsx"),
-      route("privacy","./routes/privacy.tsx"),
-      route("about","./routes/about.tsx"),
+      route("term", "./routes/TermsAndServer.tsx"),
+      route("privacy", "./routes/privacy.tsx"),
+      route("about", "./routes/about.tsx"),
     ]),
-
+    route("dashboard", "./routes/dashboard.tsx"),
     route("login", "./routes/auth/login.tsx"),
     route("register", "./routes/auth/register.tsx"),
   ]),

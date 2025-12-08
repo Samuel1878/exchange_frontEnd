@@ -15,6 +15,10 @@ import FAQ from "~/components/homeComponents/f&q";
 import FooterSection from "~/components/footer";
 import NumberFlow from "@number-flow/react";
 import { useEffect, useState } from "react";
+import { useAuthStore } from "~/store/useUserDataStore";
+import { TitleSuffix } from "~/consts";
+import { FaAngleRight, FaEye, FaEyeSlash } from "react-icons/fa";
+import { TradeButton } from "~/components/charts/components/buttons";
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Home" }, { name: "description", content: "Welcome" }];
 }
@@ -23,6 +27,8 @@ export default function Home() {
   const { t } = useTranslation();
   const [number, setNumber] = useState(85290471);
   const [volume, setVolume] = useState(10760109);
+  const { isLoggedIn, user} = useAuthStore();
+  const [balanceShow, setBalanceShow] = useState(true);
   const navigate = useNavigate()
   useEffect(() => {
     setTimeout(() => {
@@ -43,75 +49,135 @@ export default function Home() {
           id={"hero1"}
           className="flex flex-col items-center gap-10 my-10 md:my-7 md:items-start md:pl-8 lg:px-2"
         >
-          <div className="flex flex-col justify-center items-center gap-2 md:items-start md:gap-4">
-            <h2 className="text-gray-50 font-extrabold text-2xl md:text-4xl md:font-bold ">
-              MORE THAN
-            </h2>
-            <h2 className="text-amber-400 font-extrabold text-5xl font-serif md:text-8xl lg:text-7xl">
-              25 MILLION
-            </h2>
-            <h2 className="text-gray-50 font-extrabold text-3xl md:text-8xl md:*:first:block">
-              <span>USERS </span>
-              <span>TRUST US</span>
-            </h2>
-          </div>
-          <div className="flex lg:justify-around justify-center gap-10 items-center w-full my-2 lg:my-6 md:justify-start md:gap-30">
-            <div className="flex flex-col items-center gap-1">
-              <NumberFlow
-                className="text-amber-400 text-md font-extrabold md:text-lg lg:text-2xl"
-                value={number}
-                format={{ style: "currency", currency: "USD" }}
-                transformTiming={{ duration: 750 }}
-              />
-
-              <p className="text-amber-400 text-sm font-medium md:text-md lg:text-lg">
-                Customer Assets
+          {isLoggedIn ? (
+            <div
+              onClick={() => navigate("ai")}
+              className="flex cursor-pointer flex-col justify-center items-start flex-wrap lg:max-w-110"
+            >
+              <h1 className="text-amber-300 font-extrabold text-3xl md:text-5xl lg:text-6xl leading-normal">
+                AI Strategy Trading{" "}
+                <span className="text-gray-50">
+                  Is Now Available on {TitleSuffix}
+                </span>
+              </h1>
+              <p className="flex gap-2 items-center text-gray-50 mt-12">
+                Learn More <FaAngleRight color="#fff" />
               </p>
             </div>
-            <div className="flex flex-col items-center gap-1">
-              <NumberFlow
-                className="text-amber-400 text-md font-extrabold md:text-lg lg:text-2xl"
-                value={volume}
-                format={{ style: "currency", currency: "USD" }}
-                transformTiming={{ duration: 750 }}
-              />
-              <p className="text-amber-400 text-sm font-medium md:text-md lg:text-lg">
-                Trading Volume
-              </p>
+          ) : (
+            <div className="flex flex-col justify-center items-center gap-2 md:items-start md:gap-4">
+              <h2 className="text-gray-50 font-extrabold text-2xl md:text-4xl md:font-bold ">
+                MORE THAN
+              </h2>
+              <h2 className="text-amber-400 font-extrabold text-5xl font-serif md:text-8xl lg:text-7xl">
+                25 MILLION
+              </h2>
+              <h2 className="text-gray-50 font-extrabold text-3xl md:text-8xl md:*:first:block">
+                <span>USERS </span>
+                <span>TRUST US</span>
+              </h2>
             </div>
-          </div>
-          <div className="flex flex-col justify-center items-center gap-2 md:items-start">
-            <div className="flex gap-2">
-              <CiGift className="text-amber-400" size={19} />
-              <p className="font-normal text-sm  text-gray-50">
-                Up to $100 Bonus Only Today
-              </p>
+          )}
+          {isLoggedIn ? (
+            <div className="space-y-3 w-full">
+              <div className="flex items-center gap-2 text-gray-50 text-sm font-medium">
+                Your Estimated Balance
+                <button
+                  className="cursor-pointer"
+                  onClick={() => setBalanceShow((prev) => !prev)}
+                >
+                  {balanceShow ? (
+                    <FaEye color="#d6d6d6" />
+                  ) : (
+                    <FaEyeSlash color="#d6d6d6" />
+                  )}
+                </button>
+              </div>
+              <div className="text-gray-50 font-bold text-3xl">{balanceShow?"0.020291":"********"} USDT</div>
+              <div className="text-gray-200 text-sm">≈ $ {}</div>
             </div>
-            <div className="flex items-center gap-2">
-              <Form className="hidden md:block">
-                <input
-                  name="email/phone"
-                  style={{
-                    borderWidth: 1,
-                    borderColor: "rgba(244,244,244,.3)",
-                  }}
-                  placeholder="Email/Phone number"
-                  className="py-3 rounded-md w-76 px-3 text-gray-200 border-amber-50 focus:outline-1 focus:outline-amber-400"
+          ) : (
+            <div className="flex lg:justify-around justify-center gap-10 items-center w-full my-2 lg:my-6 md:justify-start md:gap-30">
+              <div className="flex flex-col items-center gap-1">
+                <NumberFlow
+                  className="text-amber-400 text-md font-extrabold md:text-lg lg:text-2xl"
+                  value={number}
+                  format={{ style: "currency", currency: "USD" }}
+                  transformTiming={{ duration: 750 }}
                 />
-              </Form>
-              <button
-                className="bg-amber-300 px-14 py-3 rounded-md cursor-pointer"
-                onClick={() => navigate("/register")}
-              >
-                <p className="font-medium text-md text-gray-950">Sign Up</p>
-              </button>
+
+                <p className="text-amber-400 text-sm font-medium md:text-md lg:text-lg">
+                  Customer Assets
+                </p>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <NumberFlow
+                  className="text-amber-400 text-md font-extrabold md:text-lg lg:text-2xl"
+                  value={volume}
+                  format={{ style: "currency", currency: "USD" }}
+                  transformTiming={{ duration: 750 }}
+                />
+                <p className="text-amber-400 text-sm font-medium md:text-md lg:text-lg">
+                  Trading Volume
+                </p>
+              </div>
             </div>
-          </div>
+          )}
+          {isLoggedIn ? (
+            <div className="flex w-full my-4">
+              <div className="flex gap-4 w-full">
+                <TradeButton
+                  label="Deposit"
+                  style="bg-amber-300 h-10 px-5"
+                  textStyle="text-gray-800 font-semibold"
+                  action={() => {}}
+                />
+                <TradeButton
+                  label="Trade"
+                  style="bg-gray-800 hover:bg-gray-950 lg:hover:bg-gray-900 h-10 w-full"
+                  textStyle="text-gray-100 font-semibold"
+                  action={() => navigate("trade/btcusdt?type=spot")}
+                />
+                <TradeButton
+                  label="Convert"
+                  style="bg-gray-800 hover:bg-gray-950 lg:hover:bg-gray-900 h-10 w-full"
+                  textStyle="text-gray-100 font-semibold"
+                  action={() => navigate("trade/convert/usdt/btc")}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col justify-center items-center gap-2 md:items-start">
+              <div className="flex gap-2">
+                <CiGift className="text-amber-400" size={19} />
+                <p className="font-normal text-sm  text-gray-50">
+                  Up to $100 Bonus Only Today
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Form className="hidden md:block">
+                  <input
+                    name="email/phone"
+                    style={{
+                      borderWidth: 1,
+                      borderColor: "rgba(244,244,244,.3)",
+                    }}
+                    placeholder="Email/Phone number"
+                    className="py-3 rounded-md w-76 px-3 text-gray-200 border-amber-50 focus:outline-1 focus:outline-amber-400"
+                  />
+                </Form>
+                <button
+                  className="bg-amber-300 px-14 py-3 rounded-md cursor-pointer"
+                  onClick={() => navigate("/register")}
+                >
+                  <p className="font-medium text-md text-gray-950">Sign Up</p>
+                </button>
+              </div>
+            </div>
+          )}
         </article>
         <article id="hero2" className="md:mt-8 lg:mt-2 space-y-4">
-          {/* <AllMarketTickerProvider> */}
           <HomeMiniChart />
-          {/* </AllMarketTickerProvider> */}
           <AiMiniChart />
         </article>
       </section>
@@ -194,7 +260,10 @@ export default function Home() {
                   >
                     {e.description}
                   </p>
-                  <button onClick={()=>navigate(e.value)} className="bg-amber-300 p-1 cursor-pointer rounded-md w-30 hidden md:block text-gray-950 mt-6 text-md font-medium">
+                  <button
+                    onClick={() => navigate(e.value)}
+                    className="bg-amber-300 p-1 cursor-pointer rounded-md w-30 hidden md:block text-gray-950 mt-6 text-md font-medium"
+                  >
                     Learn more
                   </button>
                 </div>
@@ -210,7 +279,10 @@ export default function Home() {
                     className="object-fit w-25 h-20 self-end"
                   />
                 </div>
-                <button onClick={()=>navigate(e.value)} className="bg-amber-300 py-1 cursor-pointer rounded-md w-30 md:hidden text-gray-950 text-sm font-normal">
+                <button
+                  onClick={() => navigate(e.value)}
+                  className="bg-amber-300 py-1 cursor-pointer rounded-md w-30 md:hidden text-gray-950 text-sm font-normal"
+                >
                   Learn more
                 </button>
                 {e.id === 2 ? (
@@ -238,7 +310,10 @@ export default function Home() {
         <p className="text-lg font-extrabold text-neutral-50 lg:text-3xl">
           Start earning today
         </p>
-        <button className="h-10 px-8 rounded-lg bg-amber-300 text-neutral-900 text-sm font-bold lg:px-12 cursor-pointer" onClick={()=>navigate("register")}>
+        <button
+          className="h-10 px-8 rounded-lg bg-amber-300 text-neutral-900 text-sm font-bold lg:px-12 cursor-pointer"
+          onClick={() => navigate("register")}
+        >
           Sign Up Now
         </button>
       </aside>

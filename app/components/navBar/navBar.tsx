@@ -31,11 +31,14 @@ import {
 } from "~/consts/menuLists";
 import { BiDownload } from "react-icons/bi";
 import VerticalNavBar from "./verticalNavBar";
-import { X } from "lucide-react";
+import { LucideWallet, X } from "lucide-react";
 import { LangIcon, Logo } from "~/utils";
+import { useAuthStore } from "~/store/useUserDataStore";
+import { FaRegCircleUser } from "react-icons/fa6";
 
 export default function NavigationBar() {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
+  const {isLoggedIn} = useAuthStore()
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const navigate = useNavigate();
   const resizeHandler = () => {
@@ -116,21 +119,37 @@ export default function NavigationBar() {
         </NavigationMenuList>
       </NavigationMenu>
       <div className="lg:items-center flex gap-5 xl:gap-6">
-        <div className="flex gap-3 items-center ">
-          <button
-            className="bg-gray-800 h-8 px-4 rounded-sm cursor-pointer hidden lg:flex items-center justify-center"
-            onClick={() => navigate("login")}
-          >
-            
-            <p className="text-gray-50 font-medium text-sm">Log In</p>
-          </button>
-          <button
-            className="bg-amber-300 h-8 px-4 rounded-sm cursor-pointer"
-            onClick={() => navigate("register")}
-          >
-            <p className="text-gray-800 font-medium text-sm">Sign Up</p>
-          </button>
-        </div>
+        {isLoggedIn ? (
+          <div className="flex gap-4 items-center">
+            <button
+              className="bg-amber-300 h-8 px-4 rounded-sm cursor-pointer flex items-center justify-center"
+              onClick={() => navigate("deposit")}
+            >
+              <p className="text-gray-950 font-medium text-sm">Deposit</p>
+            </button>
+            <button className="" onClick={()=>navigate("dashboard?type=overview")}>
+              <FaRegCircleUser color="#fff" size={24} />
+            </button>
+            <button className="hidden md:flex" onClick={()=>navigate("dashboard?type=wallet")}>
+              <LucideWallet color="#fff" size={24} />
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-3 items-center ">
+            <button
+              className="bg-gray-800 h-8 px-4 rounded-sm cursor-pointer hidden lg:flex items-center justify-center"
+              onClick={() => navigate("login")}
+            >
+              <p className="text-gray-50 font-medium text-sm">Log In</p>
+            </button>
+            <button
+              className="bg-amber-300 h-8 px-4 rounded-sm cursor-pointer"
+              onClick={() => navigate("register")}
+            >
+              <p className="text-gray-800 font-medium text-sm">Sign Up</p>
+            </button>
+          </div>
+        )}
         <div className="h-5 w-0.5 hidden xl:block  bg-gray-600 mx-2" />
         <button
           onClick={() => navigate("/#download")}

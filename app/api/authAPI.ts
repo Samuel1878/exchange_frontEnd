@@ -8,7 +8,7 @@ export interface LoginResponse {
   accessToken: string;
 }
 
-export type RegisterPayload = {
+export type payloadType = {
   UserName?: string;
   PasswordHash: string;
   Email?: string;
@@ -16,11 +16,11 @@ export type RegisterPayload = {
   InvitationCode?: number;
 };
 
-export const registerAPI = async (data: RegisterPayload): Promise<LoginResponse> => {
+export const registerAPI = async (data: payloadType): Promise<LoginResponse> => {
   try {
     const response = await axios.post(
       `${ACTION_URL}/api/v1/auth/register`,
-      data, // <-- body here
+      data,
       {
         headers: {
           "Content-Type": "application/json",
@@ -31,9 +31,24 @@ export const registerAPI = async (data: RegisterPayload): Promise<LoginResponse>
     if (response.status === 200) {
       return response.data;
     }
-    return null
+    return null;
   } catch (error: any) {
     console.log(error?.response?.data ?? error);
-    return null
+    return null;
+  }
+};
+
+export const loginAPI = async (data: payloadType): Promise<LoginResponse> => {
+  try {
+    const response = await axios.post(`${ACTION_URL}/api/v1/auth/login`, data, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.status === 200) return response.data;
+    return null;
+  } catch (error) {
+    console.log(error?.response?.data ?? error);
+    return null;
   }
 };
