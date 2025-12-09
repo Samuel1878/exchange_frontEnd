@@ -67,8 +67,8 @@ export function AppSidebar() {
                   className="text-gray-100 hover:bg-gray-800 active:bg-gray-800 focus:bg-gray-800 rounded-md hover:text-amber-300"
                 >
                   <SidebarMenuButton asChild className="hover:text-amber-300">
-                    <Link to={item.url} className="my-4">
-                      <item.icon />
+                    <Link to={item.url} className="py-8">
+                      <item.icon/>
                       <span className="hover:text-amber-300 text-lg">
                         {item.title}
                       </span>

@@ -71,7 +71,7 @@ export default function HomeMiniChart() {
       });
   };
   return (
-    <div className="bg-gray-900 flex flex-col min-h-80 lg:min-w-md items-center xl:min-w-lg md:bg-gray-800 md:rounded-2xl md:p-4 md:px-8 md:mx-8 lg:mx-4">
+    <div className="bg-gray-900 flex flex-col min-h-80 lg:min-w-md items-center xl:min-w-lg md:bg-gray-800 md:rounded-2xl md:p-4 md:px-8 ">
       <div className="w-full flex items-center justify-center gap-4 md:justify-between">
         <div className="flex items-center justify-center gap-4 md:justify-start">
           <button
@@ -97,7 +97,7 @@ export default function HomeMiniChart() {
         </div>
 
         <Link
-          to={"market"}
+          to={"/market"}
           className="text-sm font-light md:flex items-center gap-2 hidden text-gray-500"
         >
           View more <IoIosArrowForward size={14} color="rgba(140,140,140,.7)" />
@@ -117,7 +117,7 @@ export default function HomeMiniChart() {
         <div></div>
       )}
       <Link
-        to={"market"}
+        to={"/market"}
         className="font-light flex items-center text-sm md:hidden text-gray-500"
       >
         View More <IoIosArrowForward size={14} color="rgba(140,140,140,.7)" />

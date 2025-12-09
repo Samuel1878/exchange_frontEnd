@@ -5,7 +5,7 @@ import { HiUsers } from "react-icons/hi2";
 import SlotCounter from "react-slot-counter";
 export default function AiMiniChart() {
   return (
-    <div className="bg-gray-900 flex flex-col lg:min-w-md items-center xl:min-w-lg md:bg-gray-800 md:rounded-2xl md:p-4 md:px-8 md:mx-8 lg:mx-4">
+    <div className="bg-gray-900 flex flex-col lg:min-w-md items-center xl:min-w-lg md:bg-gray-800 md:rounded-2xl md:p-4 md:px-8">
       <div className="w-full flex items-center justify-between">
         <p className="text-gray-50">Top AI quantitative strategy</p>
         <Link
