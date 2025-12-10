@@ -17,12 +17,12 @@ import {
   Pane,
   CandlestickSeries,
 } from "lightweight-charts-react-components";
-import useWindowDimensions from "~/hook/windowWidth";
+import useWindowDimensions from "~/hooks/windowWidth";
 import TimeSeries from "./timeSeries";
-import { useKlines } from "~/hook/useKline";
+import { useKlines } from "~/hooks/useKline";
 import { useKlineStore } from "~/store/useKlineStore";
 import { useLegendStore } from "~/store/useLegendStore";
-import { useLegend } from "~/hook/useLegend";
+import { useLegend } from "~/hooks/useLegend";
 import {
   dataRangeMap,
   localizationFormater,
@@ -30,7 +30,7 @@ import {
 } from "../../util";
 import { useCompareSeriesStore } from "~/store/useCompareSeriesStore";
 import { IoIosArrowDown, IoIosArrowForward } from "react-icons/io";
-import { useMultiLegend } from "~/hook/useLineLegend";
+import { useMultiLegend } from "~/hooks/useLineLegend";
 import CandleStickInfo from "./info";
 import AggTradeView from "../aggTradeView";
 

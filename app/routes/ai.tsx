@@ -12,7 +12,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "~/
 import { Bell, Users } from "lucide-react";
 import { useFetcher } from "react-router";
 import { smartAirBage } from "~/utils";
-import { NoData } from "~/components/noData";
+import { NoData } from "~/components/loading/noData";
 export function meta({ }: Route.MetaArgs) {
   return [
     { title: "Ai Strategy" },

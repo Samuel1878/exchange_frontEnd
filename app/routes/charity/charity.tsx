@@ -3,7 +3,7 @@ import FooterSection from "~/components/footer";
 import CharittyImage from "assets/images/charity.png";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { FeaturedProjects } from "data/charity/featured-projects";
+import { FeaturedProjects } from "~/consts/charity";
 const randomNames = [
   "michael",
   "karen",

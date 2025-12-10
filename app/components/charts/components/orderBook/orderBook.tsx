@@ -5,7 +5,7 @@ import DepthVisualizer from "./depthVisulizer";
 
 import { formatPrice} from "../../util/index";
 import { CoinPairs } from "~/consts/pairs";
-import useWindowDimensions from "~/hook/windowWidth";
+import useWindowDimensions from "~/hooks/windowWidth";
 import { formatTotalPrice } from "~/utils/helpers";
 import { useOrderbookStore, type LevelType } from "~/store/useOrderBookStore";
 import { useAggTradeStore } from "~/store/useAggTradeStore";

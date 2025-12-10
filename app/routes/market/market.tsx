@@ -1,4 +1,3 @@
-
 import FooterSection from "~/components/footer";
 // import MarketView from "~/components/marketView";
 
@@ -9,21 +8,20 @@ import { CoinPairs } from "~/consts/pairs";
 import { formatPrice } from "~/components/charts/util/index";
 import { formatTotalPrice } from "~/utils/helpers";
 import { Coins } from "~/utils";
-import { useTickers } from "~/hook/useTickers";
+import { useTickers } from "~/hooks/useTickers";
 import { useTickersStore, type Ticker } from "~/store/useTickersStore";
 import type { Route } from "./+types/market";
 import { LOCAL_URL } from "~/consts";
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const response = await fetch(LOCAL_URL+"/global", {
+  const response = await fetch(LOCAL_URL + "/global", {
     method: "GET",
   });
 
-     const data = await response.json();
+  const data = await response.json();
   if (data) {
     // console.log("")
     return { data };
   }
-
 }
 const cryptoTabs = [
   //   { label: "Favorites", Id: "1" },
@@ -31,11 +29,18 @@ const cryptoTabs = [
   { label: "US_stocks", Id: "2" },
   { label: "FX", Id: "3" },
 ];
-
-export default function Market({loaderData}:Route.ComponentProps) {
-  const[activeTab, setActiveTab] = useState("Crypto");
+const TR = ({ children }) => (
+  <th className="hidden lg:table-cell text-right px-4 py-2">{children}</th>
+);
+const TD = ({ children }) => (
+  <td className="hidden md:table-cell text-right px-4 py-3 font-semibold text-md lg:text-lg text-gray-50">
+    {children}
+  </td>
+);
+export default function Market({ loaderData }: Route.ComponentProps) {
+  const [activeTab, setActiveTab] = useState("Crypto");
   const navigate = useNavigate();
-  const {data} = loaderData;
+  const { data } = loaderData;
   // console.log(data);
   useTickers([
     "btcusdt@ticker",
@@ -100,18 +105,10 @@ export default function Market({loaderData}:Route.ComponentProps) {
             <p className="">{formatPrice(Number(ticker?.priceChange))}</p>
             {ticker?.priceChangePercent}%
           </td>
-          <td className="hidden md:table-cell text-right px-4 py-3 font-semibold text-md lg:text-lg text-gray-50">
-            {formatPrice(Number(ticker?.highPrice))}
-          </td>
-          <td className="hidden md:table-cell text-right px-4 py-3 font-semibold text-md lg:text-lg text-gray-50">
-            {formatPrice(Number(ticker?.lowPrice))}
-          </td>
-          <td className="hidden lg:table-cell text-right px-4 py-3 font-semibold text-md lg:text-lg text-gray-50">
-            {formatTotalPrice(Number(ticker?.baseVolume))}
-          </td>
-          <td className="hidden lg:table-cell text-right px-4 py-3 font-semibold text-md lg:text-lg text-gray-50">
-            ${formatTotalPrice(Number(ticker?.quoteVolume))}
-          </td>
+          <TD>{formatPrice(Number(ticker?.highPrice))}</TD>
+          <TD>{formatPrice(Number(ticker?.lowPrice))}</TD>
+          <TD> {formatTotalPrice(Number(ticker?.baseVolume))}</TD>
+          <TD>${formatTotalPrice(Number(ticker?.quoteVolume))}</TD>
         </tr>
       );
     });
@@ -220,18 +217,13 @@ export default function Market({loaderData}:Route.ComponentProps) {
                       <th className="text-left px-4 py-2">Name</th>
                       <th className="text-right px-4 py-2">Price</th>
                       <th className="text-right md:px-4 py-2">24h Change</th>
-                      <th className="hidden md:table-cell text-right px-4 py-2">
-                        24h High
-                      </th>
-                      <th className="hidden md:table-cell text-right px-4 py-2">
-                        24h low
-                      </th>
-                      <th className="hidden lg:table-cell text-right px-4 py-2">
-                        24h Volume
-                      </th>
-                      <th className="hidden lg:table-cell text-right px-4 py-2">
-                        24h Vol(USDT)
-                      </th>
+                      <TR>24h High</TR>
+
+                      <TR> 24h low</TR>
+
+                      <TR> 24h Volume</TR>
+
+                      <TR> 24h Vol(USDT)</TR>
                     </tr>
                   </thead>
                   <tbody>

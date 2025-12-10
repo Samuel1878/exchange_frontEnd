@@ -1,4 +1,4 @@
-import { NoData } from "~/components/noData";
+import { NoData } from "~/components/loading/noData";
 
 const OrderHistory = () => {
     return (

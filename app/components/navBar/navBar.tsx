@@ -130,7 +130,7 @@ export default function NavigationBar() {
             <button className="" onClick={()=>navigate("dashboard?type=overview")}>
               <FaRegCircleUser color="#fff" size={24} />
             </button>
-            <button className="hidden md:flex" onClick={()=>navigate("dashboard?type=wallet")}>
+            <button className="hidden md:flex" onClick={()=>navigate("dashboard?type=spot")}>
               <LucideWallet color="#fff" size={24} />
             </button>
           </div>

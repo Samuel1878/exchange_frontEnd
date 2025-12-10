@@ -40,75 +40,79 @@ import miniEth from "assets/coins/miniEth.png";
 import miniXrp from "assets/coins/miniXrp.png";
 import miniLtc from "assets/coins/miniLtc.png";
 import btcEth from "assets/coins/btc_eth.png";
+import { EarnProductTest } from "~/consts";
+import { formatTotalPrice } from "~/utils/helpers";
+import { PairImage } from "~/components/coinPair";
+import { Coins } from "~/utils";
 
-const AdvancedEarnCaredData = [
-  {
-    id: 1,
-    tokenImage: miniUsdt,
-    tokenName: "USDT",
-    tokenType: "RWUSD | Locked",
-    lockupPeriod: "30 Days",
-    lockupName: "Locked",
-    minimumDeposit: "50 USDT",
-    apr: "8% ~ 12%",
-    productType: "HOT",
-  },
-  {
-    id: 2,
-    tokenImage: miniBtc,
-    tokenName: "BTC",
-    tokenType: "RWBTC | Locked",
-    lockupPeriod: "60 Days",
-    lockupName: "Locked",
-    minimumDeposit: "0.001 BTC",
-    apr: "6% ~ 10%",
-    productType: "HOT",
-  },
-  {
-    id: 3,
-    tokenImage: miniEth,
-    tokenName: "ETH",
-    tokenType: "RWETH | Locked",
-    lockupPeriod: "45 Days",
-    lockupName: "Locked",
-    minimumDeposit: "0.01 ETH",
-    apr: "7% ~ 11%",
-    productType: "HOT",
-  },
-  {
-    id: 4,
-    tokenImage: miniXrp,
-    tokenName: "XRP",
-    tokenType: "XRPSDT | Flexible",
-    lockupPeriod: "-",
-    lockupName: "Flexible",
-    minimumDeposit: "50 USDT",
-    apr: "8.5% ~ 12.5%",
-    productType: "New",
-  },
-  {
-    id: 5,
-    tokenImage: miniLtc,
-    tokenName: "LTC",
-    tokenType: "RWLTC | Locked",
-    lockupPeriod: "30 Days",
-    lockupName: "Locked",
-    minimumDeposit: "0.1 LTC",
-    apr: "9% ~ 13%",
-    productType: "New",
-  },
-  {
-    id: 6,
-    tokenImage: btcEth,
-    tokenName: "BTC-ETH",
-    tokenType: "RWBCH | Locked",
-    lockupPeriod: "60 Days",
-    lockupName: "Locked",
-    minimumDeposit: "0.01 BTC",
-    apr: "7.5% ~ 11.5%",
-    productType: "HOT",
-  },
-];
+// const AdvancedEarnCaredData = [
+//   {
+//     id: 1,
+//     tokenImage: miniUsdt,
+//     tokenName: "USDT",
+//     tokenType: "RWUSD | Locked",
+//     lockupPeriod: "30 Days",
+//     lockupName: "Locked",
+//     minimumDeposit: "50 USDT",
+//     apr: "8% ~ 12%",
+//     productType: "HOT",
+//   },
+//   {
+//     id: 2,
+//     tokenImage: miniBtc,
+//     tokenName: "BTC",
+//     tokenType: "RWBTC | Locked",
+//     lockupPeriod: "60 Days",
+//     lockupName: "Locked",
+//     minimumDeposit: "0.001 BTC",
+//     apr: "6% ~ 10%",
+//     productType: "HOT",
+//   },
+//   {
+//     id: 3,
+//     tokenImage: miniEth,
+//     tokenName: "ETH",
+//     tokenType: "RWETH | Locked",
+//     lockupPeriod: "45 Days",
+//     lockupName: "Locked",
+//     minimumDeposit: "0.01 ETH",
+//     apr: "7% ~ 11%",
+//     productType: "HOT",
+//   },
+//   {
+//     id: 4,
+//     tokenImage: miniXrp,
+//     tokenName: "XRP",
+//     tokenType: "XRPSDT | Flexible",
+//     lockupPeriod: "-",
+//     lockupName: "Flexible",
+//     minimumDeposit: "50 USDT",
+//     apr: "8.5% ~ 12.5%",
+//     productType: "New",
+//   },
+//   {
+//     id: 5,
+//     tokenImage: miniLtc,
+//     tokenName: "LTC",
+//     tokenType: "RWLTC | Locked",
+//     lockupPeriod: "30 Days",
+//     lockupName: "Locked",
+//     minimumDeposit: "0.1 LTC",
+//     apr: "9% ~ 13%",
+//     productType: "New",
+//   },
+//   {
+//     id: 6,
+//     tokenImage: btcEth,
+//     tokenName: "BTC-ETH",
+//     tokenType: "RWBCH | Locked",
+//     lockupPeriod: "60 Days",
+//     lockupName: "Locked",
+//     minimumDeposit: "0.01 BTC",
+//     apr: "7.5% ~ 11.5%",
+//     productType: "HOT",
+//   },
+// ];
 
 export async function clientAction({
   request,
@@ -251,15 +255,15 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
   const [durationFilter, setDurationFilter] = useState("all");
 
   const navigate = useNavigate();
-  const filteredProducts = AdvancedEarnCaredData.filter((product) => {
+  const filteredProducts = EarnProductTest.filter((product) => {
     const matchesSearch =
-      product.tokenName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.tokenType.toLowerCase().includes(searchTerm.toLowerCase());
+      product.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.Name.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesDuration =
       durationFilter === "all" ||
-      (durationFilter === "flexible" && product.lockupName === "Flexible") ||
-      (durationFilter === "locked" && product.lockupName === "Locked");
+      (durationFilter === "flexible" && product.IsFlexible === true) ||
+      (durationFilter === "locked" && product.IsFlexible === false);
 
     return matchesSearch && matchesDuration;
   });
@@ -306,76 +310,99 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                   className="w-full relative"
                 >
                   <CarouselContent>
-                    {AdvancedEarnCaredData.map((item) => (
-                      <CarouselItem
-                        key={item.id}
-                        className="md:basis-1/2 lg:basis-1/3"
-                      >
-                        <div className="p-1">
-                          <Card
-                            className="bg-gray-800 border border-gray-700 hover:border-gray-600 cursor-pointer transition-all duration-200 w-full h-full"
-                            onClick={() => navigate(`${item.tokenName}`)}
-                          >
-                            <CardContent className="p-4 flex flex-col justify-between h-32">
-                              <div className="text-sm text-white relative">
-                                <div className="absolute -top-10 items-end -right-4">
-                                  {item.productType === "HOT" && (
+                    {EarnProductTest.sort((a, b) => b.MaxApr - a.MaxApr)
+                      .slice(0, 5)
+                      .map((item) => (
+                        <CarouselItem
+                          key={item.Id}
+                          className="md:basis-1/2 lg:basis-1/3"
+                        >
+                          <div className="p-1">
+                            <Card
+                              className="bg-gray-800 border border-gray-700 hover:border-gray-600 cursor-pointer transition-all duration-200 w-full h-full"
+                              onClick={() => navigate(`${item.Name}`, {
+                                state:{
+                                  product:item
+                                }
+                              })}
+                            >
+                              <CardContent className="p-4 flex flex-col justify-between h-32">
+                                <div className="text-sm text-white relative">
+                                  <div className="absolute -top-10 items-end -right-4">
                                     <span className="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded-2xl">
                                       HOT
                                     </span>
-                                  )}
-                                  {item.productType === "New" && (
-                                    <span className="bg-green-500 text-white text-xs font-semibold px-2 py-1 rounded-2xl">
-                                      New
-                                    </span>
-                                  )}
-                                </div>
-                                <div className="grid grid-cols-2 gap-2 mb-3">
-                                  <div className="flex flex-row gap-2 items-center">
-                                    <img
-                                      src={item.tokenImage}
-                                      alt={item.tokenName}
-                                      width={32}
-                                      height={32}
-                                      className="rounded-full"
-                                    />
-                                    <div>
-                                      <p className="font-semibold">
-                                        {item.tokenName}
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-2 mb-3">
+                                    <div className="flex flex-row gap-2 items-center">
+                                      {item.IsFlexible ? (
+                                        <img
+                                          src={Coins[item.Name.toUpperCase()]}
+                                          alt={item.Name}
+                                          width={32}
+                                          height={32}
+                                          className="rounded-full"
+                                        />
+                                      ) : (
+                                        PairImage(
+                                          item.Name.split("-", 1).toString(),
+                                          item.Name.slice(
+                                            item.Name.indexOf("-")
+                                          ).replace("-", ""),
+                                          40
+                                        )
+                                      )}
+                                      <div>
+                                        <p className="font-semibold">
+                                          {item.Name}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="text-xs text-gray-400">
+                                        {item.IsFlexible
+                                          ? "Flexible"
+                                          : "Locked"}
+                                      </p>
+                                      <p className="font-semibold text-sm">
+                                        {item.IsFlexible
+                                          ? "Anytime"
+                                          : item.DurationDays}
                                       </p>
                                     </div>
                                   </div>
-                                  <div className="text-right">
-                                    <p className="text-xs text-gray-400">
-                                      {item.lockupName}
-                                    </p>
-                                    <p className="font-semibold text-sm">
-                                      {item.lockupPeriod}
-                                    </p>
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div className="text-start">
+                                      <p className="text-xs text-gray-400">
+                                        Minimum
+                                      </p>
+                                      <p className="font-semibold text-sm">
+                                        {item.MinAmount}
+                                      </p>
+                                      <p className="text-xs text-gray-400">
+                                        Maximum
+                                      </p>
+                                      <p className="font-semibold text-sm">
+                                        {formatTotalPrice(
+                                          Number(item.MaxAmount)
+                                        )}
+                                      </p>
+                                    </div>
+                                    <div className="text-right">
+                                      <p className="text-xs text-gray-400">
+                                        APR
+                                      </p>
+                                      <p className="font-semibold text-sm text-green-400">
+                                        {item.MinApr} ~ {item.MaxApr}
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-2">
-                                  <div className="text-start">
-                                    <p className="text-xs text-gray-400">
-                                      Minimum Deposit
-                                    </p>
-                                    <p className="font-semibold text-sm">
-                                      {item.minimumDeposit}
-                                    </p>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="text-xs text-gray-400">APR</p>
-                                    <p className="font-semibold text-sm text-green-400">
-                                      {item.apr}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        </div>
-                      </CarouselItem>
-                    ))}
+                              </CardContent>
+                            </Card>
+                          </div>
+                        </CarouselItem>
+                      ))}
                   </CarouselContent>
                   <CarouselPrevious className="absolute -left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 border-gray-700 hover:bg-gray-700 text-white" />
                   <CarouselNext className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 border-gray-700 hover:bg-gray-700 text-white" />
@@ -422,7 +449,6 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
               </div>
               <div className="space-y-6 text-white">
                 <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-                  {/* Search Input */}
                   <div className="relative w-full lg:w-96 flex items-center">
                     <input
                       type="text"
@@ -436,8 +462,6 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                       size={18}
                     />
                   </div>
-
-                  {/* Duration Filter and Modal */}
                   <div className="w-full lg:w-auto flex gap-2">
                     <div className="hidden lg:block">
                       <Select
@@ -481,10 +505,10 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                   {/* Results Count */}
                   <div className="text-sm text-gray-400">
                     Showing {filteredProducts.length} of{" "}
-                    {AdvancedEarnCaredData.length} products
+                    {EarnProductTest.length} products
                   </div>
 
-                  <div className="hidden lg:grid grid-cols-5 text-sm font-semibold bg-gray-800 py-4 px-6 rounded-lg text-gray-400">
+                  <div className="hidden lg:grid grid-cols-5 text-sm font-semibold py-4 px-6 rounded-lg text-gray-400">
                     <div>Coin</div>
                     <div className="text-center">APR</div>
                     <div className="text-center">Duration</div>
@@ -499,47 +523,58 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                   ) : (
                     filteredProducts.map((item) => (
                       <div
-                        key={item.id}
-                        className="grid grid-cols-2 lg:grid-cols-5 p-4 lg:p-6 rounded-xl gap-4 bg-gray-800 lg:hover:bg-gray-700 transition-colors"
+                        key={item.Id}
+                        className="grid grid-cols-2 lg:grid-cols-5 p-4 lg:p-6 rounded-xl gap-4"
                       >
                         <div className="flex items-center gap-3">
-                          <img
-                            src={item.tokenImage}
-                            alt={item.tokenName}
-                            width={40}
-                            height={40}
-                            className="rounded-full"
-                          />
+                          {item.IsFlexible ? (
+                            <img
+                              src={Coins[item.Name.toUpperCase()]}
+                              alt={item.Name}
+                              width={30}
+                              height={30}
+                              className="rounded-full"
+                            />
+                          ) : (
+                            PairImage(
+                              item.Name.split("-", 1).toString(),
+                              item.Name.slice(item.Name.indexOf("-")).replace(
+                                "-",
+                                ""
+                              ),
+                              30
+                            )
+                          )}
                           <div className="flex flex-col">
-                            <span className="font-semibold">
-                              {item.tokenName}
-                            </span>
+                            <span className="font-semibold">{item.Name}</span>
                             <span className="text-xs text-gray-400">
-                              {item.tokenType}
+                              {item.IsFlexible ? "Flexible" : "Locked"}
                             </span>
                           </div>
                         </div>
                         <div className="text-right lg:text-center text-green-400 font-semibold">
-                          {item.apr}
+                          {item.MinApr} ~ {item.MaxApr}
                         </div>
                         <div className="hidden lg:block text-center text-gray-300">
-                          {item.lockupPeriod}
+                          {item.IsFlexible ? "Anytime" : item.DurationDays}
                         </div>
                         <div className="hidden lg:block text-center">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              item.lockupName === "Flexible"
+                              item.IsFlexible
                                 ? "bg-blue-500/20 text-blue-400"
                                 : "bg-amber-500/20 text-amber-400"
                             }`}
                           >
-                            {item.lockupName}
+                            {item.IsFlexible ? "Flexible" : "Locked"}
                           </span>
                         </div>
                         <div className="col-span-2 lg:col-span-1 flex justify-end lg:justify-center">
                           <button
                             className="w-full lg:w-auto bg-amber-300 hover:bg-amber-300 text-gray-900 font-medium py-2 px-6 rounded-lg transition-colors cursor-pointer"
-                            onClick={() => navigate(`${item.tokenName}`)}
+                            onClick={() => navigate(`${item.Name}`, {
+                              state:{product:item}
+                            })}
                           >
                             Subscribe
                           </button>

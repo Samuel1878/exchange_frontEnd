@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { Activity, useCallback, useEffect, useState } from "react";
 import type { Route } from "./+types/trade";
 import MobileChart from "~/components/charts/mobileTrade";
 import ChartScreen from "~/components/charts/tradeChart";
-import useWindowDimensions from "~/hook/windowWidth";
-import { useDepthAggTrades } from "~/hook/useAggTrade";
-import { useOrderbook } from "~/hook/useOrderBook";
-import { useKlines } from "~/hook/useKline";
-import { useTickers } from "~/hook/useTickers";
+import useWindowDimensions from "~/hooks/windowWidth";
+import { useDepthAggTrades } from "~/hooks/useAggTrade";
+import { useOrderbook } from "~/hooks/useOrderBook";
+import { useKlines } from "~/hooks/useKline";
+import { useTickers } from "~/hooks/useTickers";
 
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Trade" }, { name: "description", content: "Trading" }];
@@ -65,7 +65,7 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
       className="lg:flex lg:justify-center bg-gray-900 lg:bg-black overflow-x-hidden"
       id={"spot"}
     >
-      {isMobile && isMobileTrade ? (
+      <Activity mode={isMobile && isMobileTrade ? "visible" : "hidden"}>
         <MobileChart
           pair={pair}
           type={type}
@@ -74,7 +74,8 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
           openMobileTrade={openMobileTrade}
           closeMobileTrade={closeMobileTrade}
         />
-      ) : (
+      </Activity>
+      <Activity mode={isMobile && isMobileTrade ? "hidden" : "visible"}>
         <ChartScreen
           pair={pair}
           isBuy={isBuy}
@@ -82,7 +83,12 @@ export default function SpotScreen({ loaderData }: Route.ComponentProps) {
           openMobileTrade={openMobileTrade}
           type={type}
         />
-      )}
+      </Activity>
+      {/* {isMobile && isMobileTrade ? (
+        
+      ) : (
+       
+      )} */}
     </main>
   );
 }

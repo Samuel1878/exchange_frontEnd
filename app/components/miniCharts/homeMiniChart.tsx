@@ -5,7 +5,7 @@ import { Loader } from "lucide-react";
 import { formatPrice } from "../charts/util";
 import { CoinPairs } from "~/consts/pairs";
 import { Coins } from "~/utils";
-import { useTickers } from "~/hook/useTickers";
+import { useTickers } from "~/hooks/useTickers";
 import { useTickersStore, type Ticker } from "~/store/useTickersStore";
 
 enum lists {

@@ -6,10 +6,13 @@ import { TradeButton } from "../charts/components/buttons";
 import { useNavigate } from "react-router";
 import HomeMiniChart from "../miniCharts/homeMiniChart";
 import AiMiniChart from "../miniCharts/aiMiniChart";
+import { user } from "~/consts";
+import { formatNumber, formatTotalPrice } from "~/utils/helpers";
+import CustomActiveShapePieChart from "./piChart";
 export function Container({ children }) {
   return (
     <React.Fragment>
-      <section className="bg-gray-900 lg:bg-gray-950 flex flex-col items-center">
+      <section className="bg-gray-900 lg:bg-gray-950 flex flex-col items-center overflow-y-auto min-h-full">
         <article className="max-w-6xl w-full text-gray-50 p-4">
           {children}
         </article>
@@ -17,8 +20,10 @@ export function Container({ children }) {
     </React.Fragment>
   );
 }
-export default function OverView() {
-  const { user } = useAuthStore();
+export default function OverView({walletTotals, totalUSDT}:{
+  walletTotals:Record<string, number>, totalUSDT:number
+}) {
+  // const { user } = useAuthStore();
   const [balanceShow, setBalanceShow] = useState(true);
   const navigate = useNavigate();
   return (
@@ -27,12 +32,32 @@ export default function OverView() {
         id="profile"
         className="flex items-center py-4 justify-between w-full "
       >
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           <img src={BTC} width={50} />
-          <div>
-            <p className="">{user?.UserName}</p>
-            <p>{user?.AccountLevel}</p>
-            <p>{user?.KycStatus}</p>
+          <div className="relative">
+            <p className="text-gray-50 text-md font-semibold">
+              {user?.UserName}
+            </p>
+            <p className="text-gray-600">{user?.Phone}</p>
+            {user?.Email ? (
+              <p className="text-gray-600 text-sm">{user?.Email}</p>
+            ) : (
+              <p className="text-sm font-semibold text-red-300 cursor-pointer">
+                Bind Email
+              </p>
+            )}
+            <div className="flex gap-2 mt-1">
+              <div
+                className={`text-gray-50 text-xs p-1 px-3 rounded-full bg-gray-600 capitalize`}
+              >
+                {user?.AccountLevel}
+              </div>
+              <div
+                className={`text-gray-50 text-xs p-1 px-3 capitalize rounded-full cursor-pointer ${user?.KycStatus === "verified"? "bg-green-500" :"bg-red-400"}`}
+              >
+                {user?.KycStatus}
+              </div>
+            </div>
           </div>
         </div>
         <div>
@@ -56,10 +81,10 @@ export default function OverView() {
           </button>
         </div>
         <div className="text-gray-50 font-bold text-3xl">
-          {balanceShow ? "0.020291" : "********"} USDT
+          {balanceShow ? formatNumber(totalUSDT) : "********"} USDT
         </div>
         <div className="text-gray-200 text-sm">
-          ≈ $ {balanceShow ? "0.020291" : "********"}
+          ≈ $ {balanceShow ? formatTotalPrice(totalUSDT) : "********"}
         </div>
         <div className="flex gap-4 w-full mt-6">
           <TradeButton
@@ -82,7 +107,9 @@ export default function OverView() {
           />
         </div>
       </div>
-      <div className="h-100"></div>
+      <div className="p-2">
+        <CustomActiveShapePieChart/>
+      </div>
       <div className="my-10">
         <HomeMiniChart />
       </div>

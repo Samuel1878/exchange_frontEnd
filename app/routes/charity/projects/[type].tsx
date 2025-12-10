@@ -1,6 +1,6 @@
  
 import FooterSection from "~/components/footer";
-import { FeaturedProjects } from "data/charity/featured-projects";
+import { FeaturedProjects } from "~/consts/charity";
 import TestImage from "assets/images/binance-charity-wallet.svg";
 import React, { useEffect, useRef, useState } from "react";
 import {

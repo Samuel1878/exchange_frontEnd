@@ -6,7 +6,7 @@ import { CoinPairs } from "~/consts/pairs";
 import { formatPrice } from "../util";
 import { Coins } from "~/utils";
 import { useNavigate } from "react-router";
-import useWindowDimensions from "~/hook/windowWidth";
+import useWindowDimensions from "~/hooks/windowWidth";
 import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerTitle } from "~/components/ui/drawer";
 import { X } from "lucide-react";
 import { useTickersStore, type Ticker } from "~/store/useTickersStore";

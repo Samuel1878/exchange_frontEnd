@@ -38,4 +38,36 @@ export interface UserAsset {
   Currency: string;
   CreatedAt: string;
   UpdatedAt: string;
+};
+
+
+export interface AssetBalance {
+  currency:string;
+  balance:number;
+  valueUSDT:number;
+};
+export interface WalletBalance{
+  walletType:string;
+  walletUSDT:number;
+  assets:AssetBalance[];
+};
+export interface UserBalanceResult {
+  totalUSDT :number;
+  walletTotals:Record<string, number>;
+  walletDetails:WalletBalance[]
+}
+
+export interface EarnProductsType {
+  Id:number;
+  Name:string;
+  MinApr:number;
+  MaxApr:number;
+  DurationDays:number;
+  MinAmount:string,
+  MaxAmount:string;
+  RiskLevel:string;
+  IsFlexible:boolean;
+  isActive:boolean;
+  CreatedAt:string;
+  UpdatedAt:string;
 }

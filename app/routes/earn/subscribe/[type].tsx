@@ -2,9 +2,15 @@
 import FooterSection from "~/components/footer";
 import { useState } from "react";
 
-import { useFetcher } from "react-router";
+import { useFetcher, useLocation } from "react-router";
 import type { Route } from "./+types/[type]";
-import { BCH, BTC, BTCETH, ETH, LTC, XRP } from "~/utils";
+import { BCH, BTC, BTCETH, Coins, ETH, LTC, XRP } from "~/utils";
+import { PairImage } from "~/components/coinPair";
+import type { EarnProductsType } from "~/utils/types";
+import { useAuthStore } from "~/store/useUserDataStore";
+import { calculateUserBalances } from "~/utils/helpers";
+import { user } from "~/consts";
+import moment from "moment";
 interface LoaderDataParams {
   type: string | null;
 }
@@ -55,23 +61,21 @@ export default function SubscribeTypePage({
 }: {
   loaderData: LoaderDataParams;
 }) {
+  const coin = loaderData?.type.split("-",1).toString();
+  // const {user} = useAuthStore();
+      const { walletDetails, walletTotals, totalUSDT } = calculateUserBalances(
+        user,
+        { USDT: 1, BTC: 9400, ETH: 3220 }
+      );
+  const location = useLocation();
+  const product:EarnProductsType = location.state?.product;
   const [isSubscribing, setIsSubscribing] = useState(false);
+
   const [subscriptionAmount, setSubscriptionAmount] = useState("");
-  const [selectedAsset, setSelectedAsset] = useState(
-    loaderData?.type || "USDT"
-  );
   const [useAutoSubscribe, setUseAutoSubscribe] = useState(true);
   const [loading, setLoading] = useState(false);
   const fetcher = useFetcher();
-  const availableAssets = [
-    { symbol: "USDT", balance: 0, name: "Tether", coin: BTC },
-    { symbol: "BUSD", balance: 800.0, name: "Binance USD", coin: BCH },
-    { symbol: "BTC", balance: 0.05, name: "Bitcoin", coin: BTC },
-    { symbol: "ETH", balance: 2.5, name: "Ethereum", coin: ETH },
-    { symbol: "XRP", balance: 1500, name: "Ripple", coin: XRP },
-    { symbol: "LTC", balance: 20, name: "Litecoin", coin: LTC },
-    { symbol: "BTC-ETH", balance: 1.2, name: "BTC-ETH Combo", coin: BTCETH },
-  ];
+
   const getStatusColor = (status: string) => {
     const colorMap: Record<string, string> = {
       Review: "text-yellow-400",
@@ -92,8 +96,18 @@ export default function SubscribeTypePage({
   }
   const DepositData: DepositItem[] = [];
   // Get current selected asset data
-  const currentAsset = availableAssets.find((a) => a.symbol === selectedAsset);
-  const hasZeroBalance = currentAsset?.balance === 0;
+  const getCurrentAsset = () => {
+    const fin = walletDetails.filter((e)=>e.walletType === "financial");
+    let balance
+    for (let index = 0; index < fin.length; index++) {
+      const element = fin[index];
+      const data = element.assets.find((e)=>e.currency === coin.toUpperCase())
+      balance = data?.balance || 0
+    }
+    return balance
+  }
+  const currentAsset = getCurrentAsset();
+  const hasZeroBalance = Number(currentAsset) === 0;
 
   const handleMaxAmount = () => {
     if (hasZeroBalance) {
@@ -101,7 +115,7 @@ export default function SubscribeTypePage({
       return;
     }
 
-    const maxBalance = currentAsset?.balance || 0;
+    const maxBalance = currentAsset || 0;
     setSubscriptionAmount(maxBalance.toString());
   };
 
@@ -122,8 +136,8 @@ export default function SubscribeTypePage({
       setSubscriptionAmount("0");
       return;
     }
-    if (value > (currentAsset?.balance || 0)) {
-      setSubscriptionAmount((currentAsset?.balance || 0).toString());
+    if (value > (currentAsset || 0)) {
+      setSubscriptionAmount((currentAsset || 0).toString());
       return;
     }
     // Normal validation for assets with balance > 0
@@ -131,7 +145,7 @@ export default function SubscribeTypePage({
       setSubscriptionAmount(value);
     }
   };
-
+  console.log(product)
   return (
     <main className="bg-gray-900 lg:bg-gray-950 min-h-screen overflow-x-hidden">
       <section id="hero" className="flex flex-col lg:items-center">
@@ -144,47 +158,36 @@ export default function SubscribeTypePage({
               <div className="grid grid-cols-3 gap-5">
                 <div className="col-span-3 lg:col-span-1">
                   <h2 className="text-2xl font-semibold mb-4 text-white">
-                    Subscribe to {selectedAsset} Earn
+                    Subscribe to {product?.Name} Earn
                   </h2>
                   <p className="text-gray-400 mb-6">
-                    Earn rewards by subscribing to our {selectedAsset} Earn
+                    Earn rewards by subscribing to our {product?.Name} Earn
                     program. Choose your subscription amount and enjoy
                     competitive interest rates.
                   </p>
 
-                  <div className="mb-4 py-4">
-                    <span className="text-white">Subscription Combination</span>
-                    <div className="grid grid-cols-3 mb-2 gap-4 mt-3">
-                      {selectedAsset === "BTC-ETH" ? (
-                        <>
-                          <div className="flex items-center space-x-2 mt-2 border rounded border-gray-700 bg-gray-800 p-2">
-                            <img src={BTC} alt="BTC" className="w-6 h-6 overflow-hidden rounded-full" />
-                            <span className="text-gray-300">BTC</span>
-                          </div>
-                          <div className="flex items-center space-x-2 mt-2 border rounded border-gray-700 bg-gray-800 p-2">
-                            <img src={ETH} alt="ETH" className="w-6 h-6 overflow-hidden rounded-full" />
-                            <span className="text-gray-300">ETH</span>
-                          </div>
-                        </>
+                  <div className="my-4">
+                    <span className="text-white">Subscription Product</span>
+                    <div className="flex gap-2 items-center my-4">
+                      {product?.IsFlexible ? (
+                        <img
+                          src={Coins[product?.Name.toUpperCase()]}
+                          alt={product?.Name}
+                          width={30}
+                          height={30}
+                          className="rounded-full"
+                        />
                       ) : (
-                        <div className="flex items-center gap-3 border rounded border-gray-700 bg-gray-800 p-2">
-                          <img
-                            src={currentAsset?.coin}
-                            alt={selectedAsset}
-                            width={30}
-                            height={30}
-                            className="rounded-full"
-                          />
-                          <div className="flex flex-col">
-                            <span className="font-semibold">
-                              {selectedAsset}
-                            </span>
-                            <span className="text-xs text-gray-400">
-                              {currentAsset?.name}
-                            </span>
-                          </div>
-                        </div>
+                        PairImage(
+                          product?.Name.split("-", 1).toString(),
+                          product?.Name.slice(
+                            product?.Name.indexOf("-")
+                          ).replace("-", ""),
+                          30
+                        )
                       )}
+
+                      <span className="font-semibold">{product?.Name}</span>
                     </div>
                   </div>
                   <fetcher.Form method="post">
@@ -214,7 +217,7 @@ export default function SubscribeTypePage({
                               hasZeroBalance ? "text-gray-500" : "text-gray-400"
                             }`}
                           >
-                            {selectedAsset}
+                            {coin}
                           </span>
                         </div>
                       </div>
@@ -225,7 +228,7 @@ export default function SubscribeTypePage({
                             hasZeroBalance ? "text-gray-500" : "text-gray-400"
                           }`}
                         >
-                          Available: {currentAsset?.balance} {selectedAsset}
+                          Available: {currentAsset} {coin}
                         </span>
                         <button
                           onClick={handleMaxAmount}
@@ -327,7 +330,7 @@ export default function SubscribeTypePage({
                     <div className="space-y-4">
                       <div className="flex justify-between">
                         <span className="text-gray-300">Asset:</span>
-                        <span className="text-white">{selectedAsset}</span>
+                        <span className="text-white">{product?.Name}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">
@@ -335,13 +338,15 @@ export default function SubscribeTypePage({
                         </span>
                         <span className="text-white">
                           {subscriptionAmount
-                            ? `${subscriptionAmount} ${selectedAsset}`
+                            ? `${subscriptionAmount} ${coin}`
                             : "-"}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">Estimated APR:</span>
-                        <span className=" text-green-300">8% ~ 12%</span>
+                        <span className=" text-green-300">
+                          {product?.MinApr}% ~ {product?.MaxApr}%
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">
@@ -349,7 +354,7 @@ export default function SubscribeTypePage({
                         </span>
                         <span className="text-white">
                           {subscriptionAmount
-                            ? `${(parseFloat(subscriptionAmount) * 0.08).toFixed(2)} ~ ${(parseFloat(subscriptionAmount) * 0.12).toFixed(2)} ${selectedAsset}`
+                            ? `$ ${(parseFloat(subscriptionAmount) * 0.08).toFixed(2)} ~ ${(parseFloat(subscriptionAmount) * 0.12).toFixed(2)}`
                             : "-"}
                         </span>
                       </div>
@@ -358,28 +363,44 @@ export default function SubscribeTypePage({
                           Investment Amount:
                         </span>
                         <span className="text-white">
-                          3500-999999999 {selectedAsset}
+                          $ {product?.MinAmount}-{product?.MaxAmount}
                         </span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-gray-300">Handling Fee:</span>
-                        <span className="text-white">0 {selectedAsset}</span>
+                        <span className="text-gray-300">Transaction Fee:</span>
+                        <span className="text-white">0.001% of ROI</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">Operating Time:</span>
-                        <span className="text-white">30 Days</span>
+                        <span className="text-white">
+                          {product?.IsFlexible
+                            ? "Anytime"
+                            : product?.DurationDays + " Days"}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">Start Date:</span>
-                        <span className="text-white">2025-11-1</span>
+                        <span className="text-white">
+                          {new Date().toISOString().split("T", 1)}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">End Date:</span>
-                        <span className="text-white">2025-12-1</span>
+                        <span className="text-white">
+                          {moment()
+                            .set("days", product?.DurationDays)
+                            .toISOString()
+                            .split("T", 1)}
+                        </span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-300">Redemption Date:</span>
-                        <span className="flex items-center">2025-12-10</span>
+                        <span className="flex items-center">
+                          {moment()
+                            .set("days", product?.DurationDays)
+                            .toISOString()
+                            .split("T", 1)}
+                        </span>
                       </div>
                     </div>
                   </div>

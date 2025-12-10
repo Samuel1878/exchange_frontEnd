@@ -25,7 +25,7 @@ export const FeaturedProjects = [
     id: 3,
     title: "Empower Bududa",
     description: "Save the landslide disaster victims in Uganda",
-    imageUrl:Charity_3,
+    imageUrl: Charity_3,
     status: "Completed",
     progress: 100,
     beneficiaries: "37.97K",
@@ -34,7 +34,8 @@ export const FeaturedProjects = [
   {
     id: 4,
     title: "Emergency appeal: Haiti Earthquake Relief",
-    description: "Join our efforts in sending much needed relief funds to Haiti in the wake of a devastating earthquake.",
+    description:
+      "Join our efforts in sending much needed relief funds to Haiti in the wake of a devastating earthquake.",
     imageUrl: Charity_4,
     status: "Completed",
     progress: 100,

@@ -66,14 +66,13 @@ export const clientMiddleware: Route.ClientMiddlewareFunction[] = [
 ];
 export default function App() {
   const navigation = useNavigation();
-  const isLoading = navigation.state === "loading" || navigation.state === "submitting";
+  const isLoading =
+    navigation.state === "loading" || navigation.state === "submitting";
   return (
     <React.StrictMode>
       <I18nextProvider i18n={i18n}>
-          {
-            isLoading && <GlobalLoader/>
-          }
-          <Outlet />
+        {isLoading && <GlobalLoader />}
+        <Outlet />
       </I18nextProvider>
     </React.StrictMode>
   );
