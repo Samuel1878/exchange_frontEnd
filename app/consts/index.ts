@@ -12,6 +12,11 @@ export const API_URL = "https://www.auno.site";
 export const TitleSuffix = "Binance";
 export const ACTION_URL = "http://150.95.82.150:4000";
 
+export const walletTypes = [
+  {type:"financial"},
+  {type:"funding"},
+  {type:"spot"}
+]
 export const user: UserData = {
   UserName: "Samuel Chost",
   Email: "samuelchost@gmail.com",

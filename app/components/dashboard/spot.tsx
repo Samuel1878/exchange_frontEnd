@@ -18,9 +18,11 @@ import { IoIosSearch } from "react-icons/io";
 export default function SpotWallet({
   walletDetails,
   walletTotals,
+  toggleTransfer,
 }: {
   walletDetails: WalletBalance[];
   walletTotals: Record<string, number>;
+  toggleTransfer:()=>void;
 }) {
   const [balanceShow, setBalanceShow] = useState(true);
   const [search, setSearch] = useState("");
@@ -70,7 +72,7 @@ export default function SpotWallet({
             label="Transfer"
             style="bg-gray-800 hover:bg-gray-950 lg:hover:bg-gray-900 h-10 w-full md:w-40"
             textStyle="text-gray-100 font-semibold"
-            action={() => navigate("/trade/btcusdt?type=spot")}
+            action={toggleTransfer}
           />
         </div>
       </div>
@@ -92,7 +94,10 @@ export default function SpotWallet({
             <FaExchangeAlt size={25} />
           </div>
           {list.map((c) => (
-            <Link className="flex justify-between items-center py-4 my-2 cursor-pointer" to={ "/trade/"+c.symbol.toLowerCase() + "usdt" + "?type=spot"}>
+            <Link
+              className="flex justify-between items-center py-4 my-2 cursor-pointer"
+              to={"/trade/" + c.symbol.toLowerCase() + "usdt" + "?type=spot"}
+            >
               <div className="flex gap-4 items-center">
                 <img
                   src={Coins[c.symbol.toUpperCase()]}

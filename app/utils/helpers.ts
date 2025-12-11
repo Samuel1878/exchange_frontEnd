@@ -1,4 +1,3 @@
-import { ORDERBOOK_LEVELS } from "~/consts";
 
 export const upColor = "#00c951";
 export const downColor = "#fb2c36";
@@ -113,6 +112,31 @@ const calculateUserBalances = (
     walletDetails,
   };
 };
+export function getSortedCoinsNoFilter(AssetBalance: AssetBalance[]) {
+  const balanceMap: Record<string, { balance: number; valueUSDT: number }> = {};
+
+  AssetBalance.forEach((a) => {
+    // w.assets.forEach((a) => {
+    if (!balanceMap[a.currency]) {
+      balanceMap[a.currency] = { balance: 0, valueUSDT: 0 };
+    }
+    balanceMap[a.currency].balance += a.balance;
+    balanceMap[a.currency].valueUSDT += a.valueUSDT;
+    // });
+  });
+
+  let result = Object.entries(AllCoinNames).map(([key, coin]) => {
+    const found = balanceMap[coin.symbol] || { balance: 0, valueUSDT: 0 };
+    return {
+      symbol: coin.symbol,
+      name: coin.name,
+      balance: found.balance,
+      valueUSDT: found.valueUSDT,
+    };
+  });
+   result = result.sort((a, b) => b.valueUSDT - a.valueUSDT);
+  return result
+}
 function getSortedCoins(
   AssetBalance: AssetBalance[],
   page: number,

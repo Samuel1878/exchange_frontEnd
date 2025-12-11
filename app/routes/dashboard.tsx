@@ -11,6 +11,7 @@ import FundingWallet from "~/components/dashboard/funding";
 import FinancialWallet from "~/components/dashboard/financial";
 import { calculateUserBalances } from "~/utils/helpers";
 import { user } from "~/consts";
+import TransferDrawerDialog from "~/components/dashboard/transfer";
 
 export async function clientLoader({
   params,
@@ -27,10 +28,12 @@ export async function clientLoader({
 }
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const { type } = loaderData;
+  const [openTransfer, setOpenTransfer] = useState(false);
     const { walletDetails, walletTotals, totalUSDT } = calculateUserBalances(
       user,
       { USDT: 1, BTC: 9400, ETH: 3220 }
     );
+    const toggleTransfer = () => setOpenTransfer((prev)=>!prev)
   return (
     <React.Fragment>
       <SidebarProvider className="bg-gray-900 lg:bg-gray-950 relative">
@@ -44,6 +47,7 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             <SpotWallet
               walletDetails={walletDetails}
               walletTotals={walletTotals}
+              toggleTransfer={toggleTransfer}
             />
           </Activity>
           <Activity mode={type === "funding" ? "visible" : "hidden"}>
@@ -61,6 +65,12 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           <FooterSection />
         </main>
       </SidebarProvider>
+      <TransferDrawerDialog
+        open={openTransfer}
+        setOpen={toggleTransfer}
+        wallet={type}
+        walletDetails={walletDetails}
+      />
     </React.Fragment>
   );
 }

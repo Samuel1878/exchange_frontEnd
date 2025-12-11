@@ -3,16 +3,20 @@ export const TradeButton = ({
   action,
   style = "",
   textStyle = "",
+  disabled = false
 }: {
   label: string;
   action: () => void;
   style: string;
   textStyle: string;
+  disabled?:boolean
+
 }) => {
   return (
     <button
       onClick={action}
-      className={`${style} flex items-center justify-center rounded-md cursor-pointer`}
+      className={`${style} flex items-center justify-center rounded-md cursor-pointer disabled:opacity-50`}
+      disabled={disabled}
     >
       <p className={`${textStyle} text-md`}>{label}</p>
     </button>
