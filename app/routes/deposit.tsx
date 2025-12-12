@@ -7,539 +7,448 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useState, useEffect } from "react";
-import miniUsdt from "assets/coins/usdt_circle.png";
-import miniBtc from "assets/coins/miniBtc.png";
-import miniEth from "assets/coins/miniEth.png";
-import miniusdc from "assets/coins/usdc.jpg";
+
 import HomeStart from "assets/images/how-buy-step3.svg";
 import HomeStart2 from "assets/images/how-step1.svg";
 import HomeStart3 from "assets/images/how-step2.svg";
 import HeaderImage from "assets/images/vip-ins-dark.svg";
 import { QRCodeSVG } from "qrcode.react";
 import { useNavigate } from "react-router";
-interface LoaderDataParams {
-  type: string | null;
-}
+import { useAuthStore } from "~/store/useUserDataStore";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 
-export async function clientLoader({
-  params,
-}: {
-  params: { type?: string };
-}): Promise<LoaderDataParams> {
-  return { type: params.type || null };
-}
-interface Asset {
-  symbol: string;
-  name: string;
-  coin: string;
-  network: string;
+import { cn } from "~/lib/utils";
+import { Button } from "~/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "~/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import type { Route } from "./+types/deposit";
+import { getWalletAddress } from "~/api/walletAPI";
+import type { AssetBalance, WalletAddressItem } from "~/utils/types";
+import { AllCoinNames, Networks } from "~/consts/pairs";
+import { Coins } from "~/utils";
+import { NoData } from "~/components/loading/noData";
+import FAQ from "~/components/homeComponents/f&q";
+import { GoCopy } from "react-icons/go";
+import {
+  calculateUserBalances,
+  getSortedCoinsForWithdrawls,
+} from "~/utils/helpers";
+
+export async function clientLoader({ params }: Route.ClientLoaderArgs) {
+  const accessToken = useAuthStore.getState().accessToken;
+  const isLoggedIn = useAuthStore.getState().isLoggedIn;
+  if (params.type === "deposit" && isLoggedIn) {
+    const response = await getWalletAddress(accessToken);
+    return {
+      type: params.type || null,
+      walletAddress: response.data,
+      isLoggedIn,
+    };
+  }
+  return { type: params.type || null, walletAddress: null, isLoggedIn };
 }
 interface Tab {
   label: string;
   name: string;
 }
-const availableAssets: Asset[] = [
-  {
-    symbol: "USDT",
-    name: "USDT-TRC20",
-    network: "Tron(TRC20)",
-    coin: miniUsdt,
-  },
-  { symbol: "BTC", name: "BTC", network: "Bitcoin", coin: miniBtc },
-  { symbol: "ETH", name: "ETH", network: "Tron(TRC20)", coin: miniEth },
-  {
-    symbol: "USDTERC",
-    name: "USDT-ERC20",
-    network: "Ethereum(ERC20)",
-    coin: miniUsdt,
-  },
-  { symbol: "USDC", name: "USDC", network: "Ethereum(ERC20)", coin: miniusdc },
-  { symbol: "USDTBEP", name: "USDT-BEP20", network: "BSC-USD", coin: miniUsdt },
-];
-const addressData = [
-  { symbol: "USDT", network: "Tron(TRC20)", address: "TRXsdfsdfdsfsdsfsdfsfd" },
-  {
-    symbol: "ETH",
-    network: "Ethereum(ERC20)",
-    address: "ETxsadfasfsdfsafddsfdfs;",
-  },
-  { symbol: "BTC", network: "Bitcoin", address: "BTcsdafasdfsdfsdfdsfds" },
-  {
-    symbol: "USDTERC",
-    network: "Ethereum(ERC20)",
-    address: "0x453lfkaasfsadfsdfsf",
-  },
-  {
-    symbol: "USDC",
-    network: "Ethereum(ERC20)",
-    address: "0x5342533lfkaasfsadfsdfsf",
-  },
-  { symbol: "USDTBEP", network: "BSC-USD", address: "0xsadfsdfsdfsdfsfsadf" },
-];
 const TabMenu: Tab[] = [
   { name: "Deposit", label: "deposit" },
   { name: "Withdraw", label: "withdraw" },
 ];
 const Withdraw = () => {
-  const [selectedCurrency, setSelectedCurrency] = useState("USDT");
-  const [spendselectedCurrency, setSpendSelectedCurrency] = useState("USDT");
-  const [receivedselectedCurrency, setReceivedSelectedCurrency] =
-    useState("BTC");
-  const [depositAddress, setDepositAddress] = useState("");
-  const [selectedNetwork, setSelectedNetwork] = useState("");
-  const [login, setLogin] = useState(false);
-  const navigate = useNavigate();
-  useEffect(() => {
-    const selected = addressData.find(
-      (item) => item.symbol === selectedCurrency
-    );
-    if (selected) {
-      setDepositAddress(selected.address);
-      setSelectedNetwork(selected.network);
-    }
-  }, [selectedCurrency]);
-
-  const handleCurrencyChange = (value: string) => {
-    setSelectedCurrency(value);
-  };
-  const spenhandleCurrencyChanges = (value: string) => {
-    setSpendSelectedCurrency(value);
-  };
-  const receivedhandleCurrencyChange = (value: string) => {
-    setReceivedSelectedCurrency(value);
-  };
+  const [open, setOpen] = useState(false);
+   const [value, setValue] = useState("");
+  const user = useAuthStore.getState().user;
+  const [address, setAddress] = useState("")
+  const [openN, setOpenN] = useState(false);
+  const [network, setNetwork] = useState("")
+  const isLoggedIn = useAuthStore.getState().isLoggedIn;
+  const { walletDetails, walletTotals, totalUSDT } =
+    isLoggedIn && user&& calculateUserBalances(user, { USDT: 1, BTC: 9400, ETH: 3220 });
+    const assetList = getSortedCoinsForWithdrawls(walletDetails)
   return (
     <>
-      <div className="p-4 border rounded-2xl border-gray-800 w-full">
-        <h1>Spend</h1>
-        <div className="flex justify-between py-4">
-          <div className="text-white">
-            <input
-              type="text"
-              placeholder="Enter Amount"
-              className="w-full border-gray-300 rounded-md px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900 lg:focus:ring-gray-950"
-            />
-          </div>
-          <div className="text-white">
-            <Select
-              value={spendselectedCurrency}
-              onValueChange={spenhandleCurrencyChanges}
-            >
-              <SelectTrigger
-                className="w-full bg-gray-900 border lg:bg-gray-950 lg:border-gray-950 border-gray-900 rounded-lg py-4 px-3 text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900 hover:bg-gray-900"
-                aria-label="Select Currency"
+      <div className="space-y-4 w-full">
+        <div className="w-full space-y-4 mb-8">
+          <p>Select coin</p>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full h-12 justify-between bg-gray-900 border-gray-700 hover:border-amber-300 lg:bg-gray-950 hover:bg-gray-900 hover:lg:bg-gray-950"
               >
-                <SelectValue placeholder="Select Currency" />
-              </SelectTrigger>
-              <SelectContent
-                className="bg-gray-800 border  border-gray-700 text-white hover:bg-gray-900 w-full min-w-[var(--radix-select-trigger-width)]"
-                position="popper"
-                align="end"
-                sideOffset={5}
-              >
-                {availableAssets.map((c) => (
-                  <SelectItem
-                    key={c.symbol}
-                    value={c.symbol}
-                    className=" rounded cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={c.coin}
-                        alt={c.symbol}
-                        width={20}
-                        height={20}
-                        className="rounded-full"
-                      />
-                      <p className=" hover:text-gray-950 text-sm"> {c.name}</p>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                <div className="flex items-center gap-3">
+                  {value ? (
+                    <img
+                      src={Coins[value.toUpperCase()]}
+                      className="rounded-full w-8"
+                    />
+                  ) : null}
+                  <p className="text-md font-medium text-gray-400">
+                    {value ? value : "Search coin..."}
+                  </p>
+                  <p className="text-md font-semibold text-gray-500">
+                    {value ? AllCoinNames[value.toLowerCase()]?.name : null}
+                  </p>
+                </div>
+                <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="lg:w-lg md:w-xl w-xs flex flex-1 p-0 bg-gray-900 lg:bg-gray-950 border border-gray-700 outline-0 ring-0">
+              <Command className="bg-gray-900 lg:bg-gray-950 border-0 outline-0 ring-0 text-gray-300">
+                <CommandInput placeholder="Search coin . . ." />
+                <CommandList>
+                  <CommandEmpty>No Coin found.</CommandEmpty>
+                  <CommandGroup className="bg-gray-900 lg:bg-gray-950 w-full">
+                    {assetList?.map((w) => (
+                      <CommandItem
+                        key={w.symbol}
+                        className="active:bg-gray-800 justify-between hover:bg-gray-800 flex flex-1 w-full focus:bg-gray-800 text-gray-50 text-lg font-bold"
+                        value={w.symbol}
+                        onSelect={(currentValue) => {
+                          setValue(currentValue === value ? "" : currentValue);
+                          setOpen(false);
+                          setNetwork("");
+                        }}
+                      >
+                        <CheckIcon
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            value === w.symbol ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        <div className="flex gap-4 w-full items-center">
+                          <img
+                            src={Coins[w.symbol.toUpperCase()]}
+                            className="rounded-full w-8 max-h-8"
+                          />
+                          <div>
+                            <p>{w.symbol}</p>
+                            <p className="text-gray-500 text-sm font-medium">
+                              {w.name}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-md font-semibold">{w.balance}</p>
+                          <p className="text-sm text-gray-600">
+                            ${w.valueUSDT}
+                          </p>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
+        <div className="space-y-4">
+          <p>Withdraw to</p>
+          <input
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            className="outline-0 border text-md hover:border-amber-300 focus-within:border-amber-300 border-gray-700 rounded-md h-12 w-full px-4"
+            placeholder="Enter Address"
+          />
+          <Popover open={openN} onOpenChange={setOpenN}>
+            <PopoverTrigger asChild>
+              <Button
+                disabled={!value}
+                variant="outline"
+                role="combobox"
+                aria-expanded={openN}
+                className="w-full h-12 justify-between bg-gray-900 border-gray-700 hover:border-amber-300 lg:bg-gray-950 hover:bg-gray-900 hover:lg:bg-gray-950"
+              >
+                <div className="flex items-center gap-3">
+                  <p className="text-md font-medium text-gray-400">
+                    {network ? network : "Select Network..."}
+                  </p>
+                </div>
+                <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="lg:w-lg md:w-xl w-xs flex flex-1 p-0 bg-gray-900 lg:bg-gray-950 border border-gray-700 outline-0 ring-0">
+              <Command className="bg-gray-900 lg:bg-gray-950 border-0 outline-0 ring-0 text-gray-300">
+                <CommandInput placeholder="Search network . . ." />
+                <CommandList>
+                  <CommandEmpty>No Network found.</CommandEmpty>
+                  <CommandGroup className="bg-gray-900 lg:bg-gray-950">
+                    {Networks[value.toLowerCase()]?.map((n: string) => (
+                      <CommandItem
+                        key={n}
+                        className="active:bg-gray-800 hover:bg-gray-800 focus:bg-gray-800 text-gray-50 text-lg font-bold"
+                        value={n}
+                        onSelect={(currentValue) => {
+                          setNetwork(
+                            currentValue === network ? "" : currentValue
+                          );
+                          setOpenN(false);
+                        }}
+                      >
+                        <CheckIcon
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            network === n ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        <div className="flex gap-4 w-full">
+                          <p>{n}</p>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+        <p className="text-sm text-gray-600">
+          CAUTION: Ensure the recipient address has been activated; otherwise,
+          your withdrawl will fail.
+        </p>
+        {isLoggedIn && value && network && address && (
+          <div className="space-y-4">
+            <p>Withdraw amount</p>
+            <div className="flex items-center pr-4 outline-0 border text-md hover:border-amber-300 focus-within:border-amber-300 border-gray-700 rounded-md h-12 w-full">
+              <input className="w-full h-full px-4 outline-0" placeholder="Minimal 0.000001"/>
+              <p className="font-bold">{value.toUpperCase()}</p>
+              <button className="ml-4 text-amber-300 font-bold cursor-pointer" onClick={()=>{}}>
+                MAX
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+    </>
+  );
+};
 
-      <div className="p-4 border rounded-2xl border-gray-800">
-        <h1>Receive</h1>
-        <div className="flex justify-between py-4">
-          <div className="text-white">
-            <input
-              type="text"
-              value={0}
-              className="w-full border-gray-300 rounded-md px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900 lg:focus:ring-gray-950"
-            />
-          </div>
-          <div className="text-white">
-            <Select
-              value={receivedselectedCurrency}
-              onValueChange={receivedhandleCurrencyChange}
-            >
-              <SelectTrigger
-                className="w-full bg-gray-900 border lg:bg-gray-950 lg:border-gray-950 border-gray-900 rounded-lg py-4 px-3 text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900 hover:bg-gray-900"
-                aria-label="Select Currency"
-              >
-                <SelectValue placeholder="Select Currency" />
-              </SelectTrigger>
-              <SelectContent
-                className="bg-gray-800 border  border-gray-700 text-white hover:bg-gray-900"
-                position="popper"
-                align="end"
-                sideOffset={5}
-              >
-                {availableAssets.map((c) => (
-                  <SelectItem
-                    key={c.symbol}
-                    value={c.symbol}
-                    className=" rounded cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={c.coin}
-                        alt={c.symbol}
-                        width={20}
-                        height={20}
-                        className="rounded-full"
-                      />
-                      <p className=" hover:text-gray-950 text-sm"> {c.name}</p>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+const Deposit = ({
+  data,
+  isLoggedIn,
+}: {
+  data: WalletAddressItem[];
+  isLoggedIn: boolean;
+}) => {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("");
+  const [openN, setOpenN] = useState(false);
+  const [network, setNetwork] = useState("");
+  const groupedArray = Object.entries(
+    data.reduce(
+      (acc, item) => {
+        (acc[item.CoinName] ||= []).push(item);
+        return acc;
+      },
+      {} as Record<string, WalletAddressItem[]>
+    )
+  ).map(([coin, items]) => ({ coin, items }));
+
+  return (
+    <>
+      <div className="space-y-4 w-full">
+        <div>
+          <p>Amount</p>
+          <input className="w-full focus-within:border-amber-300 hover:border-amber-300 border border-gray-700 h-12 rounded-md outline-0 text-lg font-bold text-gray-50 px-4" />
         </div>
-      </div>
-      {/* <div className="p-4 border rounded-2xl border-gray-800">
-                <label className="block text-sm font-medium mb-2">Select Currency</label>
-                <Select value={selectedCurrency} onValueChange={handleCurrencyChange}>
-                    <SelectTrigger
-                        className="w-full bg-gray-900 border-gray-900 lg:bg-gray-950 border lg:border-gray-950 text-gray-300 rounded-lg py-7 px-3 focus:outline-none focus:ring-2 focus:ring-gray-900 hover:bg-gray-900"
-                        aria-label="Select Currency"
-                    >
-                        <SelectValue placeholder="Select Currency" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border border-gray-700  hover:bg-gray-950 text-white">
-                        {availableAssets.map((c) => (
-                            <SelectItem
-                                key={c.symbol}
-                                value={c.symbol}
-                                className="hover:bg-gray-700 rounded cursor-pointer transition-colors"
+        <div className="w-full">
+          <p>Coin</p>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full h-12 justify-between bg-gray-900 border-gray-700 hover:border-amber-300 lg:bg-gray-950 hover:bg-gray-900 hover:lg:bg-gray-950"
+              >
+                <div className="flex items-center gap-3">
+                  {value ? (
+                    <img
+                      src={Coins[value.toUpperCase()]}
+                      className="rounded-full w-8"
+                    />
+                  ) : null}
+                  <p className="text-md font-medium text-gray-50">
+                    {value
+                      ? AllCoinNames[value.toLowerCase()]?.symbol
+                      : "Select coin..."}
+                  </p>
+                  <p className="text-md font-semibold text-gray-500">
+                    {value ? AllCoinNames[value.toLowerCase()]?.name : null}
+                  </p>
+                </div>
+                <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="lg:w-lg md:w-xl w-xs flex flex-1 p-0 bg-gray-900 lg:bg-gray-950 border border-gray-700 outline-0 ring-0">
+              <Command className="bg-gray-900 lg:bg-gray-950 border-0 outline-0 ring-0 text-gray-300">
+                <CommandInput placeholder="Search coin . . ." />
+                <CommandList>
+                  <CommandEmpty>No Coin found.</CommandEmpty>
+                  <CommandGroup className="bg-gray-900 lg:bg-gray-950">
+                    {groupedArray.map((w) => (
+                      <CommandItem
+                        key={w.coin}
+                        className="active:bg-gray-800 hover:bg-gray-800 focus:bg-gray-800 text-gray-50 text-lg font-bold"
+                        value={w.coin}
+                        onSelect={(currentValue) => {
+                          setValue(currentValue === value ? "" : currentValue);
+                          setOpen(false);
+                          setNetwork("");
+                        }}
+                      >
+                        <CheckIcon
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            value === w.coin ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        <div className="flex gap-4 w-full">
+                          <img
+                            src={Coins[w.coin.toUpperCase()]}
+                            className="rounded-full w-8"
+                          />
+                          <p>{w.coin}</p>
+                          <p className="text-gray-500 font-medium">
+                            {AllCoinNames[w.coin.toLowerCase()]?.name}
+                          </p>
+                        </div>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+        <div className="w-full">
+          <p>Network</p>
+          <Popover open={openN} onOpenChange={setOpenN}>
+            <PopoverTrigger asChild>
+              <Button
+                disabled={!value}
+                variant="outline"
+                role="combobox"
+                aria-expanded={openN}
+                className="w-full h-12 justify-between bg-gray-900 border-gray-700 hover:border-amber-300 lg:bg-gray-950 hover:bg-gray-900 hover:lg:bg-gray-950"
+              >
+                <div className="flex items-center gap-3">
+                  <p className="text-md font-medium text-gray-400">
+                    {network ? network : "Select Network..."}
+                  </p>
+                </div>
+                <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="lg:w-lg md:w-xl w-xs flex flex-1 p-0 bg-gray-900 lg:bg-gray-950 border border-gray-700 outline-0 ring-0">
+              <Command className="bg-gray-900 lg:bg-gray-950 border-0 outline-0 ring-0 text-gray-300">
+                <CommandInput placeholder="Search Network . . ." />
+                <CommandList>
+                  <CommandEmpty>No Network found.</CommandEmpty>
+                  <CommandGroup className="bg-gray-900 lg:bg-gray-950">
+                    {groupedArray
+                      .filter((e) => e.coin === value)
+                      .map((c) =>
+                        c.items
+                          .filter((e) => e.CoinName === value)
+                          .map((n) => (
+                            <CommandItem
+                              key={n.Id}
+                              className="active:bg-gray-800 hover:bg-gray-800 focus:bg-gray-800 text-gray-50 text-lg font-bold"
+                              value={n.NetWork}
+                              onSelect={(currentValue) => {
+                                setNetwork(
+                                  currentValue === network ? "" : currentValue
+                                );
+                                setOpenN(false);
+                              }}
                             >
-                                <div className="flex items-center gap-2">
-
-                                    <img
-                                        src={c.coin}
-                                        alt={c.symbol}
-                                        width={30}
-                                        height={30}
-                                        className="rounded-full"
-                                    />
-                                    <p className=" hover:text-gray-950 text-sm"> {c.name} <span className="text-gray-400">{c.network}</span></p>
-                                </div>
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-
-            </div> */}
-      {login ? (
-        <div className="lg:bg-gray-950 p-4 rounded-lg">
-          <div className="space-y-2">
-            <div className="text-white">
-              <input
-                type="text"
-                placeholder="Enter Your Wallet Address"
-                className="w-full border-gray-800 lg:border-gray-800 border rounded-md px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-800 lg:focus:ring-gray-900"
+                              <CheckIcon
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  network === n.NetWork
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              <div className="flex gap-4 w-full">
+                                <p>{n.NetWork}</p>
+                                <p className="text-gray-500 font-medium">
+                                  {n.NetworkName}
+                                </p>
+                              </div>
+                            </CommandItem>
+                          ))
+                      )}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
+        {isLoggedIn && value && network && (
+          <div className="flex gap-4 lg:items-center border flex-col lg:flex-row border-gray-700 p-4 rounded-md hover:border-amber-300">
+            <div className="p-2 bg-gray-50 rounded-sm self-center">
+              <QRCodeSVG
+                radius={0}
+                value={
+                  data.filter(
+                    (e) => e.CoinName === value && e.NetWork === network
+                  )[0].Address
+                }
               />
             </div>
-            <div className="text-white p-4">
-              <button className="text-gray-950 bg-amber-300 w-full p-3 rounded-2xl">
-                Buy Now
-              </button>
+            <div className="flex lg:block">
+              <div className="flex flex-1 flex-col flex-wrap gap-2">
+                <p className="text-md text-gray-600">Address</p>
+                <p className="wrap-anywhere">
+                  {
+                    data.filter(
+                      (e) => e.CoinName === value && e.NetWork === network
+                    )[0].Address
+                  }
+                </p>
+              </div>
+              <div
+                className="p-1 cursor-pointer"
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    data.filter(
+                      (e) => e.CoinName === value && e.NetWork === network
+                    )[0].Address
+                  )
+                }
+              >
+                <GoCopy size={25} />
+              </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div className="text-white p-4">
-          <button
-            className="text-gray-950 bg-amber-300 w-full p-3 rounded-2xl"
-            onClick={() => navigate(`/login`)}
-          >
-            Buy Now
-          </button>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 };
-const Deposit = () => {
-  const [selectedCurrency, setSelectedCurrency] = useState("USDT");
-  const [spendselectedCurrency, setSpendSelectedCurrency] = useState("BTC");
-  const [receivedselectedCurrency, setReceivedSelectedCurrency] =
-    useState("ETH");
-  const [depositAddress, setDepositAddress] = useState("");
-  const [amount, setAmount] = useState("100");
-  const [login, setLogin] = useState(false);
+export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
+  // const type = loaderData.type;
   const [loading, setLoading] = useState(false);
-  const [conversionRate, setConversionRate] = useState<number>(0);
-  const bearerToken = "ukowire8eam8bzqv98ab";
   const navigate = useNavigate();
-  interface ConversionResponse {
-    success: boolean;
-    result?: number;
-    error?: string;
-  }
-  useEffect(() => {
-    const fetchConversionRate = async () => {
-      if (!spendselectedCurrency || !receivedselectedCurrency || !bearerToken)
-        return;
-
-      setLoading(true);
-
-      try {
-        const response = await fetch(
-          `https://api.freecryptoapi.com/v1/getConversion?from=${spendselectedCurrency}&to=${receivedselectedCurrency}&amount=${amount}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${bearerToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data: ConversionResponse = await response.json();
-
-        setConversionRate(data.result);
-      } catch (err) {
-        console.error("Error fetching conversion rate:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchConversionRate();
-  }, [spendselectedCurrency, receivedselectedCurrency, bearerToken, amount]);
-  useEffect(() => {
-    const currentAsset = addressData.find(
-      (a) => a.symbol === receivedselectedCurrency
-    );
-    setDepositAddress(currentAsset.address);
-  });
-  const spenhandleCurrencyChanges = (value: string) => {
-    setSpendSelectedCurrency(value);
-  };
-  const receivedhandleCurrencyChange = (value: string) => {
-    setReceivedSelectedCurrency(value);
-  };
-  const handleAmountChange = (e) => {
-    setAmount(e.target.value);
-  };
-  return (
-    <>
-      <div className="p-4 border rounded-2xl border-gray-800 w-full">
-        <h1>Spend</h1>
-        <div className="flex justify-between py-4">
-          <div className="text-white">
-            <input
-              type="text"
-              placeholder="Enter Amount"
-              className="w-full border-gray-300 rounded-md px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900 lg:focus:ring-gray-950"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-          <div className="text-white">
-            <Select
-              value={spendselectedCurrency}
-              onValueChange={spenhandleCurrencyChanges}
-            >
-              <SelectTrigger
-                className="w-full bg-gray-900 border lg:bg-gray-950 lg:border-gray-950 border-gray-900 rounded-lg py-4 px-3 text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900 hover:bg-gray-900"
-                aria-label="Select Currency"
-              >
-                <SelectValue placeholder="Select Currency" />
-              </SelectTrigger>
-              <SelectContent
-                className="bg-gray-800 border  border-gray-700 text-white hover:bg-gray-900 w-full"
-                position="popper"
-                align="end"
-                sideOffset={5}
-              >
-                {availableAssets.map((c) => (
-                  <SelectItem
-                    key={c.symbol}
-                    value={c.symbol}
-                    className=" rounded cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={c.coin}
-                        alt={c.symbol}
-                        width={20}
-                        height={20}
-                        className="rounded-full"
-                      />
-                      <p className=" hover:text-gray-950 text-sm"> {c.name}</p>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
-      <div className="p-4 border rounded-2xl border-gray-800">
-        <h1>Receive</h1>
-        <div className="flex justify-between py-4">
-          <div className="text-white">
-            <input
-              type="text"
-              value={conversionRate}
-              className="w-full border-gray-300 rounded-md px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900 lg:focus:ring-gray-950"
-            />
-          </div>
-          <div className="text-white">
-            <Select
-              value={receivedselectedCurrency}
-              onValueChange={receivedhandleCurrencyChange}
-            >
-              <SelectTrigger
-                className="w-full bg-gray-900 border lg:bg-gray-950 lg:border-gray-950 border-gray-900 rounded-lg py-4 px-3 text-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-900 hover:bg-gray-900"
-                aria-label="Select Currency"
-              >
-                <SelectValue placeholder="Select Currency" />
-              </SelectTrigger>
-              <SelectContent
-                className="bg-gray-800 border  border-gray-700 text-white hover:bg-gray-900"
-                position="popper"
-                align="end"
-                sideOffset={5}
-              >
-                {availableAssets.map((c) => (
-                  <SelectItem
-                    key={c.symbol}
-                    value={c.symbol}
-                    className=" rounded cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={c.coin}
-                        alt={c.symbol}
-                        width={20}
-                        height={20}
-                        className="rounded-full"
-                      />
-                      <p className=" hover:text-gray-950 text-sm"> {c.name}</p>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-      {/* <div className="p-4 border rounded-2xl border-gray-800">
-                <label className="block text-sm font-medium mb-2">Select Currency</label>
-                <Select value={selectedCurrency} onValueChange={handleCurrencyChange}>
-                    <SelectTrigger
-                        className="w-full bg-gray-900 border-gray-900 lg:bg-gray-950 border lg:border-gray-950 text-gray-300 rounded-lg py-7 px-3 focus:outline-none focus:ring-2 focus:ring-gray-900 hover:bg-gray-900"
-                        aria-label="Select Currency"
-                    >
-                        <SelectValue placeholder="Select Currency" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-gray-800 border border-gray-700  hover:bg-gray-950 text-white">
-                        {availableAssets.map((c) => (
-                            <SelectItem
-                                key={c.symbol}
-                                value={c.symbol}
-                                className="hover:bg-gray-700 rounded cursor-pointer transition-colors"
-                            >
-                                <div className="flex items-center gap-2">
-
-                                    <img
-                                        src={c.coin}
-                                        alt={c.symbol}
-                                        width={30}
-                                        height={30}
-                                        className="rounded-full"
-                                    />
-                                    <p className=" hover:text-gray-950 text-sm"> {c.name} <span className="text-gray-400">{c.network}</span></p>
-                                </div>
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-
-            </div> */}
-      {login ? (
-        <div className="bg-gray-950 p-4 rounded-lg">
-          <div className="space-y-2">
-            <div className="flex flex-col items-center space-y-3 p-4 bg-gray-950 rounded-lg">
-              <span className="text-sm text-gray-400">Scan QR Code</span>
-              <div className="bg-white p-2 rounded">
-                <QRCodeSVG
-                  value={depositAddress}
-                  size={128}
-                  bgColor="#ffffff"
-                  fgColor="#000000"
-                  level="M"
-                />
-              </div>
-              <span className="text-xs text-gray-400 text-center">
-                Scan to deposit funds
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-400">Deposit Address:</span>
-              <div className="flex items-center gap-2">
-                <span className="text-white font-mono text-sm">
-                  {depositAddress}
-                </span>
-                <button
-                  onClick={() => navigator.clipboard.writeText(depositAddress)}
-                  className="text-blue-400 hover:text-blue-300 text-sm"
-                >
-                  Copy
-                </button>
-              </div>
-            </div>
-            <div className="text-white p-4">
-              <button className="text-gray-950 bg-amber-300 w-full p-3 rounded-2xl">
-                Buy Now
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="text-white p-4">
-          <button
-            className="text-gray-950 bg-amber-300 w-full p-3 rounded-2xl"
-            onClick={() => navigate(`/login`)}
-          >
-            Buy Now
-          </button>
-        </div>
-      )}
-    </>
-  );
-};
-export default function AnnouncementPage({
-  loaderData,
-}: {
-  loaderData: LoaderDataParams;
-}) {
-  const [activeTab, setActiveTab] = useState("deposit");
-  const [loading, setLoading] = useState(false);
-
+  const { type, walletAddress, isLoggedIn } = loaderData;
+  console.log(walletAddress);
   return (
     <main className="bg-gray-900 lg:bg-gray-950 min-h-screen overflow-x-hidden">
       <section id="hero" className="flex flex-col lg:items-center">
@@ -551,8 +460,8 @@ export default function AnnouncementPage({
             <div className="text-gray-300 p-6 md:p-5 space-y-10">
               <div className="grid lg:grid-cols-2 gap-4">
                 <div className="text-white text-2xl space-y-7 lg:text-4xl lg:font-bold">
-                  <h1>Buy BTC with USD</h1>
-                  <div className="space-y-7">
+                  <h1 className="capitalize">On-Chain {type}</h1>
+                  <div className="space-y-7 flex items-center justify-center">
                     <img src={HeaderImage} alt="" className="w-80" />
                   </div>
                 </div>
@@ -564,10 +473,10 @@ export default function AnnouncementPage({
                       <button
                         key={label}
                         onClick={() => {
-                          setActiveTab(label);
+                          navigate("/" + label);
                         }}
                         className={`px-3 py-1 ${
-                          activeTab === label
+                          type === label
                             ? "text-gray-100 border-b-2 border-b-amber-300"
                             : "hover:text-gray-100"
                         }`}
@@ -586,8 +495,13 @@ export default function AnnouncementPage({
                       </div>
                     ) : (
                       <>
-                        {activeTab === "deposit" && <Deposit />}
-                        {activeTab === "withdraw" && <Withdraw />}
+                        {type === "deposit" && (
+                          <Deposit
+                            data={walletAddress}
+                            isLoggedIn={isLoggedIn}
+                          />
+                        )}
+                        {type === "withdraw" && <Withdraw />}
                       </>
                     )}
                   </div>
@@ -635,79 +549,15 @@ export default function AnnouncementPage({
                 </div>
               </div>
               <div className="space-y-7 text-white">
-                <div className="grid gap-4 lg:grid-cols-2">
+                <div className="">
                   <div className="border border-gray-800 text-white p-4 rounded-2xl space-y-7">
-                    <h1 className="space-y-4">BTC to USD</h1>
-                    <div className="flex flex-row justify-between">
-                      <p>0.5 BTC</p>
-                      <p>42,182.94 USD</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>1 BTC</p>
-                      <p>84,365.88 USD</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>5 BTC</p>
-                      <p>421,829.40 USD</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>10 BTC</p>
-                      <p>843,658.81 USD</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>50 BTC</p>
-                      <p>4.22M USD</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>100 BTC</p>
-                      <p>8.44M USD</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>500 BTC</p>
-                      <p>42.18M USD</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>1000 BTC</p>
-                      <p>84.37M USD</p>
-                    </div>
-                  </div>
-                  <div className="border border-gray-800 text-white p-4 rounded-2xl space-y-7">
-                    <h1 className="space-y-4">BTC to USD</h1>
-                    <div className="flex flex-row justify-between">
-                      <p>0.5 USD</p>
-                      <p>0.0000059 BTC</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>1 USD</p>
-                      <p>0.0000119 BTC</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>5 USD</p>
-                      <p>0.0000593 BTC</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>10 USD</p>
-                      <p>0.0001185 BTC</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>50 USD</p>
-                      <p>0.0005927 BTC</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>100 USD</p>
-                      <p>0.0011853 BTC</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>500 USD</p>
-                      <p>0.0059266 BTC</p>
-                    </div>
-                    <div className="flex flex-row justify-between">
-                      <p>1000 USD</p>
-                      <p>0.0118531 BTC</p>
-                    </div>
+                    <h1>Recent {type}</h1>
+                    <NoData />
+
                   </div>
                 </div>
               </div>
+              <FAQ />
             </div>
           </div>
         </article>

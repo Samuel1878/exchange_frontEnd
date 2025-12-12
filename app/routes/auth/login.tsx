@@ -89,7 +89,7 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
     console.log(payload)
   const response = await loginAPI(payload);
   if (response && response.success){
-    return {ok:true, data:response?.data}
+    return {ok:true, data:response}
   }
    toast.error("Login Failed Failed");
   return {ok:false, message:response?.message ?? "Login Failed"}

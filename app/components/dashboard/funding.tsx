@@ -12,20 +12,24 @@ import { AllCoinNames } from "~/consts/pairs";
 import { Coins } from "~/utils";
 import type { WalletBalance } from "~/utils/types";
 import { getSortedCoins } from "~/utils/helpers";
+import { IoIosSearch } from "react-icons/io";
 
 export default function FundingWallet({
   walletDetails,
   walletTotals,
+  toggleTransfer,
 }: {
   walletDetails: WalletBalance[];
   walletTotals: Record<string, number>;
+  toggleTransfer:()=>void;
 }) {
   const [balanceShow, setBalanceShow] = useState(true);
   const [query, setQuery] = useState("");
-  const assets = walletDetails.filter((e) => e.walletType === "funding");
+  const assets =
+    walletDetails && walletDetails?.filter((e) => e?.walletType === "funding");
   const [page, setPage] = useState(1);
   const size = 10;
-  const list = getSortedCoins(assets[0].assets, page, size, query);
+  const list = getSortedCoins(assets && assets[0]?.assets, page, size, query);
   const navigate = useNavigate();
   return (
     <Container>
@@ -44,10 +48,10 @@ export default function FundingWallet({
           </button>
         </div>
         <div className="text-gray-50 font-bold text-3xl">
-          {balanceShow ? walletTotals?.funding : "********"} USDT
+          {balanceShow ? (walletTotals?.funding ?? 0) : "********"} USDT
         </div>
         <div className="text-gray-200 text-sm">
-          ≈ $ {balanceShow ? walletTotals?.funding : "********"}
+          ≈ $ {balanceShow ? (walletTotals?.funding ?? 0) : "********"}
         </div>
         <div className="flex gap-4 w-full mt-6">
           <TradeButton
@@ -66,20 +70,24 @@ export default function FundingWallet({
             label="Transfer"
             style="bg-gray-800 hover:bg-gray-950 lg:hover:bg-gray-900 h-10 w-full md:w-40"
             textStyle="text-gray-100 font-semibold"
-            action={() => navigate("/trade/btcusdt?type=spot")}
+            action={toggleTransfer}
           />
         </div>
       </div>
       <div className="mt-8">
         <p className="text-2xl font-bold text-gray-100">Funding</p>
         <div className="mt-4" id="balanceTable">
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="border-1 px-4 border-gray-700 w-100 h-10 outline-0 rounded-lg text-gray-300 focus:border-gray-300"
-          />
-          {list.map((c) => (
+          <div className="border px-4 flex items-center gap-3 border-gray-700 w-100 h-10 outline-0 rounded-full text-gray-300 focus:border-gray-300">
+            <IoIosSearch />
+            <input
+              type="search"
+              value={query}
+              placeholder="Search"
+              onChange={(e) => setQuery(e.target.value)}
+              className="outline-0 w-full h-full"
+            />
+          </div>
+          {list?.map((c) => (
             <div className="flex justify-between items-center my-6">
               <div className="flex gap-4 items-center">
                 <img
@@ -114,7 +122,7 @@ export default function FundingWallet({
             </button>
             <button
               className="text-gray-600 flex gap-2 items-center text-md "
-              disabled={list.length < size}
+              disabled={list?.length < size}
               onClick={() => setPage((p) => p + 1)}
             >
               Next

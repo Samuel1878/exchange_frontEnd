@@ -71,3 +71,24 @@ export interface EarnProductsType {
   CreatedAt:string;
   UpdatedAt:string;
 }
+export interface WalletAddressItem {
+  Id: number;
+  UserId: number;
+  CoinName: string;
+  NetWork: string;
+  Address: string;
+  Status: string;
+  CreatedAt: string | null;
+  UpdatedAt: string | null;
+  NetworkName?:string
+}
+
+export interface WalletAddressResponse {
+  data: WalletAddressItem[];
+  total: number;
+  page: number;
+  Limit: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrePage: boolean;
+}

@@ -1,6 +1,6 @@
 import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
 import { FaPowerOff } from "react-icons/fa";
-import { Link, useSearchParams } from "react-router";
+import { Link, redirect, useNavigate, useSearchParams } from "react-router";
 
 import {
   Sidebar,
@@ -13,6 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
+import { useAuthStore } from "~/store/useUserDataStore";
 import { Logo } from "~/utils";
 
 // Menu items.
@@ -45,6 +46,8 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const {logout} = useAuthStore();
+  const navigate = useNavigate()
 
   return (
     <Sidebar
@@ -68,7 +71,7 @@ export function AppSidebar() {
                 >
                   <SidebarMenuButton asChild className="hover:text-amber-300">
                     <Link to={item.url} className="py-8">
-                      <item.icon/>
+                      <item.icon />
                       <span className="hover:text-amber-300 text-lg">
                         {item.title}
                       </span>
@@ -84,7 +87,13 @@ export function AppSidebar() {
         className="bg-gray-800 cursor-pointer"
         onClick={() => console.log("logout")}
       >
-        <button className="text-red-400 font-bold cursor-pointer flex items-center justify-center gap-2">
+        <button
+          className="text-red-400 font-bold cursor-pointer flex items-center justify-center gap-2"
+          onClick={()=>{
+            logout();
+            navigate("/")
+          }}
+        >
           <FaPowerOff />
           Log out
         </button>

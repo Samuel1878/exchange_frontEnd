@@ -16,13 +16,13 @@ enum lists {
 
 export default function HomeMiniChart() {
   const [focus, setFocus] = useState<lists>(lists.coin);
-  // useTickers([
-  //   "btcusdt@ticker",
-  //   "ethusdt@ticker",
-  //   "solusdt@ticker",
-  //   "xrpusdt@ticker",
-  //   "dogeusdt@ticker",
-  // ]);
+  useTickers([
+    "btcusdt@ticker",
+    "ethusdt@ticker",
+    "solusdt@ticker",
+    "xrpusdt@ticker",
+    "dogeusdt@ticker",
+  ]);
   const { tickers } = useTickersStore();
   const BuildMiniPrice = (tickers) => {
     return Object.values(tickers)

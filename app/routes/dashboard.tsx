@@ -10,7 +10,7 @@ import SpotWallet from "~/components/dashboard/spot";
 import FundingWallet from "~/components/dashboard/funding";
 import FinancialWallet from "~/components/dashboard/financial";
 import { calculateUserBalances } from "~/utils/helpers";
-import { user } from "~/consts";
+// import { user } from "~/consts";
 import TransferDrawerDialog from "~/components/dashboard/transfer";
 
 export async function clientLoader({
@@ -20,14 +20,16 @@ export async function clientLoader({
   const url = new URL(request.url);
   const type = url.searchParams.get("type");
   const loggedIn = useAuthStore.getState().isLoggedIn;
-
+  const user = useAuthStore.getState().user;
   if (!loggedIn) {
     throw redirect("/login");
   }
-  return { type };
+  return { type, user };
 }
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
-  const { type } = loaderData;
+  const { type, user } = loaderData;
+  const {accessToken} = useAuthStore()
+  console.log("user", accessToken);
   const [openTransfer, setOpenTransfer] = useState(false);
     const { walletDetails, walletTotals, totalUSDT } = calculateUserBalances(
       user,
@@ -54,12 +56,14 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
             <FundingWallet
               walletDetails={walletDetails}
               walletTotals={walletTotals}
+              toggleTransfer={toggleTransfer}
             />
           </Activity>
           <Activity mode={type === "financial" ? "visible" : "hidden"}>
             <FinancialWallet
               walletDetails={walletDetails}
               walletTotals={walletTotals}
+              toggleTransfer={toggleTransfer}
             />
           </Activity>
           <FooterSection />

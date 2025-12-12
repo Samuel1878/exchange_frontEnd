@@ -27,10 +27,11 @@ export default function SpotWallet({
   const [balanceShow, setBalanceShow] = useState(true);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
-  const assets = walletDetails.filter((e) => e.walletType === "spot");
-  const [page, setPage] = useState(1);
-  const size = 10;
-  const list = getSortedCoins(assets[0].assets, page, size, search);
+    const [page, setPage] = useState(1);
+    const size = 10;
+  const assets = walletDetails?.filter((e) => e?.walletType === "spot");
+
+  const list = getSortedCoins( assets && assets[0]?.assets, page, size, search);
 
   useEffect(() => {}, []);
   return (
@@ -50,10 +51,10 @@ export default function SpotWallet({
           </button>
         </div>
         <div className="text-gray-50 font-bold text-3xl">
-          {balanceShow ? walletTotals?.spot : "********"} USDT
+          {balanceShow ? walletTotals?.spot ??0 : "********"} USDT
         </div>
         <div className="text-gray-200 text-sm">
-          ≈ $ {balanceShow ? walletTotals?.spot : "********"}
+          ≈ $ {balanceShow ? walletTotals?.spot??0 : "********"}
         </div>
         <div className="flex gap-4 w-full mt-6">
           <TradeButton
@@ -80,7 +81,7 @@ export default function SpotWallet({
         <p className="text-2xl font-bold text-gray-100">Spot</p>
         <div className="mt-4" id="balanceTable">
           <div className="flex justify-between items-center">
-            <div className="border-1 px-4 flex items-center gap-3 border-gray-700 w-100 h-10 outline-0 rounded-full text-gray-300 focus:border-gray-300">
+            <div className="border px-4 flex items-center gap-3 border-gray-700 w-100 h-10 outline-0 rounded-full text-gray-300 focus:border-gray-300">
               <IoIosSearch />
               <input
                 type="search"
@@ -93,7 +94,7 @@ export default function SpotWallet({
 
             <FaExchangeAlt size={25} />
           </div>
-          {list.map((c) => (
+          {list && list?.map((c) => (
             <Link
               className="flex justify-between items-center py-4 my-2 cursor-pointer"
               to={"/trade/" + c.symbol.toLowerCase() + "usdt" + "?type=spot"}
@@ -131,7 +132,7 @@ export default function SpotWallet({
             </button>
             <button
               className="text-gray-600 flex gap-2 items-center text-md "
-              disabled={list.length < size}
+              disabled={list?.length < size}
               onClick={() => setPage((p) => p + 1)}
             >
               Next

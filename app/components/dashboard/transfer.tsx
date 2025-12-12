@@ -34,7 +34,7 @@ export default function TransferDrawerDialog({
   wallet: string;
   walletDetails: WalletBalance[];
 }) {
-  const [from, setFrom] = useState(wallet ?? "string");
+  const [from, setFrom] = useState(isWallet(wallet) ? wallet:"spot");
   const [to, setTo] = useState(from === "spot" ? "financial" : "spot");
   const [availableAmount, setAvailableAmount] = useState(0);
   const { width } = useWindowDimensions();
@@ -46,7 +46,7 @@ export default function TransferDrawerDialog({
   useEffect(() => {
     if (isWallet(from || wallet)) {
       const assets = walletDetails?.filter((e) => e.walletType === from);
-      setList(assets && getSortedCoinsNoFilter(assets[0]?.assets));
+      setList(getSortedCoinsNoFilter(assets && assets[0]?.assets));
     }
  
   }, [from]);
@@ -55,7 +55,7 @@ export default function TransferDrawerDialog({
   },[amount])
   useEffect(() => {
     if (selectedCoin) {
-      list.map((e) => {
+      list?.map((e) => {
         if (selectedCoin.toUpperCase() === e.symbol.toUpperCase()) {
           setAvailableAmount(e.balance);
           return;
@@ -124,10 +124,11 @@ export default function TransferDrawerDialog({
                   </SelectTrigger>
                   <SelectContent className="h-1/3 md:max-h-120 bg-gray-900 border-gray-800 border">
                     <SelectGroup>
-                      {list.map((e) => {
+                      {list?.map((e) => {
                         return (
                           <SelectItem
                             value={e.symbol}
+                            key={e.symbol}
                             className=" text-gray-50"
                           >
                             <div className="w-2xs md:w-sm flex justify-between">

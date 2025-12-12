@@ -6,7 +6,7 @@ import { TradeButton } from "../charts/components/buttons";
 import { useNavigate } from "react-router";
 import HomeMiniChart from "../miniCharts/homeMiniChart";
 import AiMiniChart from "../miniCharts/aiMiniChart";
-import { user } from "~/consts";
+
 import { formatNumber, formatTotalPrice } from "~/utils/helpers";
 import CustomActiveShapePieChart from "./piChart";
 export function Container({ children }) {
@@ -23,7 +23,7 @@ export function Container({ children }) {
 export default function OverView({walletTotals, totalUSDT}:{
   walletTotals:Record<string, number>, totalUSDT:number
 }) {
-  // const { user } = useAuthStore();
+  const { user } = useAuthStore();
   const [balanceShow, setBalanceShow] = useState(true);
   const navigate = useNavigate();
   return (
@@ -36,16 +36,16 @@ export default function OverView({walletTotals, totalUSDT}:{
           <img src={BTC} width={50} />
           <div className="relative">
             <p className="text-gray-50 text-md font-semibold">
-              {user?.UserName}
+              {user?.UserName || user?.Phone || user?.Email}
             </p>
             <p className="text-gray-600">{user?.Phone}</p>
-            {user?.Email ? (
+            {/* {user?.Email ? (
               <p className="text-gray-600 text-sm">{user?.Email}</p>
             ) : (
               <p className="text-sm font-semibold text-red-300 cursor-pointer">
                 Bind Email
               </p>
-            )}
+            )} */}
             <div className="flex gap-2 mt-1">
               <div
                 className={`text-gray-50 text-xs p-1 px-3 rounded-full bg-gray-600 capitalize`}
@@ -81,10 +81,10 @@ export default function OverView({walletTotals, totalUSDT}:{
           </button>
         </div>
         <div className="text-gray-50 font-bold text-3xl">
-          {balanceShow ? formatNumber(totalUSDT) : "********"} USDT
+          {balanceShow ? formatNumber(totalUSDT)??0 : "********"} USDT
         </div>
         <div className="text-gray-200 text-sm">
-          ≈ $ {balanceShow ? formatTotalPrice(totalUSDT) : "********"}
+          ≈ $ {balanceShow ? formatTotalPrice(totalUSDT) ??0 : "********"}
         </div>
         <div className="flex gap-4 w-full mt-6">
           <TradeButton
