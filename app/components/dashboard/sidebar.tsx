@@ -20,34 +20,35 @@ import { Logo } from "~/utils";
 const items = [
   {
     title: "Dashboard",
-    url: "/dashboard?type=overview",
+    url: "type=overview",
     icon: Home,
   },
   {
     title: "Spot Wallet",
-    url: "/dashboard?type=spot",
+    url: "type=spot",
     icon: Inbox,
   },
   {
     title: "Financial",
-    url: "/dashboard?type=financial",
+    url: "type=financial",
     icon: Calendar,
   },
   {
     title: "Funding",
-    url: "/dashboard?type=funding",
+    url: "type=funding",
     icon: Search,
   },
   {
     title: "Settings",
-    url: "/dashboard?type=setting",
+    url: "type=setting",
     icon: Settings,
   },
 ];
 
 export function AppSidebar() {
   const {logout} = useAuthStore();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams()
 
   return (
     <Sidebar
@@ -70,12 +71,12 @@ export function AppSidebar() {
                   className="text-gray-100 hover:bg-gray-800 active:bg-gray-800 focus:bg-gray-800 rounded-md hover:text-amber-300"
                 >
                   <SidebarMenuButton asChild className="hover:text-amber-300">
-                    <Link to={item.url} className="py-8">
+                    <div onClick={()=>setSearchParams(item.url)} className="py-8">
                       <item.icon />
                       <span className="hover:text-amber-300 text-lg">
                         {item.title}
                       </span>
-                    </Link>
+                    </div>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

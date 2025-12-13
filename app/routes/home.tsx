@@ -19,15 +19,31 @@ import { useAuthStore } from "~/store/useUserDataStore";
 import { TitleSuffix } from "~/consts";
 import { FaAngleRight, FaEye, FaEyeSlash } from "react-icons/fa";
 import { TradeButton } from "~/components/charts/components/buttons";
+import { getUserDataAPI } from "~/api/authAPI";
+import { calculateUserBalances } from "~/utils/helpers";
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Home" }, { name: "description", content: "Welcome" }];
 }
+export async function clientLoader ({params}:Route.ClientLoaderArgs){
+  const accessToken = useAuthStore.getState().accessToken;
+  const isLoggedIn = useAuthStore.getState().isLoggedIn;
+  const setUser = useAuthStore.getState().setUser;
+  if (accessToken && isLoggedIn){
+  const response = await getUserDataAPI(accessToken);
+    if (response && response.success) {
+      setUser(response.data)
+    }
+  }
+  return {accessToken, isLoggedIn}
 
-export default function Home() {
+}
+export default function Home({loaderData}:Route.ComponentProps) {
   const { t } = useTranslation();
+  const {accessToken, isLoggedIn} = loaderData;
   const [number, setNumber] = useState(85290471);
   const [volume, setVolume] = useState(10760109);
-  const { isLoggedIn, user} = useAuthStore();
+  const { wallet } = useAuthStore();
+  const {totalUSDT} = calculateUserBalances(wallet, { USDT: 1, BTC: 9400, ETH: 3220 });
   const [balanceShow, setBalanceShow] = useState(true);
   const navigate = useNavigate()
   useEffect(() => {
@@ -93,8 +109,10 @@ export default function Home() {
                   )}
                 </button>
               </div>
-              <div className="text-gray-50 font-bold text-3xl">{balanceShow?"0.020291":"********"} USDT</div>
-              <div className="text-gray-200 text-sm">≈ $ {}</div>
+              <div className="text-gray-50 font-bold text-3xl">
+                {balanceShow ? totalUSDT : "********"} USDT
+              </div>
+              <div className="text-gray-200 text-sm">≈ $ {totalUSDT}</div>
             </div>
           ) : (
             <div className="flex lg:justify-around justify-center gap-10 items-center w-full my-2 lg:my-6 md:justify-start md:gap-30">
@@ -130,7 +148,7 @@ export default function Home() {
                   label="Deposit"
                   style="bg-amber-300 h-10 px-5"
                   textStyle="text-gray-800 font-semibold"
-                  action={() => {}}
+                  action={() => navigate("/deposit")}
                 />
                 <TradeButton
                   label="Trade"

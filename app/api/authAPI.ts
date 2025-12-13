@@ -52,3 +52,18 @@ export const loginAPI = async (data: payloadType): Promise<LoginResponse> => {
     return null;
   }
 };
+
+export const getUserDataAPI = async (accessToken) => {
+  try {
+     const response = await axios.get(`${ACTION_URL}/api/v1/users/get-wallet`, {
+       headers: {
+         "Content-Type": "application/json",
+         Authorization: `Bearer ${accessToken}`,
+       },
+     });
+     if (response.status === 200) return response.data;
+     return null;
+  } catch (error) {
+    
+  }
+}

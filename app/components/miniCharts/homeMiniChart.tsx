@@ -7,6 +7,7 @@ import { CoinPairs } from "~/consts/pairs";
 import { Coins } from "~/utils";
 import { useTickers } from "~/hooks/useTickers";
 import { useTickersStore, type Ticker } from "~/store/useTickersStore";
+import { Spinner } from "../ui/spinner";
 
 enum lists {
   coin = "coin",
@@ -109,7 +110,7 @@ export default function HomeMiniChart() {
             BuildMiniPrice(tickers)
           ) : (
             <div className="h-full w-full flex flex-col justify-center items-center py-25">
-              <Loader color={"#d7d7d7"}/>
+              <Spinner color="#fff"/>
             </div>
           )}
         </div>

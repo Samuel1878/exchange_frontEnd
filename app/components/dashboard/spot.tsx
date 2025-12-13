@@ -51,10 +51,10 @@ export default function SpotWallet({
           </button>
         </div>
         <div className="text-gray-50 font-bold text-3xl">
-          {balanceShow ? walletTotals?.spot ??0 : "********"} USDT
+          {balanceShow ? (walletTotals?.spot ?? 0) : "********"} USDT
         </div>
         <div className="text-gray-200 text-sm">
-          ≈ $ {balanceShow ? walletTotals?.spot??0 : "********"}
+          ≈ $ {balanceShow ? (walletTotals?.spot ?? 0) : "********"}
         </div>
         <div className="flex gap-4 w-full mt-6">
           <TradeButton
@@ -91,37 +91,39 @@ export default function SpotWallet({
                 className="outline-0 w-full h-full"
               />
             </div>
-
-            <FaExchangeAlt size={25} />
+            <div onClick={()=>navigate("/trade/convert/usdt/btc?type=spot")} className="cursor-pointer border border-gray-700 rounded-md p-2">
+              <FaExchangeAlt size={25} />
+            </div>
           </div>
-          {list && list?.map((c) => (
-            <Link
-              className="flex justify-between items-center py-4 my-2 cursor-pointer"
-              to={"/trade/" + c.symbol.toLowerCase() + "usdt" + "?type=spot"}
-            >
-              <div className="flex gap-4 items-center">
-                <img
-                  src={Coins[c.symbol.toUpperCase()]}
-                  style={{ width: 30, height: 30, borderRadius: "100%" }}
-                />
-                <div>
-                  <p className="text-lg font-bold text-gray-50">{c.symbol}</p>
-                  <p className="text-md font-bold text-gray-700">{c.name}</p>
+          {list &&
+            list?.map((c) => (
+              <Link
+                className="flex justify-between items-center py-4 my-2 cursor-pointer"
+                to={"/trade/" + c.symbol.toLowerCase() + "usdt" + "?type=spot"}
+              >
+                <div className="flex gap-4 items-center">
+                  <img
+                    src={Coins[c.symbol.toUpperCase()]}
+                    style={{ width: 30, height: 30, borderRadius: "100%" }}
+                  />
+                  <div>
+                    <p className="text-lg font-bold text-gray-50">{c.symbol}</p>
+                    <p className="text-md font-bold text-gray-700">{c.name}</p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex gap-4 items-center">
-                <div className="text-right">
-                  <p className="text-gray-50 font-medium text-md">
-                    {c.balance.toFixed(6)}
-                  </p>
-                  <p className="text-gray-700 font-medium text-md">
-                    $ {c.valueUSDT.toFixed(2)}
-                  </p>
+                <div className="flex gap-4 items-center">
+                  <div className="text-right">
+                    <p className="text-gray-50 font-medium text-md">
+                      {c.balance.toFixed(6)}
+                    </p>
+                    <p className="text-gray-700 font-medium text-md">
+                      $ {c.valueUSDT.toFixed(2)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))}
           <div className="flex gap-4 justify-center">
             <button
               className="text-gray-600 flex gap-2 items-center text-md "

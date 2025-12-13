@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router";
 import { useCallback, useEffect, useState } from "react";
 import { TbTransferVertical } from "react-icons/tb";
 import { Coins } from "~/utils";
-import { FaCaretDown } from "react-icons/fa";
+import { FaArrowRight, FaCaretDown } from "react-icons/fa";
 import FooterSection from "~/components/footer";
 import {
   Drawer,
@@ -17,20 +17,26 @@ import { Star, X } from "lucide-react";
 import { getAvgPriceAPI } from "~/api/price";
 import { AltCoins, StableCoins } from "~/consts/pairs";
 import { formatPrice, priceFormatter } from "~/components/charts/util";
-export const clientLoader = async ({ params }: Route.ClientLoaderArgs) => {
+import { useAuthStore } from "~/store/useUserDataStore";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "~/components/ui/dialog";
+import { formatNumber } from "~/utils/helpers";
+export const clientLoader = async ({ params,request }: Route.ClientLoaderArgs) => {
   const from = params.from;
+  
   const to = params.to;
+    const url = new URL(request.url);
+  const type = url.searchParams.get("type");
   if (!from) {
     throw new Error("No Params");
   }
   if (!to) {
-    return { from, to: "usdt" };
+    return { from, to: "usdt", type };
   }
-  return { from, to };
+  return { from, to, type };
 };
 
 export default function Convert({ loaderData }: Route.ComponentProps) {
-  const { from, to } = loaderData;
+  const { from, to , type} = loaderData;
   const [fromCoins, setFromCoins] = useState(null);
   const [ready, setReady] = useState<boolean>(false);
   const [toCoins, setToCoins] = useState(null);
@@ -39,6 +45,10 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [availableAmount ,setAvailableAmount] = useState("");
+  const { wallet} = useAuthStore()
+  const[ openPreview, setOpenPreview] = useState(false);
   const [isFromStable, setIsFromStable] = useState<boolean>(
     Object.keys(StableCoins).includes(from.toLowerCase())
   );
@@ -77,9 +87,17 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
     setToAmount("");
     navigate(`/trade/convert/${from}/${to}`);
   };
-
-
-  useEffect(() => {
+  useEffect(()=>{
+    console.log(type)
+    wallet.map((e)=>{
+      if (e.WalletType === type){
+        e.UserAsset.map((i)=>{
+          if (i.Currency.toUpperCase() === fromCoin.toUpperCase())return setAvailableAmount(i.AvailableBalance)
+        })
+      return
+      }
+    })
+  },[fromCoin, type])
     const fetchPrice = async () => {
       const pair = isFromStable
         ? toCoin.toUpperCase() + fromCoin.toUpperCase()
@@ -90,6 +108,8 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
       setRate(newRate ? Number(newRate?.price) : 0);
       console.log("New rate:", newRate);
     };
+  useEffect(() => {
+
     ready && fetchPrice();
   }, [fromCoin , toCoin]);
 
@@ -138,6 +158,9 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
       });
     }
   }, [searchTerm]);
+  const convertAction = async () => {
+
+  }
   const RenderDrawerCoinItem = useCallback(
     ({
       symbol,
@@ -169,9 +192,99 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
     },
     []
   );
+  const RenderDialog = useCallback( () => {
+    const [expired, setExpired] = useState(false);
+    useEffect(()=>{
+      setExpired(false);
+      const timeOut = setTimeout(()=>{
+        setExpired(true)
+      },15000)
+      return ()=> clearTimeout(timeOut)
+    },[])
+    console.log("DIALOG")
+    return (
+      <Dialog open={openPreview} onOpenChange={setOpenPreview}>
+        <DialogTrigger></DialogTrigger>
+        <DialogContent className="bg-gray-800 border-0 outline-0 ring-0">
+          <DialogHeader className="text-gray-50 font-bold text-lg">
+            Confirm
+          </DialogHeader>
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center">
+              <div className="flex flex-col gap-3 items-center flex-1">
+                <img src={Coins[fromCoin.toUpperCase()]} width={40} />
+                <p className="text-gray-500 font-medium">From</p>
+                <p className="text-gray-50 font-bold text-lg">
+                  {formatPrice(Number(fromAmount)) + " "}{" "}
+                  {fromCoin.toUpperCase()}
+                </p>
+              </div>
+              <FaArrowRight color="#888" size={20} />
+              <div className="flex flex-col gap-3 items-center flex-1">
+                <img src={Coins[toCoin.toUpperCase()]} width={40} />
+                <p className="text-gray-500 font-medium">To</p>
+                <p className="text-gray-50 font-bold text-lg">
+                  {formatPrice(Number(toAmount)) + " "} {toCoin.toUpperCase()}
+                </p>
+              </div>
+            </div>
+            <div className="border border-gray-700 rounded-md p-2 flex flex-col gap-4">
+              <div className="w-full flex justify-between">
+                <p className="text-gray-400 text-sm md:text-md">Rate</p>
+                <p className="text-gray-200 text-right font-medium text-sm md:text-md">
+                  1{" "}
+                  {isFromStable ? toCoin.toUpperCase() : fromCoin.toUpperCase()}{" "}
+                  ≈ {priceFormatter(rate)}{" "}
+                  {isFromStable ? fromCoin.toUpperCase() : toCoin.toUpperCase()}
+                </p>
+              </div>
+              <div className="w-full flex justify-between">
+                <p className="text-gray-400 text-sm md:text-md">
+                  Payment Method
+                </p>
+                <p className="text-gray-200 text-right text-sm md:text-md font-medium capitalize">
+                  {type} wallet
+                </p>
+              </div>
+              <div className="w-full flex justify-between">
+                <p className="text-gray-400 text-sm md:text-md">
+                  Transaction Fees
+                </p>
+                <p className="text-gray-200 text-right text-sm md:text-md font-medium capitalize">
+                  0 {toCoin.toUpperCase()}
+                </p>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <div className="w-full ">
+              <div className="sapce-x-2 p-2 text-center text-gray-500">
+                Exchange rate {expired?"is expired":"will expire in 15 s"}
+              </div>
+
+              <button
+                onClick={() => {
+                  if (expired) {
+                    fetchPrice();
+                    setExpired(false);
+                    return;
+                  }
+                  convertAction();
+                }}
+                className="cursor-pointer font-semibold w-full h-12 bg-amber-300 flex justify-center items-center rounded-md"
+              >
+                {expired ? "Refresh Quote" : "Convert"}
+              </button>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+  },[openPreview, rate])
   return (
     <>
       <main className="flex items-center w-full h-full flex-col  bg-gray-900 lg:bg-gray-950 overflow-x-hidden pt-10 pb-10">
+        <RenderDialog/>
         <div className="w-full p-4 lg:max-w-6xl">
           <h1 className="text-lg font-bold text-gray-100 md:text-xl lg:text-4xl">
             {TitleSuffix} Convert {fromCoin.toUpperCase()} to{" "}
@@ -195,7 +308,8 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
               <div className="flex w-full justify-between items-center">
                 <p className="text-xs text-gray-500 font-medium">From</p>
                 <p className="text-xs text-gray-500 font-medium">
-                  Availiable Balance -- {fromCoin.toUpperCase()}
+                  Availiable Balance {formatPrice(Number(availableAmount))}{" "}
+                  {fromCoin.toUpperCase()}
                 </p>
               </div>
               <div className="flex justify-between items-center mt-2">
@@ -220,7 +334,10 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
                   className="w-full outline-0 text-right h-18 text-gray-50 font-bold text-2xl placeholder:text-gray-600 placeholder:text-lg"
                   placeholder="0.01 - 100,000 USD"
                 />
-                <button className="pl-3 ml-3 cursor-pointer border-l-2 border-gray-700 text-amber-400 font-semibold text-sm">
+                <button
+                  onClick={() => setFromAmount(availableAmount)}
+                  className="pl-3 ml-3 cursor-pointer border-l-2 border-gray-700 text-amber-400 font-semibold text-sm"
+                >
                   Max
                 </button>
               </div>
@@ -239,9 +356,9 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
             <div className="w-full h-40 bg-gray-800 rounded-md group p-4 lg:w-1/2 lg:bg-gray-950 lg:border-2 lg:border-gray-700 border-0">
               <div className="flex w-full justify-between items-center">
                 <p className="text-xs text-gray-500 font-medium">To</p>
-                <p className="text-xs text-gray-500 font-medium">
+                {/* <p className="text-xs text-gray-500 font-medium">
                   Availiable Balance -- {toCoin.toUpperCase()}
-                </p>
+                </p> */}
               </div>
               <div className="flex justify-between items-center mt-2">
                 <div
@@ -280,6 +397,7 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
             <button
               className="w-full bg-amber-300 h-12 rounded-md text-gray-900 font-semibold disabled:opacity-20 lg:w-1/2 cursor-pointer"
               disabled={!(fromAmount && Number(fromAmount) > 0)}
+              onClick={() => setOpenPreview(true)}
             >
               {fromAmount && toAmount ? `Preview Convert` : "Enter an amount"}
             </button>

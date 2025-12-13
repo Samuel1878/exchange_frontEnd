@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import HomeStart from "assets/images/how-buy-step3.svg";
 import HomeStart2 from "assets/images/how-step1.svg";
@@ -33,7 +33,7 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import type { Route } from "./+types/deposit";
-import { getWalletAddress } from "~/api/walletAPI";
+import { getDepositHis, getWalletAddress, sumbitDepositForm } from "~/api/walletAPI";
 import type { AssetBalance, WalletAddressItem } from "~/utils/types";
 import { AllCoinNames, Networks } from "~/consts/pairs";
 import { Coins } from "~/utils";
@@ -44,19 +44,24 @@ import {
   calculateUserBalances,
   getSortedCoinsForWithdrawls,
 } from "~/utils/helpers";
+import { Spinner } from "~/components/ui/spinner";
+import { toast } from "sonner";
+import moment from "moment";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const accessToken = useAuthStore.getState().accessToken;
   const isLoggedIn = useAuthStore.getState().isLoggedIn;
-  if (params.type === "deposit" && isLoggedIn) {
+  if (params.type === "deposit" && isLoggedIn && accessToken) {
     const response = await getWalletAddress(accessToken);
     return {
       type: params.type || null,
       walletAddress: response.data,
       isLoggedIn,
+      accessToken
+  
     };
   }
-  return { type: params.type || null, walletAddress: null, isLoggedIn };
+  return { type: params.type || null, walletAddress: null, isLoggedIn ,accessToken};
 }
 interface Tab {
   label: string;
@@ -66,16 +71,19 @@ const TabMenu: Tab[] = [
   { name: "Deposit", label: "deposit" },
   { name: "Withdraw", label: "withdraw" },
 ];
-const Withdraw = () => {
+const Withdraw = ({isLoggedIn}) => {
   const [open, setOpen] = useState(false);
    const [value, setValue] = useState("");
   const user = useAuthStore.getState().user;
+  const wallet = useAuthStore.getState().wallet
   const [address, setAddress] = useState("")
   const [openN, setOpenN] = useState(false);
   const [network, setNetwork] = useState("")
-  const isLoggedIn = useAuthStore.getState().isLoggedIn;
+
   const { walletDetails, walletTotals, totalUSDT } =
-    isLoggedIn && user&& calculateUserBalances(user, { USDT: 1, BTC: 9400, ETH: 3220 });
+    isLoggedIn &&
+    user &&
+    calculateUserBalances(wallet, { USDT: 1, BTC: 9400, ETH: 3220 });
     const assetList = getSortedCoinsForWithdrawls(walletDetails)
   return (
     <>
@@ -240,16 +248,20 @@ const Withdraw = () => {
 const Deposit = ({
   data,
   isLoggedIn,
+  accessToken
 }: {
   data: WalletAddressItem[];
   isLoggedIn: boolean;
+  accessToken:any
 }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [openN, setOpenN] = useState(false);
   const [network, setNetwork] = useState("");
-  const groupedArray = Object.entries(
+  const [loading ,setLoading] = useState(false);
+  const [amount, setAmount] = useState("");
+  const groupedArray = data && Object.entries(
     data.reduce(
       (acc, item) => {
         (acc[item.CoinName] ||= []).push(item);
@@ -257,14 +269,33 @@ const Deposit = ({
       },
       {} as Record<string, WalletAddressItem[]>
     )
-  ).map(([coin, items]) => ({ coin, items }));
+  )?.map(([coin, items]) => ({ coin, items }));
+
+  const submit = async()=>{
+    setLoading(true)
+    const payload = {DepositAmount:Number(amount), CoinName:value, NetWork:network, NetWorkName:network}
+    const response = await sumbitDepositForm(payload, accessToken);
+    console.log(response);
+
+    if (response && response?.success){
+      setAmount("")
+      toast(response?.message);
+      
+      navigate("/")
+    }
+    setLoading(false);
+  }
 
   return (
     <>
       <div className="space-y-4 w-full">
         <div>
           <p>Amount</p>
-          <input className="w-full focus-within:border-amber-300 hover:border-amber-300 border border-gray-700 h-12 rounded-md outline-0 text-lg font-bold text-gray-50 px-4" />
+          <input
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="w-full focus-within:border-amber-300 hover:border-amber-300 border border-gray-700 h-12 rounded-md outline-0 text-lg font-bold text-gray-50 px-4"
+          />
         </div>
         <div className="w-full">
           <p>Coin</p>
@@ -301,7 +332,7 @@ const Deposit = ({
                 <CommandList>
                   <CommandEmpty>No Coin found.</CommandEmpty>
                   <CommandGroup className="bg-gray-900 lg:bg-gray-950">
-                    {groupedArray.map((w) => (
+                    {groupedArray && groupedArray.map((w) => (
                       <CommandItem
                         key={w.coin}
                         className="active:bg-gray-800 hover:bg-gray-800 focus:bg-gray-800 text-gray-50 text-lg font-bold"
@@ -361,7 +392,7 @@ const Deposit = ({
                 <CommandList>
                   <CommandEmpty>No Network found.</CommandEmpty>
                   <CommandGroup className="bg-gray-900 lg:bg-gray-950">
-                    {groupedArray
+                    {groupedArray && groupedArray
                       .filter((e) => e.coin === value)
                       .map((c) =>
                         c.items
@@ -401,43 +432,51 @@ const Deposit = ({
             </PopoverContent>
           </Popover>
         </div>
-        {isLoggedIn && value && network && (
-          <div className="flex gap-4 lg:items-center border flex-col lg:flex-row border-gray-700 p-4 rounded-md hover:border-amber-300">
-            <div className="p-2 bg-gray-50 rounded-sm self-center">
-              <QRCodeSVG
-                radius={0}
-                value={
-                  data.filter(
-                    (e) => e.CoinName === value && e.NetWork === network
-                  )[0].Address
-                }
-              />
-            </div>
-            <div className="flex lg:block">
-              <div className="flex flex-1 flex-col flex-wrap gap-2">
-                <p className="text-md text-gray-600">Address</p>
-                <p className="wrap-anywhere">
-                  {
+        {isLoggedIn && value && network && amount && (
+          <>
+            <div className="flex gap-4 lg:items-center border flex-col lg:flex-row border-gray-700 p-4 rounded-md hover:border-amber-300">
+              <div className="p-2 bg-gray-50 rounded-sm self-center">
+                <QRCodeSVG
+                  radius={0}
+                  value={
                     data.filter(
                       (e) => e.CoinName === value && e.NetWork === network
                     )[0].Address
                   }
-                </p>
+                />
               </div>
-              <div
-                className="p-1 cursor-pointer"
-                onClick={() =>
-                  navigator.clipboard.writeText(
-                    data.filter(
-                      (e) => e.CoinName === value && e.NetWork === network
-                    )[0].Address
-                  )
-                }
-              >
-                <GoCopy size={25} />
+              <div className="flex justify-between w-full">
+                <div className="flex flex-1 flex-col flex-wrap gap-2">
+                  <p className="text-md text-gray-600">Address</p>
+                  <p className="wrap-anywhere">
+                    {
+                      data.filter(
+                        (e) => e.CoinName === value && e.NetWork === network
+                      )[0].Address
+                    }
+                  </p>
+                </div>
+                <div
+                  className="p-1 cursor-pointer lg:self-end"
+                  onClick={() =>
+                    navigator.clipboard.writeText(
+                      data.filter(
+                        (e) => e.CoinName === value && e.NetWork === network
+                      )[0].Address
+                    )
+                  }
+                >
+                  <GoCopy size={25} />
+                </div>
               </div>
             </div>
-          </div>
+            <button
+              onClick={submit}
+              className="w-full h-12 text-gray-950 bg-amber-300 rounded-sm cursor-pointer flex items-center justify-center"
+            >
+              {!loading ? "Done" : <Spinner color="#000" />}
+            </button>
+          </>
         )}
       </div>
     </>
@@ -445,10 +484,22 @@ const Deposit = ({
 };
 export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
   // const type = loaderData.type;
+  const [history ,setHisory] = useState([])
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { type, walletAddress, isLoggedIn } = loaderData;
-  console.log(walletAddress);
+  const { type, walletAddress, isLoggedIn,accessToken } = loaderData;
+    const fetchDepoData = async () => {
+      setLoading(true)
+      const response = await getDepositHis(accessToken);
+      if (response) {
+        console.log(response);
+        setHisory(response.data);
+      }
+      setLoading(false)
+    };
+    useEffect(() => {
+      type === "deposit"&& accessToken && fetchDepoData();
+    }, [type]);
   return (
     <main className="bg-gray-900 lg:bg-gray-950 min-h-screen overflow-x-hidden">
       <section id="hero" className="flex flex-col lg:items-center">
@@ -486,24 +537,18 @@ export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
                     ))}
                   </div>
                   <div className="space-y-7">
-                    {loading ? (
-                      <div className="flex flex-col items-center justify-center my-4 h-52">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
-                        <span className="mt-3 text-gray-400">
-                          Loading content...
-                        </span>
-                      </div>
-                    ) : (
+
                       <>
                         {type === "deposit" && (
                           <Deposit
                             data={walletAddress}
                             isLoggedIn={isLoggedIn}
+                            accessToken={accessToken}
                           />
                         )}
-                        {type === "withdraw" && <Withdraw />}
+                        {type === "withdraw" && <Withdraw isLoggedIn={isLoggedIn}/>}
                       </>
-                    )}
+             
                   </div>
                 </div>
               </div>
@@ -552,7 +597,41 @@ export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
                 <div className="">
                   <div className="border border-gray-800 text-white p-4 rounded-2xl space-y-7">
                     <h1>Recent {type}</h1>
-                    <NoData />
+
+                   {history.length ? (<>
+                    {
+                      history?.map((e)=>{
+                        return (
+                          <div className="w-full flex justify-between">
+                            <div className="flex flex-col flex-1">
+                              <p className="text-white text-lg font-bold">{e?.Currency}</p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-md font-bold text-gray-50">
+                                  {e?.DepositAmount}
+                                </p>
+
+                                <p className="text-sm text-gray-500">
+                                  {" "}
+                                  ({e?.NetWork})
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex flex-1 justify-between">
+                              <p className={`text-sm text-gray-500`}>
+                                {moment(e?.CreatedAt).format(
+                                  "YYYY-MM-DD hh:mm:ss "
+                                )}
+                              </p>
+                              <p className={`text-lg font-bold capitalize`}>
+                                {e?.Status}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })
+                    }
+                   </>): <NoData />}
+                   {loading && <Spinner/>}
 
                   </div>
                 </div>

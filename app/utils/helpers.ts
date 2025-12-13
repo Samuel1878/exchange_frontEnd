@@ -77,20 +77,21 @@ import type {
   AssetBalance,
   UserBalanceResult,
   UserData,
+  UserWallet,
   WalletBalance,
 } from "~/utils/types";
 
 export const calculateUserBalances = (
-  user: UserData,
+  wallet:UserWallet[],
   prices: Record<string, number>
 ): UserBalanceResult => {
-  if (!user)
+  if (!wallet)
     return { walletTotals: null, totalUSDT: null, walletDetails: null };
   const walletTotals: Record<string, number> = {};
   let totalUSDT = 0;
-  const walletDetails = user.UserWallet.map((wallet) => {
+  const walletDetails = wallet?.map((w) => {
     let walletUSDT = 0;
-    const assets = wallet.UserAsset.map((asset) => {
+    const assets = w.UserAsset?.map((asset) => {
       const balance =
         parseFloat(asset.AvailableBalance) + parseFloat(asset.LockedBalance);
       const assetUSDT = balance * (prices[asset.Currency] ?? 0);
@@ -101,10 +102,10 @@ export const calculateUserBalances = (
         valueUSDT: assetUSDT,
       };
     });
-    walletTotals[wallet.WalletType] = walletUSDT;
+    walletTotals[w.WalletType] = walletUSDT;
     totalUSDT += walletUSDT;
     return {
-      walletType: wallet.WalletType,
+      walletType: w.WalletType,
       assets,
       walletUSDT,
     };

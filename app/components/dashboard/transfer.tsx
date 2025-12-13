@@ -22,6 +22,11 @@ import type { WalletBalance } from "~/utils/types";
 import { Coins } from "~/utils";
 import { AllCoinNames } from "~/consts/pairs";
 import { TradeButton } from "../charts/components/buttons";
+import { transferAPI } from "~/api/walletAPI";
+import { useAuthStore } from "~/store/useUserDataStore";
+import { redirect } from "react-router";
+import type { Spinner } from "../ui/spinner";
+import { getUserDataAPI } from "~/api/authAPI";
 const isWallet = (w:string):boolean => w === "spot" || w==="financial" || w==="funding" 
 export default function TransferDrawerDialog({
   open,
@@ -42,6 +47,8 @@ export default function TransferDrawerDialog({
   const [selectedCoin, setSelectedCoin] = useState("");
   const [amount, setAmout] = useState("");
   const [valid, setValid] = useState(false);
+  const [loading ,setLoading] = useState(false);
+  const {accessToken, setUser} = useAuthStore();
 
   useEffect(() => {
     if (isWallet(from || wallet)) {
@@ -69,7 +76,30 @@ export default function TransferDrawerDialog({
     setFrom(to);
     setTo(temFrom);
     setAvailableAmount(0);
+    setAmout("")
   };
+  const transferAction = async () => {
+    setLoading(true);
+    const response = await transferAPI({
+      FromAccountType:from,
+      ToAccountType:to,
+      ToAmount:Number(amount),
+      FromCurrency:selectedCoin,
+      ToCurrency:selectedCoin
+    }, accessToken);
+    if (response && response?.success){
+              const response = await getUserDataAPI(accessToken);
+              if (response && response?.success) {
+                console.log(response);
+                setUser(response?.data);
+              }
+        
+      
+    }
+    setLoading(false);
+    setOpen()
+    setAmout("")
+  }
     return (
       <React.Fragment>
         <Dialog open={open} onOpenChange={setOpen}>
@@ -184,7 +214,7 @@ export default function TransferDrawerDialog({
                 </p>
               </div>
             </div>
-            <TradeButton disabled={!valid || !amount} label="Transfer" textStyle="text-gray-950 font-bold text-lg" style="bg-amber-300 h-12" action={()=>{}}/>
+            <TradeButton disabled={!valid || !amount} label={"Transfer"} textStyle="text-gray-950 font-bold text-lg" style="bg-amber-300 h-12" action={transferAction}/>
 
             <DialogDescription></DialogDescription>
           </DialogContent>

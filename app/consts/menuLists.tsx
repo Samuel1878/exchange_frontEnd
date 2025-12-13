@@ -89,7 +89,7 @@ export const verticalNavMenu: menu[] = [
 
 export const tradeMenuList: menu[] = [
   {
-    value: "trade/convert/usdt/btc",
+    value: "trade/convert/usdt/btc?type=spot",
     label: "Convert",
     description: "The easiest way to trade at all sizes",
     icon: <RiExchange2Fill size={30} color="rgba(120,130,150,1)" />,

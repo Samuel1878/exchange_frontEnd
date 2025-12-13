@@ -16,7 +16,7 @@ export interface UserData {
   CreatedAt: string; // ISO date
   UpdatedAt: string; // ISO date
   Id: number;
-  UserWallet: UserWallet[];
+  UserWallet?: UserWallet[];
 }
 
 export interface UserWallet {
@@ -92,3 +92,20 @@ export interface WalletAddressResponse {
   hasNextPage: boolean;
   hasPrePage: boolean;
 }
+
+
+export interface DepositForm {
+  DepositAmount: number;
+  CoinName: string;
+  NetWork: string;
+  NetWorkName: string;
+}
+
+
+export type TransferPayload = {
+  FromAccountType: string;
+  FromCurrency: string;
+  ToAccountType:string;
+  ToCurrency: string;
+  ToAmount: number;
+};

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import {
   FaChevronLeft,
   FaChevronRight,
+  FaExchangeAlt,
   FaEye,
   FaEyeSlash,
 } from "react-icons/fa";
@@ -77,16 +78,21 @@ export default function FundingWallet({
       <div className="mt-8">
         <p className="text-2xl font-bold text-gray-100">Funding</p>
         <div className="mt-4" id="balanceTable">
-          <div className="border px-4 flex items-center gap-3 border-gray-700 w-100 h-10 outline-0 rounded-full text-gray-300 focus:border-gray-300">
-            <IoIosSearch />
-            <input
-              type="search"
-              value={query}
-              placeholder="Search"
-              onChange={(e) => setQuery(e.target.value)}
-              className="outline-0 w-full h-full"
-            />
-          </div>
+          <div className="flex justify-between items-center">
+                      <div className="border px-4 flex items-center gap-3 border-gray-700 w-100 h-10 outline-0 rounded-full text-gray-300 focus:border-gray-300">
+                        <IoIosSearch />
+                        <input
+                          type="search"
+                          value={query}
+                          placeholder="Search"
+                          onChange={(e) => setQuery(e.target.value)}
+                          className="outline-0 w-full h-full"
+                        />
+                      </div>
+                      <div onClick={()=>navigate("/trade/convert/usdt/btc?type=funding")} className="cursor-pointer border border-gray-700 rounded-md p-2">
+                        <FaExchangeAlt size={25} />
+                      </div>
+                    </div>
           {list?.map((c) => (
             <div className="flex justify-between items-center my-6">
               <div className="flex gap-4 items-center">
