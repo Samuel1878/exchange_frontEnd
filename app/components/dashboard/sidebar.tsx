@@ -85,7 +85,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter
-        className="bg-gray-800 cursor-pointer"
+        className="cursor-pointer bg-gray-900 lg:bg-gray-950"
         onClick={() => console.log("logout")}
       >
         <button

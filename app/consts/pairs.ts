@@ -1,3 +1,4 @@
+import type { NetworksMap } from "~/utils/types";
 
 export const CoinPairs = {
   btcusdt: {
@@ -198,160 +199,77 @@ export const AllCoinNames = {
   ...StableCoins,
 };
 
-export const Networks = {
-    usdt: [
-      "Ethereum (ERC20)",
-      "Tron (TRC20)",
-      "BNB Smart Chain (BEP20)",
-      "Solana (SOL)",
-      "Polygon",
-    ],
-    usdc: [
-      "Ethereum (ERC20)",
-      "Solana (SOL)",
-      "Tron (TRC20)",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-    ],
+export const Networks: NetworksMap= {
+  usdt: [
+    { name: "Ethereum (ERC20)", fee: 1, mini: 10 },
+    { name: "Tron (TRC20)", fee: 1, mini: 10 },
+    { name: "BNB Smart Chain (BEP20)", fee: 0.01, mini: 10 },
+    { name: "Solana (SOL)", fee: 0.6, mini: 10 },
+    { name: "Polygon", fee: 0.03, mini: 10 },
+  ],
 
-    btc: [
-      "Bitcoin",
-      "Lightning",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Tron (TRC20)",
-    ],
-    eth: [
-      "Ethereum",
-      "Arbitrum One",
-      "Optimism",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-    ],
-    sol: [
-      "Solana",
-      "Ethereum (ERC20)",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Tron (TRC20)",
-    ],
-    xrp: [
-      "XRP Ledger",
-      "Ethereum (ERC20)",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Solana",
-    ],
-    doge: [
-      "Dogecoin",
-      "BNB Smart Chain (BEP20)",
-      "Ethereum (ERC20)",
-      "Polygon",
-      "Tron (TRC20)",
-    ],
-    ada: [
-      "Cardano",
-      "BNB Smart Chain (BEP20)",
-      "Ethereum (ERC20)",
-      "Polygon",
-      "Solana",
-    ],
-    avax: [
-      "Avalanche C-Chain",
-      "Ethereum",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Arbitrum One",
-    ],
-    link: [
-      "Ethereum (ERC20)",
-      "Arbitrum One",
-      "Optimism",
-      "Polygon",
-      "BNB Smart Chain (BEP20)",
-    ],
-    dot: [
-      "Polkadot",
-      "Ethereum (ERC20)",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Solana",
-    ],
-    ltc: [
-      "Litecoin",
-      "BNB Smart Chain (BEP20)",
-      "Ethereum (ERC20)",
-      "Tron (TRC20)",
-      "Polygon",
-    ],
-    shib: [
-      "Ethereum (ERC20)",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Solana",
-      "Arbitrum",
-    ],
-    etc: [
-      "Ethereum Classic",
-      "Ethereum (ERC20)",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Arbitrum",
-    ],
-    mana: [
-      "Ethereum (ERC20)",
-      "Polygon",
-      "BNB Smart Chain (BEP20)",
-      "Solana",
-      "Tron (TRC20)",
-    ],
-    uni: [
-      "Ethereum (ERC20)",
-      "Arbitrum One",
-      "Optimism",
-      "Polygon",
-      "BNB Smart Chain (BEP20)",
-    ],
-    bch: [
-      "Bitcoin Cash",
-      "Ethereum (ERC20)",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Tron (TRC20)",
-    ],
-    trx: [
-      "Tron (TRC20)",
-      "BNB Smart Chain (BEP20)",
-      "Ethereum (ERC20)",
-      "Polygon",
-      "Solana",
-    ],
-    xlm: [
-      "Stellar",
-      "Ethereum (ERC20)",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Solana",
-    ],
-    atom: [
-      "Cosmos",
-      "Ethereum (ERC20)",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Solana",
-    ],
-    near: [
-      "NEAR",
-      "Ethereum (ERC20)",
-      "Aurora",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-    ],
-    pepe: [
-      "Ethereum (ERC20)",
-      "BNB Smart Chain (BEP20)",
-      "Polygon",
-      "Solana",
-      "Arbitrum One",
-    ],
-  }
+  usdc: [
+    { name: "Ethereum (ERC20)", fee: 1.2, mini: 20 },
+    { name: "Solana (SOL)", fee: 0.5, mini: 10 },
+    { name: "BNB Smart Chain (BEP20)", fee: 0, mini: 10 },
+    { name: "Polygon", fee: 0.032, mini: 10 },
+  ],
+
+  btc: [
+    { name: "Bitcoin", fee: 0.000015, mini: 0.00012 },
+    { name: "Lightning", fee: 0.000001, mini: 0.00002 },
+    { name: "BNB Smart Chain (BEP20)", fee: 0.0000003, mini: 0.0000006 },
+    { name: "Ethereum (ERC20)", fee: 0.000011, mini: 0.000022 },
+  ],
+
+  eth: [
+    { name: "Ethereum (ERC20)", fee: 0.0002, mini: 0.002 },
+    { name: "Arbitrum One", fee: 0.00002, mini: 0.0003 },
+    { name: "Optimism", fee: 0.00001, mini: 0.00002 },
+    { name: "BNB Smart Chain (BEP20)", fee: 0.0000086, mini: 0.000017 },
+  ],
+
+  sol: [
+    { name: "Solana", fee: 0.001, mini: 0.1 },
+    { name: "BNB Smart Chain (BEP20)", fee: 0.0002, mini: 0.0004 },
+  ],
+
+  xrp: [
+    { name: "XRP Ledger", fee: 0.2, mini: 2 },
+    { name: "Ethereum (ERC20)", fee: 0.49, mini: 0.98 },
+    { name: "BNB Smart Chain (BEP20)", fee: 0.013, mini: 0.026 },
+  ],
+
+  doge: [
+    { name: "Dogecoin", fee: 4, mini: 8 },
+    { name: "BNB Smart Chain (BEP20)", fee: 0.19, mini: 0.38 },
+  ],
+
+  ada: [
+    { name: "Cardano", fee: 0.8, mini: 2 },
+    { name: "BNB Smart Chain (BEP20)", fee: 0.055, mini: 0.13 },
+  ],
+  avax: [{ name: "Avalanche C-Chain", fee: 0.004, mini: 0.008 }],
+  link: [{ name: "Ethereum (ERC20)", fee: 0.073, mini: 0.15 }],
+  dot: [
+    { name: "Ethereum (ERC20)", fee: 0.49, mini: 0.98 },
+    { name: "Polkadot", fee: 0.05, mini: 1 },
+  ],
+  ltc: [{ name: "Litecoin", mini: 0.002, fee: 0.0001 }],
+  shib: [{ name: "Ethereum (ERC20)", fee: 119279, mini: 238558 }],
+  etc: [{ name: "Ethereum Classic", mini: 0.02, fee: 0.002 }],
+  mana: [{ name: "Ethereum (ERC20)", fee: 6.87, mini: 13 }],
+  uni: [{ name: "Ethereum (ERC20)", fee: 0.18, mini: 0.36 }],
+  bch: [
+    { name: "Bitcoin Cash", mini: 0.002, fee: 0.0002 },
+    { name: "Ethereum (ERC20)", mini: 0.0034, fee: 0.0017 },
+  ],
+  trx: [
+    { name: "Tron (TRC20)", mini: 30, fee: 1.5 },
+    { name: "Ethereum (ERC20)", mini: 7.32, fee: 3.66 },
+  ],
+  xlm: [{ name: "Stellar", mini: 10, fee: 0.005 }],
+  atom: [{ name: "Cosmos", mini: 0.04, fee: 0.02 }],
+  near: [{ name: "NEAR Protocol", mini: 0.6, fee: 0.018 }],
+  pepe: [{ name: "Ethereum (ERC20)", mini: 456952, fee: 228476 }],
+};

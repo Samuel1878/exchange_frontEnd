@@ -1,18 +1,23 @@
 import axios from "axios";
 import { ACTION_URL } from "~/consts";
-import type { DepositForm, TransferPayload, WalletAddressResponse } from "~/utils/types";
+import type {
+  ConvertRequest,
+  DepositForm,
+  TransferPayload,
+  WalletAddressResponse,
+  WithdrawalRequest,
+} from "~/utils/types";
 
 export const getWalletAddress = async (
-    accessToken
-): Promise< WalletAddressResponse| null> => {
+  accessToken
+): Promise<WalletAddressResponse | null> => {
   try {
     const response = await axios.get(
       `${ACTION_URL}/api/v1/users/wallet-address`,
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization:
-            `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
       }
     );
@@ -25,31 +30,11 @@ export const getWalletAddress = async (
   }
 };
 
-
-export const sumbitDepositForm = async (data:DepositForm, accessToken) => {
-  try{
+export const sumbitDepositForm = async (data: DepositForm, accessToken) => {
+  try {
     const response = await axios.post(
       `${ACTION_URL}/api/v1/users/add-deposit`,
       data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    if (response.status !==200) return null;
-    const d = await response.data;
-    return d
-  } catch (error){
-    console.log(error);
-    return null
-  }
-}
-export const getDepositHis = async (accessToken) => {
-  try {
-    const response = await axios.get(
-      `${ACTION_URL}/api/v1/users/deposits`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -61,24 +46,103 @@ export const getDepositHis = async (accessToken) => {
     const d = await response.data;
     return d;
   } catch (error) {
-     console.log(error);
-     return null;
+    console.log(error);
+    return null;
   }
-}
-
-export const transferAPI = async (data:TransferPayload, accessToken)=>{
-    try {
-      const response = await axios.post(`${ACTION_URL}/api/v1/users/wallet-transfer`, data,{
+};
+export const submitWithdrawForm = async (
+  data: WithdrawalRequest,
+  accessToken
+) => {
+  try {
+    const response = await axios.post(
+      `${ACTION_URL}/api/v1/users/withdraw`,
+      data,
+      {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-      });
-      if (response.status !== 200) return null;
-      const d = await response.data;
-      return d;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-}
+      }
+    );
+    if (response.status !== 200) return null;
+    const d = await response.data;
+    return d;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+export const getDepositHis = async (accessToken) => {
+  try {
+    const response = await axios.get(`${ACTION_URL}/api/v1/users/deposits`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.status !== 200) return null;
+    const d = await response.data;
+    return d;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+export const getWithdrawHis = async (accessToken) => {
+  try {
+    const response = await axios.get(`${ACTION_URL}/api/v1/users/get-withdraw`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.status !== 200) return null;
+    const d = await response.data;
+    return d;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+export const transferAPI = async (data: TransferPayload, accessToken) => {
+  try {
+    const response = await axios.post(
+      `${ACTION_URL}/api/v1/users/wallet-transfer`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (response.status !== 200) return null;
+    const d = await response.data;
+    return d;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const convertAPI = async (data: ConvertRequest, accessToken) => {
+  try {
+    const response = await axios.post(
+      `${ACTION_URL}/api/v1/users/coin-conversion`,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (response.status !== 200) return null;
+    const d = await response.data;
+    return d;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

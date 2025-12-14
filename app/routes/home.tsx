@@ -146,19 +146,19 @@ export default function Home({loaderData}:Route.ComponentProps) {
               <div className="flex gap-4 w-full">
                 <TradeButton
                   label="Deposit"
-                  style="bg-amber-300 h-10 px-5"
+                  style="bg-amber-300 h-10 px-5 md:h-12 md:w-full lg:w-auto"
                   textStyle="text-gray-800 font-semibold"
                   action={() => navigate("/deposit")}
                 />
                 <TradeButton
                   label="Trade"
-                  style="bg-gray-800 hover:bg-gray-950 lg:hover:bg-gray-900 h-10 w-full"
+                  style="bg-gray-800 hover:bg-gray-950 lg:hover:bg-gray-900 h-10 w-full md:h-12"
                   textStyle="text-gray-100 font-semibold"
                   action={() => navigate("trade/btcusdt?type=spot")}
                 />
                 <TradeButton
                   label="Convert"
-                  style="bg-gray-800 hover:bg-gray-950 lg:hover:bg-gray-900 h-10 w-full"
+                  style="bg-gray-800 hover:bg-gray-950 lg:hover:bg-gray-900 h-10 w-full md:h-12"
                   textStyle="text-gray-100 font-semibold"
                   action={() => navigate("trade/convert/usdt/btc")}
                 />
@@ -326,13 +326,13 @@ export default function Home({loaderData}:Route.ComponentProps) {
       <FAQ />
       <aside className="flex flex-col gap-4 w-full py-6 lg:bg-gray-900 bg-gray-800 items-center justify-center lg:py-10 lg:gap-6">
         <p className="text-lg font-extrabold text-neutral-50 lg:text-3xl">
-          Start earning today
+        { isLoggedIn? "Start trading now":" Start earning today"}
         </p>
         <button
           className="h-10 px-8 rounded-lg bg-amber-300 text-neutral-900 text-sm font-bold lg:px-12 cursor-pointer"
-          onClick={() => navigate("register")}
+          onClick={() => isLoggedIn? navigate("/trade/"):navigate("register")}
         >
-          Sign Up Now
+         {isLoggedIn ? "Trade Now":"Sign Up Now"}
         </button>
       </aside>
 

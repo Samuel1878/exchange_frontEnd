@@ -29,6 +29,7 @@ import {
 } from "~/components/ui/select";
 import { Checkbox } from "~/components/ui/checkbox";
 import { BTC, ETH, XRP } from "~/utils";
+import { NoData } from "~/components/loading/noData";
 
 const allTokensData = {
   Favorites: [
@@ -165,7 +166,10 @@ export default function LoanTab() {
                   </button>
                 </div>
                 <div className="md:block hidden sm:block my-4 lg:my-0 lg:space-y-2 md:space-y-2">
-                  <div className="flex flex-2 border p-4 gap-2 rounded-2xl bg-opacity-50 bg-gradient-to-b from-gray-950 via-gray-800 to-gray-900">
+                  <div
+                    className="flex flex-2 border border-amber-300 p-4 gap-2 rounded-2xl"
+                    style={{ backgroundColor: "rgba(240, 185, 11,.03)" }}
+                  >
                     <div className="lg:p-4 md:p-4">
                       <p>Fixed Rate Loans</p>
                       <span>
@@ -180,7 +184,10 @@ export default function LoanTab() {
                       <img src={Loan} alt="" className="lg:w-[200px]" />
                     </div>
                   </div>
-                  <div className="flex flex-2 border p-4 gap-2 rounded-2xl bg-opacity-50 bg-gradient-to-b from-gray-950 via-gray-800 to-gray-900">
+                  <div
+                    className="flex flex-2 border p-4 gap-2 rounded-2xl border-amber-300"
+                    style={{ backgroundColor: "rgba(240, 185, 11,.03)" }}
+                  >
                     <div className="lg:p-4 md:p-4">
                       <p>Vip Loan</p>
                       <span>
@@ -368,7 +375,7 @@ export default function LoanTab() {
                   </DialogContent>
                 </Dialog>
               </div>
-              <div className="overflow-x-auto">
+              <div className="">
                 <div className="flex flex-2 gap-4">
                   <div className="lg:space-y-4">
                     {BorrowTabs.map(({ label }) => (
@@ -386,8 +393,8 @@ export default function LoanTab() {
                     ))}
                   </div>
                 </div>
-                <div className="lg:border lg:rounded lg:h-52 h-52 space-y-2 lg:space-y-4 lg:p-2 border-gray-700">
-                  <div className="flex flex-wrap items-center justify-center p-5">
+                <div className="lg:border min-h-100 rounded-lg space-y-2 lg:space-y-4 lg:p-2 border-gray-700">
+                  {/* <div className="flex flex-wrap items-center justify-center p-5">
                     {!loading ? (
                       <svg
                         width="94"
@@ -494,16 +501,17 @@ export default function LoanTab() {
                         </defs>
                       </svg>
                     ) : (
-                      <>
+                      <> */}
                         <div className="flex flex-col items-center justify-center my-4">
-                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div>
-                          <span className="mt-3 text-gray-600">
+                          {/* <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500"></div> */}
+                          {/* <span className="mt-3 text-gray-600">
                             Loading content...
-                          </span>
+                          </span> */}
+                          <NoData/>
                         </div>
-                      </>
-                    )}
-                  </div>
+                      {/* </>
+                    )} */}
+                  {/* </div> */}
                 </div>
               </div>
             </div>

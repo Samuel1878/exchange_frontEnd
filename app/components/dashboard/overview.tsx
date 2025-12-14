@@ -7,8 +7,9 @@ import { useNavigate } from "react-router";
 import HomeMiniChart from "../miniCharts/homeMiniChart";
 import AiMiniChart from "../miniCharts/aiMiniChart";
 
-import { formatNumber, formatTotalPrice } from "~/utils/helpers";
+import { formatTotalPrice } from "~/utils/helpers";
 import CustomActiveShapePieChart from "./piChart";
+import { formatPrice } from "../charts/util";
 export function Container({ children }) {
   return (
     <React.Fragment>
@@ -81,7 +82,7 @@ export default function OverView({walletTotals, totalUSDT}:{
           </button>
         </div>
         <div className="text-gray-50 font-bold text-3xl">
-          {balanceShow ? formatNumber(totalUSDT)??0 : "********"} USDT
+          {balanceShow ? formatPrice(totalUSDT)??0 : "********"} USDT
         </div>
         <div className="text-gray-200 text-sm">
           ≈ $ {balanceShow ? formatTotalPrice(totalUSDT) ??0 : "********"}

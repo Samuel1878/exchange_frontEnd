@@ -1,3 +1,5 @@
+import axios from "axios";
+import { ACTION_URL } from "~/consts";
 import type { EarnProductsType } from "~/utils/types";
 
 export interface EarnResponseType {
@@ -9,3 +11,23 @@ export interface EarnResponseType {
     hasNextPage:boolean;
     hasPrePage:boolean
 }
+
+export const getEarnProductAPI = async (): Promise<EarnResponseType |null>=> {
+  try {
+    const response = await axios.get(
+      `${ACTION_URL}/api/v1/users/get-earn-products`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        //   Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    if (response.status !== 200) return null;
+    const d = await response.data;
+    return d;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};

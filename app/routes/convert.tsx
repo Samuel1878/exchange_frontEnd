@@ -19,13 +19,15 @@ import { AltCoins, StableCoins } from "~/consts/pairs";
 import { formatPrice, priceFormatter } from "~/components/charts/util";
 import { useAuthStore } from "~/store/useUserDataStore";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "~/components/ui/dialog";
-import { formatNumber } from "~/utils/helpers";
+import { convertAPI } from "~/api/walletAPI";
+import { toast } from "sonner";
+import { getUserDataAPI } from "~/api/authAPI";
 export const clientLoader = async ({ params,request }: Route.ClientLoaderArgs) => {
   const from = params.from;
   
   const to = params.to;
     const url = new URL(request.url);
-  const type = url.searchParams.get("type");
+  const type = url.searchParams.get("type") || "spot";
   if (!from) {
     throw new Error("No Params");
   }
@@ -45,9 +47,10 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const accessToken = useAuthStore.getState().accessToken;
   const [loading, setLoading] = useState(false);
   const [availableAmount ,setAvailableAmount] = useState("");
-  const { wallet} = useAuthStore()
+  const { wallet, setUser} = useAuthStore()
   const[ openPreview, setOpenPreview] = useState(false);
   const [isFromStable, setIsFromStable] = useState<boolean>(
     Object.keys(StableCoins).includes(from.toLowerCase())
@@ -85,19 +88,19 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
   const switchFnc = ({ from, to }) => {
     setFromAmount("");
     setToAmount("");
-    navigate(`/trade/convert/${from}/${to}`);
+    navigate(`/trade/convert/${from}/${to}?type=${type}`);
   };
   useEffect(()=>{
     console.log(type)
-    wallet.map((e)=>{
+   if (fromCoin && wallet && type) {wallet.map((e)=>{
       if (e.WalletType === type){
         e.UserAsset.map((i)=>{
-          if (i.Currency.toUpperCase() === fromCoin.toUpperCase())return setAvailableAmount(i.AvailableBalance)
+          if (i.Currency.toUpperCase() === fromCoin.toUpperCase()) return setAvailableAmount(i.AvailableBalance)
         })
       return
       }
-    })
-  },[fromCoin, type])
+    })}
+  },[fromCoin, type, wallet])
     const fetchPrice = async () => {
       const pair = isFromStable
         ? toCoin.toUpperCase() + fromCoin.toUpperCase()
@@ -159,7 +162,34 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
     }
   }, [searchTerm]);
   const convertAction = async () => {
+    setLoading(true);
+    const response = await convertAPI({
+        WalletType:type,
+        FromAmount:Number(fromAmount),
+        ToAmount:Number(toAmount),
+        FromCoin:fromCoin.toUpperCase(),
+        ToCoin:toCoin.toUpperCase()
+    }, accessToken);
+    setLoading(false);
+    setOpenPreview(false);
+    if (response){
+          (async () => {
+            if (accessToken) {
+              const response = await getUserDataAPI(accessToken);
+              if (response && response?.success) {
+                console.log(response);
+                setUser(response?.data);
+              }
+            }
+          })();
+          setAvailableAmount("");
+          setFromAmount("");
+          setToAmount("");
 
+      toast("Succesfully converted");
+      return
+    }
+    toast("Something went wrong")
   }
   const RenderDrawerCoinItem = useCallback(
     ({

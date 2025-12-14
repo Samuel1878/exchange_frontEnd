@@ -58,18 +58,26 @@ export interface UserBalanceResult {
 }
 
 export interface EarnProductsType {
-  Id:number;
-  Name:string;
-  MinApr:number;
-  MaxApr:number;
-  DurationDays:number;
-  MinAmount:string,
-  MaxAmount:string;
-  RiskLevel:string;
-  IsFlexible:boolean;
-  isActive:boolean;
-  CreatedAt:string;
-  UpdatedAt:string;
+  Id: number;
+
+  FromCoin: string;
+  ToCoin: string;
+
+  MinAmount: string;
+  MaxAmount: string;
+
+  MinApr: number;
+  MaxApr: number;
+
+  DurationDays: number;
+  RiskLevel: "low" | "medium" | "high";
+
+  IsActive: boolean;
+  IsFlexible: boolean;
+
+  CreatedBy: string;
+  CreatedAt: string; // ISO 8601 datetime
+  UpdatedAt: string; // ISO 8601 datetime
 }
 export interface WalletAddressItem {
   Id: number;
@@ -101,6 +109,13 @@ export interface DepositForm {
   NetWorkName: string;
 }
 
+export type WithdrawalRequest = {
+  WithdrawalAmount: number;
+  Currency: string;
+  WithdrawalMethod: string;
+  ToAddress: string;
+  NetworkFee: number;
+};
 
 export type TransferPayload = {
   FromAccountType: string;
@@ -109,3 +124,17 @@ export type TransferPayload = {
   ToCurrency: string;
   ToAmount: number;
 };
+export type ConvertRequest = {
+  FromCoin: string;
+  FromAmount: number;
+  ToCoin: string;
+  ToAmount: number;
+  WalletType:string;
+};
+export type Network = {
+  name: string;
+  fee: number;
+  mini:number
+};
+
+export type NetworksMap = Record<string, Network[]>;

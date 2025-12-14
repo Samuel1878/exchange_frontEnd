@@ -17,18 +17,18 @@ export const downColor = "#fb2c36";
 //     .filter((level) => level.length > 0);
 // };
 
-export const formatNumber = (arg: number): string => {
-  return new Intl.NumberFormat("en-US").format(arg);
-};
+export function formatNumber(value: number): string {
+  if (!Number.isFinite(value)) return "0";
 
-// export function formatLevels(map) {
-//   let levels = Object.entries(map)
-//   return levels.slice(0, ORDERBOOK_LEVELS).map(([p, q]) => {
-//       let cumulative = Number(p) * Number(q)
+  const factor = 1_000_000;
 
-//     return { price: p, amount: q, total: cumulative };
-//   });
-// }
+  // floor to 6 decimal places
+  const floored = Math.floor(value * factor) / factor;
+
+  // convert to string and remove trailing zeros
+  return floored.toFixed(6).replace(/\.?0+$/, "");
+}
+
 
 export const formatTotalPrice = (num: number): string => {
   if (!num) {
@@ -82,7 +82,7 @@ import type {
 } from "~/utils/types";
 
 export const calculateUserBalances = (
-  wallet:UserWallet[],
+  wallet: UserWallet[],
   prices: Record<string, number>
 ): UserBalanceResult => {
   if (!wallet)
@@ -181,19 +181,20 @@ export function getSortedCoins(
   return result.slice(start, start + size);
 }
 
-
 export function getSortedCoinsForWithdrawls(wallets: WalletBalance[]) {
   const balanceMap: Record<string, { balance: number; valueUSDT: number }> = {};
 
   wallets &&
     wallets.forEach((wallet) => {
-      wallet.assets.map((a) => {
-        if (!balanceMap[a.currency]) {
-          balanceMap[a.currency] = { balance: 0, valueUSDT: 0 };
-        }
-        balanceMap[a.currency].balance += a.balance;
-        balanceMap[a.currency].valueUSDT += a.valueUSDT;
-      });
+      if (wallet.walletType === "spot") {
+        wallet.assets.map((a) => {
+          if (!balanceMap[a.currency]) {
+            balanceMap[a.currency] = { balance: 0, valueUSDT: 0 };
+          }
+          balanceMap[a.currency].balance += a.balance;
+          balanceMap[a.currency].valueUSDT += a.valueUSDT;
+        });
+      }
     });
 
   let result = Object.entries(AllCoinNames).map(([key, coin]) => {

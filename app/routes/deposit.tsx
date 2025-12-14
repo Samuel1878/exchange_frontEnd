@@ -33,8 +33,14 @@ import {
   PopoverTrigger,
 } from "~/components/ui/popover";
 import type { Route } from "./+types/deposit";
-import { getDepositHis, getWalletAddress, sumbitDepositForm } from "~/api/walletAPI";
-import type { AssetBalance, WalletAddressItem } from "~/utils/types";
+import {
+  getDepositHis,
+  getWalletAddress,
+  getWithdrawHis,
+  submitWithdrawForm,
+  sumbitDepositForm,
+} from "~/api/walletAPI";
+import type { AssetBalance, Network, WalletAddressItem } from "~/utils/types";
 import { AllCoinNames, Networks } from "~/consts/pairs";
 import { Coins } from "~/utils";
 import { NoData } from "~/components/loading/noData";
@@ -42,6 +48,7 @@ import FAQ from "~/components/homeComponents/f&q";
 import { GoCopy } from "react-icons/go";
 import {
   calculateUserBalances,
+  formatNumber,
   getSortedCoinsForWithdrawls,
 } from "~/utils/helpers";
 import { Spinner } from "~/components/ui/spinner";
@@ -51,17 +58,8 @@ import moment from "moment";
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
   const accessToken = useAuthStore.getState().accessToken;
   const isLoggedIn = useAuthStore.getState().isLoggedIn;
-  if (params.type === "deposit" && isLoggedIn && accessToken) {
-    const response = await getWalletAddress(accessToken);
-    return {
-      type: params.type || null,
-      walletAddress: response.data,
-      isLoggedIn,
-      accessToken
-  
-    };
-  }
-  return { type: params.type || null, walletAddress: null, isLoggedIn ,accessToken};
+
+  return { type: params.type, isLoggedIn, accessToken };
 }
 interface Tab {
   label: string;
@@ -71,25 +69,75 @@ const TabMenu: Tab[] = [
   { name: "Deposit", label: "deposit" },
   { name: "Withdraw", label: "withdraw" },
 ];
-const Withdraw = ({isLoggedIn}) => {
+const Withdraw = ({ isLoggedIn, accessToken }) => {
   const [open, setOpen] = useState(false);
-   const [value, setValue] = useState("");
+  const [value, setValue] = useState("");
   const user = useAuthStore.getState().user;
-  const wallet = useAuthStore.getState().wallet
-  const [address, setAddress] = useState("")
+  const wallet = useAuthStore.getState().wallet;
+  const [address, setAddress] = useState("");
   const [openN, setOpenN] = useState(false);
-  const [network, setNetwork] = useState("")
-
+  const [network, setNetwork] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [availableAmount, setAvailableAmount] = useState("");
+  const [networkFee, setNetworkFee] = useState(0);
+  const [error, setError] = useState("");
+  const [miniAmount, setMiniAmount] = useState(0);
   const { walletDetails, walletTotals, totalUSDT } =
     isLoggedIn &&
     user &&
     calculateUserBalances(wallet, { USDT: 1, BTC: 9400, ETH: 3220 });
-    const assetList = getSortedCoinsForWithdrawls(walletDetails)
+  const assetList = getSortedCoinsForWithdrawls(walletDetails) || null;
+  useEffect(() => {
+    if (value) {
+      assetList
+        .filter((e) => e.symbol === value)
+        .map((e) => setAvailableAmount(e.balance.toString()));
+    }
+  }, [value]);
+  useEffect(() => {
+    value &&
+      Networks[value.toLowerCase()].map((e) => {
+        if (e.name === network) {
+          setMiniAmount(e.mini);
+          setNetworkFee(e.fee);
+          return;
+        }
+      });
+  }, [network]);
+  const submitAction = async () => {
+    setLoading(true);
+    if (
+      Number(amount) < miniAmount ||
+      Number(availableAmount) < Number(amount)
+    ) {
+      toast("Amount should within available rate");
+      setLoading(false);
+      return;
+    }
+    const response = await submitWithdrawForm(
+      {
+        WithdrawalAmount: Number(amount),
+        Currency: value.toUpperCase(),
+        WithdrawalMethod: network,
+        ToAddress: address,
+        NetworkFee: networkFee,
+      },
+      accessToken
+    );
+    setLoading(false);
+    if (response) {
+      toast("Withdrawl successfully request");
+      setAmount("");
+      return;
+    }
+    toast("Something went wrong!");
+  };
   return (
     <>
       <div className="space-y-4 w-full">
         <div className="w-full space-y-4 mb-8">
-          <p>Select coin</p>
+          <p className="text-gray-50 text-md font-medium">Select coin</p>
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -165,7 +213,7 @@ const Withdraw = ({isLoggedIn}) => {
           </Popover>
         </div>
         <div className="space-y-4">
-          <p>Withdraw to</p>
+          <p className="text-gray-50 text-md font-medium">Withdraw to</p>
           <input
             value={address}
             onChange={(e) => setAddress(e.target.value)}
@@ -195,11 +243,11 @@ const Withdraw = ({isLoggedIn}) => {
                 <CommandList>
                   <CommandEmpty>No Network found.</CommandEmpty>
                   <CommandGroup className="bg-gray-900 lg:bg-gray-950">
-                    {Networks[value.toLowerCase()]?.map((n: string) => (
+                    {Networks[value.toLowerCase()]?.map((n: Network) => (
                       <CommandItem
-                        key={n}
+                        key={n.name}
                         className="active:bg-gray-800 hover:bg-gray-800 focus:bg-gray-800 text-gray-50 text-lg font-bold"
-                        value={n}
+                        value={n.name}
                         onSelect={(currentValue) => {
                           setNetwork(
                             currentValue === network ? "" : currentValue
@@ -210,11 +258,11 @@ const Withdraw = ({isLoggedIn}) => {
                         <CheckIcon
                           className={cn(
                             "mr-2 h-4 w-4",
-                            network === n ? "opacity-100" : "opacity-0"
+                            network === n.name ? "opacity-100" : "opacity-0"
                           )}
                         />
                         <div className="flex gap-4 w-full">
-                          <p>{n}</p>
+                          <p>{n.name}</p>
                         </div>
                       </CommandItem>
                     ))}
@@ -224,20 +272,43 @@ const Withdraw = ({isLoggedIn}) => {
             </PopoverContent>
           </Popover>
         </div>
-        <p className="text-sm text-gray-600">
+        <p className="text-xs text-gray-600">
           CAUTION: Ensure the recipient address has been activated; otherwise,
           your withdrawl will fail.
         </p>
         {isLoggedIn && value && network && address && (
           <div className="space-y-4">
-            <p>Withdraw amount</p>
+            <div className="flex justify-between items-center">
+              <p className="text-gray-50 text-md font-medium">
+                Withdraw amount
+              </p>
+              <p className="text-gray-400 font-semibold text-sm">
+                Available {availableAmount + " " + value}{" "}
+              </p>
+            </div>
             <div className="flex items-center pr-4 outline-0 border text-md hover:border-amber-300 focus-within:border-amber-300 border-gray-700 rounded-md h-12 w-full">
-              <input className="w-full h-full px-4 outline-0" placeholder="Minimal 0.000001"/>
+              <input
+                className="w-full h-full px-4 outline-0"
+                placeholder={miniAmount.toString()}
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
               <p className="font-bold">{value.toUpperCase()}</p>
-              <button className="ml-4 text-amber-300 font-bold cursor-pointer" onClick={()=>{}}>
+              <button
+                className="ml-4 text-amber-300 font-bold cursor-pointer"
+                onClick={() => setAmount(availableAmount)}
+              >
                 MAX
               </button>
             </div>
+            <p className="text-xs text-gray-500">Network Fee: {networkFee}</p>
+            <button
+              onClick={submitAction}
+              disabled={loading || !amount}
+              className="w-full h-12 bg-amber-300 rounded-md flex items-center justify-center text-gray-950 font-semibold cursor-pointer"
+            >
+              {loading ? <Spinner /> : "Submit"}
+            </button>
           </div>
         )}
       </div>
@@ -246,45 +317,61 @@ const Withdraw = ({isLoggedIn}) => {
 };
 
 const Deposit = ({
-  data,
   isLoggedIn,
-  accessToken
+  accessToken,
 }: {
-  data: WalletAddressItem[];
+  // data: WalletAddressItem[];
   isLoggedIn: boolean;
-  accessToken:any
+  accessToken: any;
 }) => {
   const navigate = useNavigate();
+  const [data, setData] = useState<WalletAddressItem[]>([]);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [openN, setOpenN] = useState(false);
   const [network, setNetwork] = useState("");
-  const [loading ,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [amount, setAmount] = useState("");
-  const groupedArray = data && Object.entries(
-    data.reduce(
-      (acc, item) => {
-        (acc[item.CoinName] ||= []).push(item);
-        return acc;
-      },
-      {} as Record<string, WalletAddressItem[]>
-    )
-  )?.map(([coin, items]) => ({ coin, items }));
+  const groupedArray =
+    data &&
+    Object.entries(
+      data.reduce(
+        (acc, item) => {
+          (acc[item.CoinName] ||= []).push(item);
+          return acc;
+        },
+        {} as Record<string, WalletAddressItem[]>
+      )
+    )?.map(([coin, items]) => ({ coin, items }));
 
-  const submit = async()=>{
-    setLoading(true)
-    const payload = {DepositAmount:Number(amount), CoinName:value, NetWork:network, NetWorkName:network}
+  const submit = async () => {
+    setLoading(true);
+    const payload = {
+      DepositAmount: Number(amount),
+      CoinName: value,
+      NetWork: network,
+      NetWorkName: network,
+    };
     const response = await sumbitDepositForm(payload, accessToken);
     console.log(response);
 
-    if (response && response?.success){
-      setAmount("")
+    if (response && response?.success) {
+      setAmount("");
       toast(response?.message);
-      
-      navigate("/")
+
+      navigate("/");
     }
     setLoading(false);
-  }
+  };
+  useEffect(() => {
+    if (isLoggedIn && accessToken) {
+      (async () => {
+        console.log("getting walletaddresss");
+        const response = await getWalletAddress(accessToken);
+        if (response) setData(response.data);
+      })();
+    }
+  }, []);
 
   return (
     <>
@@ -332,35 +419,38 @@ const Deposit = ({
                 <CommandList>
                   <CommandEmpty>No Coin found.</CommandEmpty>
                   <CommandGroup className="bg-gray-900 lg:bg-gray-950">
-                    {groupedArray && groupedArray.map((w) => (
-                      <CommandItem
-                        key={w.coin}
-                        className="active:bg-gray-800 hover:bg-gray-800 focus:bg-gray-800 text-gray-50 text-lg font-bold"
-                        value={w.coin}
-                        onSelect={(currentValue) => {
-                          setValue(currentValue === value ? "" : currentValue);
-                          setOpen(false);
-                          setNetwork("");
-                        }}
-                      >
-                        <CheckIcon
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            value === w.coin ? "opacity-100" : "opacity-0"
-                          )}
-                        />
-                        <div className="flex gap-4 w-full">
-                          <img
-                            src={Coins[w.coin.toUpperCase()]}
-                            className="rounded-full w-8"
+                    {groupedArray &&
+                      groupedArray.map((w) => (
+                        <CommandItem
+                          key={w.coin}
+                          className="active:bg-gray-800 hover:bg-gray-800 focus:bg-gray-800 text-gray-50 text-lg font-bold"
+                          value={w.coin}
+                          onSelect={(currentValue) => {
+                            setValue(
+                              currentValue === value ? "" : currentValue
+                            );
+                            setOpen(false);
+                            setNetwork("");
+                          }}
+                        >
+                          <CheckIcon
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              value === w.coin ? "opacity-100" : "opacity-0"
+                            )}
                           />
-                          <p>{w.coin}</p>
-                          <p className="text-gray-500 font-medium">
-                            {AllCoinNames[w.coin.toLowerCase()]?.name}
-                          </p>
-                        </div>
-                      </CommandItem>
-                    ))}
+                          <div className="flex gap-4 w-full">
+                            <img
+                              src={Coins[w.coin.toUpperCase()]}
+                              className="rounded-full w-8"
+                            />
+                            <p>{w.coin}</p>
+                            <p className="text-gray-500 font-medium">
+                              {AllCoinNames[w.coin.toLowerCase()]?.name}
+                            </p>
+                          </div>
+                        </CommandItem>
+                      ))}
                   </CommandGroup>
                 </CommandList>
               </Command>
@@ -392,40 +482,41 @@ const Deposit = ({
                 <CommandList>
                   <CommandEmpty>No Network found.</CommandEmpty>
                   <CommandGroup className="bg-gray-900 lg:bg-gray-950">
-                    {groupedArray && groupedArray
-                      .filter((e) => e.coin === value)
-                      .map((c) =>
-                        c.items
-                          .filter((e) => e.CoinName === value)
-                          .map((n) => (
-                            <CommandItem
-                              key={n.Id}
-                              className="active:bg-gray-800 hover:bg-gray-800 focus:bg-gray-800 text-gray-50 text-lg font-bold"
-                              value={n.NetWork}
-                              onSelect={(currentValue) => {
-                                setNetwork(
-                                  currentValue === network ? "" : currentValue
-                                );
-                                setOpenN(false);
-                              }}
-                            >
-                              <CheckIcon
-                                className={cn(
-                                  "mr-2 h-4 w-4",
-                                  network === n.NetWork
-                                    ? "opacity-100"
-                                    : "opacity-0"
-                                )}
-                              />
-                              <div className="flex gap-4 w-full">
-                                <p>{n.NetWork}</p>
-                                <p className="text-gray-500 font-medium">
-                                  {n.NetworkName}
-                                </p>
-                              </div>
-                            </CommandItem>
-                          ))
-                      )}
+                    {groupedArray &&
+                      groupedArray
+                        .filter((e) => e.coin === value)
+                        .map((c) =>
+                          c.items
+                            .filter((e) => e.CoinName === value)
+                            .map((n) => (
+                              <CommandItem
+                                key={n.Id}
+                                className="active:bg-gray-800 hover:bg-gray-800 focus:bg-gray-800 text-gray-50 text-lg font-bold"
+                                value={n.NetWork}
+                                onSelect={(currentValue) => {
+                                  setNetwork(
+                                    currentValue === network ? "" : currentValue
+                                  );
+                                  setOpenN(false);
+                                }}
+                              >
+                                <CheckIcon
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    network === n.NetWork
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                <div className="flex gap-4 w-full">
+                                  <p>{n.NetWork}</p>
+                                  <p className="text-gray-500 font-medium">
+                                    {n.NetworkName}
+                                  </p>
+                                </div>
+                              </CommandItem>
+                            ))
+                        )}
                   </CommandGroup>
                 </CommandList>
               </Command>
@@ -483,23 +574,39 @@ const Deposit = ({
   );
 };
 export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
-  // const type = loaderData.type;
-  const [history ,setHisory] = useState([])
+  const [history, setHisory] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { type, walletAddress, isLoggedIn,accessToken } = loaderData;
-    const fetchDepoData = async () => {
-      setLoading(true)
-      const response = await getDepositHis(accessToken);
-      if (response) {
-        console.log(response);
-        setHisory(response.data);
-      }
-      setLoading(false)
-    };
-    useEffect(() => {
-      type === "deposit"&& accessToken && fetchDepoData();
-    }, [type]);
+  const { type, isLoggedIn, accessToken } = loaderData;
+
+  const fetchDepoData = async () => {
+    setLoading(true);
+    const response = await getDepositHis(accessToken);
+    if (response) {
+      console.log(response);
+      setHisory(response);
+    }
+    setLoading(false);
+  };
+  const fetchWithdrawData = async () => {
+    setLoading(true);
+    const response = await getWithdrawHis(accessToken);
+    if (response) {
+      console.log(response);
+      setHisory(response);
+    }
+    setLoading(false);
+  };
+  useEffect(() => {
+    type === "deposit" && accessToken && fetchDepoData();
+    type === "withdraw" && accessToken && fetchWithdrawData();
+  }, [type]);
+  const prevHandler =() => {
+
+  }
+  const nextHandler = () => {
+
+  }
   return (
     <main className="bg-gray-900 lg:bg-gray-950 min-h-screen overflow-x-hidden">
       <section id="hero" className="flex flex-col lg:items-center">
@@ -537,18 +644,21 @@ export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
                     ))}
                   </div>
                   <div className="space-y-7">
-
-                      <>
-                        {type === "deposit" && (
-                          <Deposit
-                            data={walletAddress}
-                            isLoggedIn={isLoggedIn}
-                            accessToken={accessToken}
-                          />
-                        )}
-                        {type === "withdraw" && <Withdraw isLoggedIn={isLoggedIn}/>}
-                      </>
-             
+                    <>
+                      {type === "deposit" && (
+                        <Deposit
+                          // data={walletAddress}
+                          isLoggedIn={isLoggedIn}
+                          accessToken={accessToken}
+                        />
+                      )}
+                      {type === "withdraw" && (
+                        <Withdraw
+                          isLoggedIn={isLoggedIn}
+                          accessToken={accessToken}
+                        />
+                      )}
+                    </>
                   </div>
                 </div>
               </div>
@@ -596,43 +706,65 @@ export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
               <div className="space-y-7 text-white">
                 <div className="">
                   <div className="border border-gray-800 text-white p-4 rounded-2xl space-y-7">
-                    <h1>Recent {type}</h1>
+                    <h1 className="text-gray-50">Recent {type}</h1>
 
-                   {history.length ? (<>
-                    {
-                      history?.map((e)=>{
-                        return (
-                          <div className="w-full flex justify-between">
-                            <div className="flex flex-col flex-1">
-                              <p className="text-white text-lg font-bold">{e?.Currency}</p>
-                              <div className="flex items-center gap-2">
-                                <p className="text-md font-bold text-gray-50">
-                                  {e?.DepositAmount}
+                    {history ? (
+                      <>
+                        {history?.data?.map((e) => {
+                          return (
+                            <div className="w-full flex justify-between">
+                              <div className="flex flex-col flex-1">
+                                <p className="text-gray-400 text-sm font-bold">
+                                  {
+                                    AllCoinNames[e?.Currency?.toLowerCase()]
+                                      .name
+                                  }{" "}
+                                 ({type === "deposit"
+                                    ? e?.NetWork
+                                    : e?.WithdrawalMethod})
                                 </p>
+                                <div className="flex items-center gap-2">
+                                  <p className="text-sm font-bold text-gray-50">
+                                    {type === "deposit"
+                                      ? Number(e?.DepositAmount).toFixed(4)
+                                      : Number(e?.WithdrawalAmount).toFixed(4)}
+                                  </p>
 
-                                <p className="text-sm text-gray-500">
-                                  {" "}
-                                  ({e?.NetWork})
+                                  <p className="text-sm text-gray-500">{e?.Currency}</p>
+                                </div>
+                              </div>
+                              <div className="flex flex-1 justify-between">
+                                <div>
+                                  <p className={`text-sm text-gray-500`}>
+                                    {moment(e?.CreatedAt).format("YYYY-MM-DD")}
+                                  </p>
+                                  <p className={`text-sm text-gray-500`}>
+                                    {moment(e?.CreatedAt).format("hh:mm:ss")}
+                                  </p>
+                                </div>
+
+                                <p
+                                  className={`text-sm font-bold capitalize ${e?.Status === "pending" ? "text-amber-200" : e?.Status === "approved" ? "text-green-400" : "text-red-400"}`}
+                                >
+                                  {e?.Status}
                                 </p>
                               </div>
                             </div>
-                            <div className="flex flex-1 justify-between">
-                              <p className={`text-sm text-gray-500`}>
-                                {moment(e?.CreatedAt).format(
-                                  "YYYY-MM-DD hh:mm:ss "
-                                )}
-                              </p>
-                              <p className={`text-lg font-bold capitalize`}>
-                                {e?.Status}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })
-                    }
-                   </>): <NoData />}
-                   {loading && <Spinner/>}
-
+                          );
+                        })}
+                        <div className="w-full flex justify-end gap-2" onClick={prevHandler}>
+                          <button disabled={history?.hasPrePage} className="text-sm text-gray-400 cursor-pointer">
+                            Prev
+                          </button>
+                          <button disabled={history?.hasNextPage} className="text-sm text-gray-400 cursor-pointer" onClick={nextHandler}>
+                            Next
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <NoData />
+                    )}
+                    {loading && <Spinner color="#fff" />}
                   </div>
                 </div>
               </div>

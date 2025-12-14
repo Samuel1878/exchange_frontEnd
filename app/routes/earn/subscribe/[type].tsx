@@ -62,9 +62,9 @@ export default function SubscribeTypePage({
   loaderData: LoaderDataParams;
 }) {
   const coin = loaderData?.type.split("-",1).toString();
-  // const {user} = useAuthStore();
+  const {wallet} = useAuthStore();
       const { walletDetails, walletTotals, totalUSDT } = calculateUserBalances(
-        user,
+        wallet,
         { USDT: 1, BTC: 9400, ETH: 3220 }
       );
   const location = useLocation();
@@ -158,10 +158,10 @@ export default function SubscribeTypePage({
               <div className="grid grid-cols-3 gap-5">
                 <div className="col-span-3 lg:col-span-1">
                   <h2 className="text-2xl font-semibold mb-4 text-white">
-                    Subscribe to {product?.Name} Earn
+                    Subscribe to {product?.FromCoin} Earn
                   </h2>
                   <p className="text-gray-400 mb-6">
-                    Earn rewards by subscribing to our {product?.Name} Earn
+                    Earn rewards by subscribing to our {product?.FromCoin} Earn
                     program. Choose your subscription amount and enjoy
                     competitive interest rates.
                   </p>
@@ -171,23 +171,21 @@ export default function SubscribeTypePage({
                     <div className="flex gap-2 items-center my-4">
                       {product?.IsFlexible ? (
                         <img
-                          src={Coins[product?.Name.toUpperCase()]}
-                          alt={product?.Name}
+                          src={Coins[product?.FromCoin.toUpperCase()]}
+                          alt={product?.FromCoin}
                           width={30}
                           height={30}
                           className="rounded-full"
                         />
                       ) : (
                         PairImage(
-                          product?.Name.split("-", 1).toString(),
-                          product?.Name.slice(
-                            product?.Name.indexOf("-")
-                          ).replace("-", ""),
+                          product?.FromCoin,
+                          product?.ToCoin,
                           30
                         )
                       )}
 
-                      <span className="font-semibold">{product?.Name}</span>
+                      <span className="font-semibold">{product?.FromCoin}</span>
                     </div>
                   </div>
                   <fetcher.Form method="post">
@@ -330,7 +328,7 @@ export default function SubscribeTypePage({
                     <div className="space-y-4">
                       <div className="flex justify-between">
                         <span className="text-gray-300">Asset:</span>
-                        <span className="text-white">{product?.Name}</span>
+                        <span className="text-white">{product?.FromCoin}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">

@@ -32,87 +32,10 @@ import { Label } from "~/components/ui/label";
 import type { Route } from "./+types";
 import { useFetcher, useNavigate } from "react-router";
 import { useState } from "react";
-
-// Import images properly
-import miniUsdt from "assets/coins/miniUsdt.png";
-import miniBtc from "assets/coins/miniBtc.png";
-import miniEth from "assets/coins/miniEth.png";
-import miniXrp from "assets/coins/miniXrp.png";
-import miniLtc from "assets/coins/miniLtc.png";
-import btcEth from "assets/coins/btc_eth.png";
-import { EarnProductTest } from "~/consts";
 import { formatTotalPrice } from "~/utils/helpers";
 import { PairImage } from "~/components/coinPair";
 import { Coins } from "~/utils";
-
-// const AdvancedEarnCaredData = [
-//   {
-//     id: 1,
-//     tokenImage: miniUsdt,
-//     tokenName: "USDT",
-//     tokenType: "RWUSD | Locked",
-//     lockupPeriod: "30 Days",
-//     lockupName: "Locked",
-//     minimumDeposit: "50 USDT",
-//     apr: "8% ~ 12%",
-//     productType: "HOT",
-//   },
-//   {
-//     id: 2,
-//     tokenImage: miniBtc,
-//     tokenName: "BTC",
-//     tokenType: "RWBTC | Locked",
-//     lockupPeriod: "60 Days",
-//     lockupName: "Locked",
-//     minimumDeposit: "0.001 BTC",
-//     apr: "6% ~ 10%",
-//     productType: "HOT",
-//   },
-//   {
-//     id: 3,
-//     tokenImage: miniEth,
-//     tokenName: "ETH",
-//     tokenType: "RWETH | Locked",
-//     lockupPeriod: "45 Days",
-//     lockupName: "Locked",
-//     minimumDeposit: "0.01 ETH",
-//     apr: "7% ~ 11%",
-//     productType: "HOT",
-//   },
-//   {
-//     id: 4,
-//     tokenImage: miniXrp,
-//     tokenName: "XRP",
-//     tokenType: "XRPSDT | Flexible",
-//     lockupPeriod: "-",
-//     lockupName: "Flexible",
-//     minimumDeposit: "50 USDT",
-//     apr: "8.5% ~ 12.5%",
-//     productType: "New",
-//   },
-//   {
-//     id: 5,
-//     tokenImage: miniLtc,
-//     tokenName: "LTC",
-//     tokenType: "RWLTC | Locked",
-//     lockupPeriod: "30 Days",
-//     lockupName: "Locked",
-//     minimumDeposit: "0.1 LTC",
-//     apr: "9% ~ 13%",
-//     productType: "New",
-//   },
-//   {
-//     id: 6,
-//     tokenImage: btcEth,
-//     tokenName: "BTC-ETH",
-//     tokenType: "RWBCH | Locked",
-//     lockupPeriod: "60 Days",
-//     lockupName: "Locked",
-//     minimumDeposit: "0.01 BTC",
-//     apr: "7.5% ~ 11.5%",
-//     productType: "HOT",
-//   },
-// ];
+import { getEarnProductAPI } from "~/api/earnAPI";
 
 export async function clientAction({
   request,
@@ -137,7 +60,13 @@ export async function clientAction({
     };
   }
 }
+export async function clientLoader({params}:Route.ClientLoaderArgs) {
 
+  const response = await getEarnProductAPI();
+  if (response){
+    return {products:response?.data || null}
+  }
+}
 const FilterModal = () => {
   const fetcher = useFetcher();
   const [search, setSearch] = useState("");
@@ -251,14 +180,15 @@ const FilterModal = () => {
 };
 
 export default function EarnIndex({ loaderData }: Route.ComponentProps) {
+  const {products} = loaderData
   const [searchTerm, setSearchTerm] = useState("");
   const [durationFilter, setDurationFilter] = useState("all");
 
   const navigate = useNavigate();
-  const filteredProducts = EarnProductTest.filter((product) => {
+  const filteredProducts = products ? products?.filter((product) => {
     const matchesSearch =
-      product.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.Name.toLowerCase().includes(searchTerm.toLowerCase());
+      product.FromCoin.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.FromCoin.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesDuration =
       durationFilter === "all" ||
@@ -266,7 +196,7 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
       (durationFilter === "locked" && product.IsFlexible === false);
 
     return matchesSearch && matchesDuration;
-  });
+  }):null
 
   return (
     <main className="bg-gray-900 lg:bg-gray-950 min-h-screen overflow-x-hidden">
@@ -310,8 +240,8 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                   className="w-full relative"
                 >
                   <CarouselContent>
-                    {EarnProductTest.sort((a, b) => b.MaxApr - a.MaxApr)
-                      .slice(0, 5)
+                    {products ? products?.sort((a, b) => b.MaxApr - a.MaxApr)
+                      ?.slice(0, 5)
                       .map((item) => (
                         <CarouselItem
                           key={item.Id}
@@ -320,7 +250,7 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                           <div className="p-1">
                             <Card
                               className="bg-gray-800 border border-gray-700 hover:border-gray-600 cursor-pointer transition-all duration-200 w-full h-full"
-                              onClick={() => navigate(`${item.Name}`, {
+                              onClick={() => navigate(`${item.FromCoin}`, {
                                 state:{
                                   product:item
                                 }
@@ -337,24 +267,22 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                                     <div className="flex flex-row gap-2 items-center">
                                       {item.IsFlexible ? (
                                         <img
-                                          src={Coins[item.Name.toUpperCase()]}
-                                          alt={item.Name}
+                                          src={Coins[item?.FromCoin?.toUpperCase()]}
+                                          alt={item?.FromCoin}
                                           width={32}
                                           height={32}
                                           className="rounded-full"
                                         />
                                       ) : (
                                         PairImage(
-                                          item.Name.split("-", 1).toString(),
-                                          item.Name.slice(
-                                            item.Name.indexOf("-")
-                                          ).replace("-", ""),
+                                          item.FromCoin,
+                                          item.ToCoin,
                                           40
                                         )
                                       )}
                                       <div>
                                         <p className="font-semibold">
-                                          {item.Name}
+                                          {item.FromCoin}
                                         </p>
                                       </div>
                                     </div>
@@ -402,7 +330,7 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                             </Card>
                           </div>
                         </CarouselItem>
-                      ))}
+                      )):null}
                   </CarouselContent>
                   <CarouselPrevious className="absolute -left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 border-gray-700 hover:bg-gray-700 text-white" />
                   <CarouselNext className="absolute -right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 border-gray-700 hover:bg-gray-700 text-white" />
@@ -504,8 +432,8 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
 
                   {/* Results Count */}
                   <div className="text-sm text-gray-400">
-                    Showing {filteredProducts.length} of{" "}
-                    {EarnProductTest.length} products
+                    Showing {filteredProducts?.length} of{" "}
+                    {products?.length} products
                   </div>
 
                   <div className="hidden lg:grid grid-cols-5 text-sm font-semibold py-4 px-6 rounded-lg text-gray-400">
@@ -516,12 +444,12 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                     <div className="text-center">Action</div>
                   </div>
 
-                  {filteredProducts.length === 0 ? (
+                  {filteredProducts?.length === 0 ? (
                     <div className="text-center py-8 text-gray-400">
                       No products found matching your filters.
                     </div>
                   ) : (
-                    filteredProducts.map((item) => (
+                    filteredProducts?.map((item) => (
                       <div
                         key={item.Id}
                         className="grid grid-cols-2 lg:grid-cols-5 p-4 lg:p-6 rounded-xl gap-4"
@@ -529,24 +457,21 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                         <div className="flex items-center gap-3">
                           {item.IsFlexible ? (
                             <img
-                              src={Coins[item.Name.toUpperCase()]}
-                              alt={item.Name}
+                              src={Coins[item.FromCoin.toUpperCase()]}
+                              alt={item.FromCoin}
                               width={30}
                               height={30}
                               className="rounded-full"
                             />
                           ) : (
                             PairImage(
-                              item.Name.split("-", 1).toString(),
-                              item.Name.slice(item.Name.indexOf("-")).replace(
-                                "-",
-                                ""
-                              ),
+                              item.FromCoin,
+                              item.ToCoin,
                               30
                             )
                           )}
                           <div className="flex flex-col">
-                            <span className="font-semibold">{item.Name}</span>
+                            <span className="font-semibold">{item.FromCoin}</span>
                             <span className="text-xs text-gray-400">
                               {item.IsFlexible ? "Flexible" : "Locked"}
                             </span>
@@ -572,7 +497,7 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                         <div className="col-span-2 lg:col-span-1 flex justify-end lg:justify-center">
                           <button
                             className="w-full lg:w-auto bg-amber-300 hover:bg-amber-300 text-gray-900 font-medium py-2 px-6 rounded-lg transition-colors cursor-pointer"
-                            onClick={() => navigate(`${item.Name}`, {
+                            onClick={() => navigate(`${item.FromCoin}`, {
                               state:{product:item}
                             })}
                           >
