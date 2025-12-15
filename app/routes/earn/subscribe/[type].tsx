@@ -1,8 +1,7 @@
-
 import FooterSection from "~/components/footer";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { useFetcher, useLocation } from "react-router";
+import { redirect, useFetcher, useLocation, useNavigation } from "react-router";
 import type { Route } from "./+types/[type]";
 import { BCH, BTC, BTCETH, Coins, ETH, LTC, XRP } from "~/utils";
 import { PairImage } from "~/components/coinPair";
@@ -11,6 +10,10 @@ import { useAuthStore } from "~/store/useUserDataStore";
 import { calculateUserBalances } from "~/utils/helpers";
 import { user } from "~/consts";
 import moment from "moment";
+import { formatPrice } from "~/components/charts/util";
+import { NoData } from "~/components/loading/noData";
+import { subscribeEarnProductAPI } from "~/api/earnAPI";
+import { Spinner } from "~/components/ui/spinner";
 interface LoaderDataParams {
   type: string | null;
 }
@@ -19,6 +22,10 @@ export async function clientLoader({
 }: {
   params: { type?: string };
 }): Promise<LoaderDataParams> {
+  const isLoggedIn = useAuthStore.getState().isLoggedIn;
+  if (!isLoggedIn) {
+    throw redirect("/");
+  }
   return { type: params.type || null };
 }
 
@@ -30,20 +37,27 @@ export async function clientAction({
     const formData = await request.formData();
     const intent = formData.get("intent");
     const amount = formData.get("amount");
-    const asset = formData.get("asset");
-
+    const url = new URL(request.url);
+    const id = url.searchParams.get("product_id");
+    // const asset = formData.get("asset");
+    const accessToken = useAuthStore.getState().accessToken;
     if (intent === "subscribe") {
-      // Your subscription logic here
-      console.log("Subscribing with:", { amount, asset });
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
+      const response = await subscribeEarnProductAPI({
+        Amount:Number(amount),
+        EarnId:Number(id)
+      } , accessToken)
+      if (response){
+        return {
+          success: true,
+          message: "Subscription successful!",
+          data: { amount, id },
+        };
+      }
       return {
-        success: true,
-        message: "Subscription successful!",
-        data: { amount, asset },
-      };
+        success:false,
+        message: "Subscription failed",
+      }
+   
     }
 
     return { success: false, error: "Unknown action" };
@@ -61,20 +75,16 @@ export default function SubscribeTypePage({
 }: {
   loaderData: LoaderDataParams;
 }) {
-  const coin = loaderData?.type.split("-",1).toString();
-  const {wallet} = useAuthStore();
-      const { walletDetails, walletTotals, totalUSDT } = calculateUserBalances(
-        wallet,
-        { USDT: 1, BTC: 9400, ETH: 3220 }
-      );
+  const coin = loaderData?.type;
+  const [loading, setLoading] = useState(false);
+  const { wallet } = useAuthStore();
+  const [availableAmount, setAvailableAmount] = useState("");
   const location = useLocation();
-  const product:EarnProductsType = location.state?.product;
-  const [isSubscribing, setIsSubscribing] = useState(false);
-
+  const product: EarnProductsType = location.state?.product;
   const [subscriptionAmount, setSubscriptionAmount] = useState("");
   const [useAutoSubscribe, setUseAutoSubscribe] = useState(true);
-  const [loading, setLoading] = useState(false);
   const fetcher = useFetcher();
+  let isSubmitting = fetcher.state === "submitting";
 
   const getStatusColor = (status: string) => {
     const colorMap: Record<string, string> = {
@@ -95,57 +105,44 @@ export default function SubscribeTypePage({
     };
   }
   const DepositData: DepositItem[] = [];
-  // Get current selected asset data
-  const getCurrentAsset = () => {
-    const fin = walletDetails.filter((e)=>e.walletType === "financial");
-    let balance
-    for (let index = 0; index < fin.length; index++) {
-      const element = fin[index];
-      const data = element.assets.find((e)=>e.currency === coin.toUpperCase())
-      balance = data?.balance || 0
+  useEffect(() => {
+    if (coin) {
+      const fin = wallet?.filter((e) => e.WalletType === "financial");
+      for (let index = 0; index < fin?.length; index++) {
+        const element = fin[index];
+        const data = element?.UserAsset?.find(
+          (e) => e?.Currency?.toUpperCase() === coin.toUpperCase()
+        );
+        setAvailableAmount(data?.AvailableBalance || "0");
+      }
     }
-    return balance
-  }
-  const currentAsset = getCurrentAsset();
-  const hasZeroBalance = Number(currentAsset) === 0;
+  }, [coin]);
+
+  let hasZeroBalance = useMemo(
+    () => Number(availableAmount) === 0,
+    [availableAmount]
+  );
 
   const handleMaxAmount = () => {
-    if (hasZeroBalance) {
-      setSubscriptionAmount("0");
-      return;
-    }
-
-    const maxBalance = currentAsset || 0;
-    setSubscriptionAmount(maxBalance.toString());
+    setSubscriptionAmount(availableAmount);
   };
-
-  const canSubscribe = () => {
-    if (isSubscribing) return false;
-    if (!subscriptionAmount) return false;
-    if (hasZeroBalance) return false;
-
-    const amount = parseFloat(subscriptionAmount);
-    return !isNaN(amount) && amount > 0;
-  };
-
   const handleAmountChange = (e) => {
     const value = e.target.value;
-
-    // If selected asset has 0 balance, always set to 0
     if (hasZeroBalance) {
       setSubscriptionAmount("0");
       return;
     }
-    if (value > (currentAsset || 0)) {
-      setSubscriptionAmount((currentAsset || 0).toString());
+    if (value > (availableAmount || 0)) {
+      setSubscriptionAmount((availableAmount || 0).toString());
       return;
     }
-    // Normal validation for assets with balance > 0
     if (value === "" || (!isNaN(value) && parseFloat(value) >= 0)) {
       setSubscriptionAmount(value);
     }
   };
-  console.log(product)
+  if (!product || !coin){
+    throw redirect("finance/earn");
+  }
   return (
     <main className="bg-gray-900 lg:bg-gray-950 min-h-screen overflow-x-hidden">
       <section id="hero" className="flex flex-col lg:items-center">
@@ -178,11 +175,11 @@ export default function SubscribeTypePage({
                           className="rounded-full"
                         />
                       ) : (
-                        PairImage(
-                          product?.FromCoin,
-                          product?.ToCoin,
-                          30
-                        )
+                        <PairImage
+                          first={product.FromCoin}
+                          second={product.ToCoin}
+                          width={30}
+                        />
                       )}
 
                       <span className="font-semibold">{product?.FromCoin}</span>
@@ -199,7 +196,7 @@ export default function SubscribeTypePage({
                           value={subscriptionAmount}
                           onChange={handleAmountChange}
                           name="amount"
-                          min="0"
+                          min={product?.MinAmount}
                           step="0.01"
                           placeholder="0.00"
                           disabled={hasZeroBalance}
@@ -226,7 +223,7 @@ export default function SubscribeTypePage({
                             hasZeroBalance ? "text-gray-500" : "text-gray-400"
                           }`}
                         >
-                          Available: {currentAsset} {coin}
+                          Available: {availableAmount} {coin}
                         </span>
                         <button
                           onClick={handleMaxAmount}
@@ -240,8 +237,6 @@ export default function SubscribeTypePage({
                           MAX
                         </button>
                       </div>
-
-                      {/* Warning message for zero balance assets */}
                       {hasZeroBalance && (
                         <div className="text-red-400 text-sm mt-2 flex items-center">
                           <svg
@@ -291,20 +286,22 @@ export default function SubscribeTypePage({
                     )}
                     <div className="mt-6 flex items-center">
                       <button
-                        // onClick={handleSubscribe}
+                        // onClick={subscribeHandler}
                         name="intent"
                         value="subscribe"
                         type="submit"
-                        disabled={!canSubscribe()}
-                        className={`w-full py-3 px-4 rounded-lg font-semibold transition duration-200 ${
-                          !canSubscribe()
+                        disabled={
+                          hasZeroBalance || isSubmitting || !subscriptionAmount
+                        }
+                        className={`w-full py-3 px-4 rounded-lg font-semibold transition disabled:opacity-50 duration-200 cursor-pointer ${
+                          hasZeroBalance
                             ? "bg-amber-300 text-gray-950 cursor-not-allowed opacity-50"
                             : "bg-amber-300 hover:bg-amber-300 text-gray-950"
                         }`}
                       >
-                        {isSubscribing ? (
+                        {isSubmitting ? (
                           <div className="flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-950 mr-2"></div>
+                            <Spinner color={"#111"} />
                             Processing...
                           </div>
                         ) : hasZeroBalance ? (
@@ -361,7 +358,8 @@ export default function SubscribeTypePage({
                           Investment Amount:
                         </span>
                         <span className="text-white">
-                          $ {product?.MinAmount}-{product?.MaxAmount}
+                          $ {formatPrice(Number(product?.MinAmount))}-
+                          {formatPrice(Number(product?.MaxAmount))}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -456,119 +454,7 @@ export default function SubscribeTypePage({
                         </>
                       ) : (
                         <div className="flex flex-col items-center justify-center my-8 h-52">
-                          <svg
-                            width="94"
-                            height="70"
-                            viewBox="0 0 94 70"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="svg-class"
-                          >
-                            <path
-                              d="M10.4531 10.9219H66.021V44.3999C66.021 53.3608 66.021 57.8412 64.2771 61.2638C62.7432 64.2744 60.2955 66.7221 57.2849 68.2561C53.8623 70 49.3819 70 40.421 70H16.8531C14.6129 70 13.4928 70 12.6372 69.564C11.8845 69.1805 11.2726 68.5686 10.8891 67.8159C10.4531 66.9603 10.4531 65.8402 10.4531 63.6V10.9219Z"
-                              fill="white"
-                              fillOpacity="0.04"
-                            ></path>
-                            <path
-                              d="M10.922 69.9994C4.88993 69.9994 0 65.1094 0 59.0774H47.0402C47.0402 69.9994 57.4936 69.9994 57.4936 69.9994H10.922Z"
-                              fill="url(#paint0_linear_17615_36895)"
-                            ></path>
-                            <path
-                              d="M21.3751 -4.86374e-05C15.3431 -4.86374e-05 10.4531 4.88989 10.4531 10.9219H66.0211C66.0211 -4.86374e-05 76.4745 -4.86374e-05 76.4745 -4.86374e-05H21.3751Z"
-                              fill="url(#paint1_linear_17615_36895)"
-                            ></path>
-                            <rect
-                              x="18.8242"
-                              y="18.6667"
-                              width="25.2954"
-                              height="3.5"
-                              rx="1.75"
-                              fill="white"
-                              fillOpacity="0.06"
-                            ></rect>
-                            <rect
-                              x="18.8242"
-                              y="30.9166"
-                              width="17.6479"
-                              height="3.50001"
-                              rx="1.75001"
-                              fill="white"
-                              fillOpacity="0.06"
-                            ></rect>
-                            <rect
-                              x="18.8242"
-                              y="43.1665"
-                              width="23.5306"
-                              height="3.50001"
-                              rx="1.75001"
-                              fill="white"
-                              fillOpacity="0.06"
-                            ></rect>
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M84.7764 40.6118C84.7764 48.657 78.2813 55.1788 70.2691 55.1788C62.2569 55.1788 55.7617 48.657 55.7617 40.6118C55.7617 32.5667 62.2569 26.0449 70.2691 26.0449C78.2813 26.0449 84.7764 32.5667 84.7764 40.6118ZM79.5444 40.8507C79.5444 46.1262 75.2852 50.4028 70.0313 50.4028C64.7774 50.4028 60.5183 46.1262 60.5183 40.8507C60.5183 35.5752 64.7774 31.2986 70.0313 31.2986C75.2852 31.2986 79.5444 35.5752 79.5444 40.8507Z"
-                              fill="#FCD535"
-                            ></path>
-                            <path
-                              d="M70.0306 50.4028C75.2845 50.4028 79.5436 46.1262 79.5436 40.8507C79.5436 35.5752 75.2845 31.2986 70.0306 31.2986C64.7767 31.2986 60.5176 35.5752 60.5176 40.8507C60.5176 46.1262 64.7767 50.4028 70.0306 50.4028Z"
-                              fill="#FCD535"
-                              fillOpacity="0.1"
-                            ></path>
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M84.4642 55.6269L80.3984 51.4324L81.544 50.3283L85.6098 54.5229L84.4642 55.6269Z"
-                              fill="#FCD535"
-                            ></path>
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M88.0506 54.7156C87.6005 54.2637 87.0105 54.0377 86.4205 54.0377C85.8305 54.0377 85.2406 54.2637 84.7904 54.7156C84.3403 55.1676 84.1152 55.76 84.1152 56.3524C84.1152 56.9448 84.3403 57.5372 84.7904 57.9892L90.0632 63.2836C90.5133 63.7356 91.1033 63.9616 91.6933 63.9616C92.2832 63.9616 92.8732 63.7356 93.3233 63.2836C93.7735 62.8316 93.9985 62.2392 93.9985 61.6468C93.9985 61.0544 93.7735 60.462 93.3233 60.01L88.0506 54.7156Z"
-                              fill="#FCD535"
-                            ></path>
-                            <defs>
-                              <linearGradient
-                                id="paint0_linear_17615_36895"
-                                x1="32.2204"
-                                y1="59.0774"
-                                x2="32.2204"
-                                y2="69.9994"
-                                gradientUnits="userSpaceOnUse"
-                              >
-                                <stop
-                                  stopColor="white"
-                                  stopOpacity="0.08"
-                                ></stop>
-                                <stop
-                                  offset="1"
-                                  stopColor="white"
-                                  stopOpacity="0.04"
-                                ></stop>
-                              </linearGradient>
-                              <linearGradient
-                                id="paint1_linear_17615_36895"
-                                x1="47.4526"
-                                y1="10.9219"
-                                x2="47.4526"
-                                y2="-4.86374e-05"
-                                gradientUnits="userSpaceOnUse"
-                              >
-                                <stop
-                                  stopColor="white"
-                                  stopOpacity="0.04"
-                                ></stop>
-                                <stop
-                                  offset="1"
-                                  stopColor="white"
-                                  stopOpacity="0.08"
-                                ></stop>
-                              </linearGradient>
-                            </defs>
-                          </svg>
-                          <span className="mt-3 text-gray-400">
-                            No data available
-                          </span>
+                          <NoData />
                         </div>
                       )}
                     </>

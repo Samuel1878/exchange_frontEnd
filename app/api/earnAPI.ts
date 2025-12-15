@@ -31,3 +31,27 @@ export const getEarnProductAPI = async (): Promise<EarnResponseType |null>=> {
     return null;
   }
 };
+
+export const subscribeEarnProductAPI = async (
+  data: {
+    Amount: number;
+    EarnId: number;
+  },
+  accessToken
+) => {
+  try {
+    const response = await axios.post(`${ACTION_URL}/api/v1/users/subscribe`, 
+      data, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    if (response.status !== 200) return null;
+    const d = await response.data;
+    return d;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
