@@ -84,10 +84,12 @@ import BTCTRX from "assets/coins/btc_trx.png";
 import ETHTRX from "assets/coins/eth_trx.png";
 import BTCUSDT from "assets/coins/btc_usdt.png";
 import XRPSOL from "assets/coins/xrp_sol.png";
+import USER from "assets/images/profile.png";
 export { BTCETH,BTCUSDT,XRPSOL,
   BTCTRX, 
   ETHTRX};
 export {
+  USER,
   Apple,
   BinanceCharityWallet,
   BnbStackingV2,

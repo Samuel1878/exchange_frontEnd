@@ -9,7 +9,7 @@ import FooterSection from "~/components/footer";
 import SpotWallet from "~/components/dashboard/spot";
 import FundingWallet from "~/components/dashboard/funding";
 import FinancialWallet from "~/components/dashboard/financial";
-import { calculateUserBalances } from "~/utils/helpers";
+import { calculateUserBalances, extractNonZeroSymbols } from "~/utils/helpers";
 // import { user } from "~/consts";
 import TransferDrawerDialog from "~/components/dashboard/transfer";
 import { getUserDataAPI } from "~/api/authAPI";
@@ -26,11 +26,16 @@ export async function clientLoader({
   if (!loggedIn) {
     throw redirect("/login");
   }
+  const wallet = useAuthStore.getState().wallet;
   const user = useAuthStore.getState().user;
-  return { type, user, accessToken };
+  const prices = extractNonZeroSymbols(wallet);
+  if (prices?.length){
+    console.log(prices)
+  }
+  return { type, user, accessToken, wallet, prices};
 }
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
-  const { type, user, accessToken } = loaderData;
+  const { type, user, accessToken, wallet } = loaderData;
   const setUser = useAuthStore.getState().setUser;
   useEffect(() => {
     (async () => {
@@ -44,12 +49,14 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
     })();
   }, [accessToken]);
 
-  const wallet = useAuthStore.getState().wallet;
+
   const [openTransfer, setOpenTransfer] = useState(false);
+  
   const { walletDetails, walletTotals, totalUSDT } = calculateUserBalances(
     wallet,
     { USDT: 1, BTC: 9400, ETH: 3220 }
   );
+
   const toggleTransfer = () => setOpenTransfer((prev) => !prev);
   return (
     <React.Fragment>

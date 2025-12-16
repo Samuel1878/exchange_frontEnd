@@ -116,6 +116,62 @@ export const calculateUserBalances = (
     walletDetails,
   };
 };
+export const extractNonZeroSymbols = (wallets: UserWallet[]): string[] => {
+  const symbols = new Set<string>();
+
+  wallets.forEach((wallet) => {
+    wallet.UserAsset?.forEach((asset) => {
+      const balance =
+        parseFloat(asset.AvailableBalance) + parseFloat(asset.LockedBalance);
+
+      if (balance > 0) {
+        symbols.add(asset.Currency);
+      }
+    });
+  });
+
+  return Array.from(symbols);
+};
+
+export const calculateCoinForOverview = (
+  wallets: UserWallet[],
+  prices: Record<string, number>
+) => {
+  const balanceMap: Record<string, { balance: number; valueUSDT: number }> = {};
+
+  wallets.forEach((wallet) => {
+    wallet.UserAsset?.forEach((asset) => {
+      const balance =
+        parseFloat(asset.AvailableBalance) + parseFloat(asset.LockedBalance);
+
+      if (balance <= 0) return;
+
+      if (!balanceMap[asset.Currency]) {
+        balanceMap[asset.Currency] = { balance: 0, valueUSDT: 0 };
+      }
+
+      const valueUSDT = balance * (prices[asset.Currency] ?? 0);
+
+      balanceMap[asset.Currency].balance += balance;
+      balanceMap[asset.Currency].valueUSDT += valueUSDT;
+    });
+  });
+
+  return Object.values(AllCoinNames)
+    .map((coin) => {
+      const found = balanceMap[coin.symbol];
+      if (!found) return {symbol:coin.symbol, name:coin.name, balance:0, valueUSDT:0};
+
+      return {
+        symbol: coin.symbol,
+        name: coin.name,
+        balance: found.balance,
+        valueUSDT: found.valueUSDT,
+      };
+    })
+    // .filter(Boolean)
+    .sort((a, b) => b!.valueUSDT - a!.valueUSDT);
+};
 export function getSortedCoinsNoFilter(AssetBalance: AssetBalance[]) {
   const balanceMap: Record<string, { balance: number; valueUSDT: number }> = {};
 

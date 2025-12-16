@@ -36,6 +36,7 @@ export const subscribeEarnProductAPI = async (
   data: {
     Amount: number;
     EarnId: number;
+    FromCoin:string;
   },
   accessToken
 ) => {

@@ -13,15 +13,20 @@ import { useTickersStore, type Ticker } from "~/store/useTickersStore";
 import type { Route } from "./+types/market";
 import { LOCAL_URL } from "~/consts";
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const response = await fetch(LOCAL_URL + "/global", {
-    method: "GET",
-  });
+  try {
+      const response = await fetch(LOCAL_URL + "/global", {
+        method: "GET",
+      });
 
-  const data = await response.json();
-  if (data) {
-    // console.log("")
-    return { data };
+      const data = await response.json();
+      if (data) {
+        // console.log("")
+        return { data };
+      }
+  } catch (error) {
+    return {data:null}
   }
+
 }
 const cryptoTabs = [
   //   { label: "Favorites", Id: "1" },

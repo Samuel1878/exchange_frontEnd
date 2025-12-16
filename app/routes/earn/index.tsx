@@ -49,15 +49,17 @@ export async function clientAction({
 }: Route.ClientActionArgs) {
   try {
     const formData = await request.formData();
-    const intent = formData.get("intent") as String;
-    const amount = formData.get("amount") as String;
-    const id = formData.get("product_id") as String;
+    const intent = formData.get("intent") as string;
+    const amount = formData.get("amount") as string;
+    const id = formData.get("product_id") as string;
+    const coin = formData.get("coin") as string;
     const accessToken = useAuthStore.getState().accessToken;
     console.log(intent,amount)
     // if (intent === "subscribe") {
       const response = await subscribeEarnProductAPI({
         Amount:Number(amount),
-        EarnId:Number(id)
+        EarnId:Number(id),
+        FromCoin:coin
       } , accessToken)
       if (response){
         return {
@@ -374,6 +376,11 @@ const SubcribeModal =
                       type="hidden"
                       name="product_id"
                       value={product?.Id}
+                    />
+                    <input
+                      type="hidden"
+                      name="coin"
+                      value={product?.FromCoin}
                     />
                     <button
                       name="intent"

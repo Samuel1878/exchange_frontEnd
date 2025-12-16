@@ -160,7 +160,7 @@ export default function Home({loaderData}:Route.ComponentProps) {
                   label="Convert"
                   style="bg-gray-800 hover:bg-gray-950 lg:hover:bg-gray-900 h-10 w-full md:h-12"
                   textStyle="text-gray-100 font-semibold"
-                  action={() => navigate("trade/convert/usdt/btc")}
+                  action={() => navigate("trade/convert/usdt/btc?type=spot")}
                 />
               </div>
             </div>

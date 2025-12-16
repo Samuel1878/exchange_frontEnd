@@ -1,16 +1,49 @@
-import { Pie, PieChart, ResponsiveContainer, Sector, Tooltip } from "recharts";
-// import { PieSectorDataItem } from "recharts/types/polar/Pie";
-// import type { TooltipIndex } from "recharts";
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  Sector,
 
+  Tooltip,
+  type PieSectorDataItem,
+  type TooltipProps,
 
-const data = [
-  { name: "Group A", value: 400 },
-  { name: "Group B", value: 300 },
-  { name: "Group C", value: 300 },
-  //   { name: "Group D", value: 200 },
+} from "recharts";
+import { ChartContainer, type ChartConfig } from "../ui/chart";
+
+const COLORS = [
+  "#22c55e", // green
+  "#3b82f6", // blue
+  "#f59e0b", // amber
 ];
 
+type Props = {
+  walletTotals: Record<string, number> | null;
+};
+const chartConfig = {
+  mobile: {
+    label: "Mobile",
+    color: "var(--chart-2)",
+  },
+} satisfies ChartConfig
+type WalletPieItem = {
+  name: string;
+  value: number;
+};
 
+const toPieData = (
+  walletTotals: Record<string, number> | null
+): WalletPieItem[] => {
+  if (!walletTotals) return [];
+
+  return Object.entries(walletTotals)
+    .filter(([, value]) => value > 0)
+    .map(([key, value]) => ({
+      name: key.toUpperCase(),
+      value,
+    }));
+};
 const renderActiveShape = ({
   cx,
   cy,
@@ -69,15 +102,17 @@ const renderActiveShape = ({
         y={ey}
         textAnchor={textAnchor}
         fill="#333"
-      >{`PV ${value}`}</text>
+        fontSize={16}
+      >{`${value}`}</text>
       <text
         x={ex + (cos >= 0 ? 1 : -1) * 12}
         y={ey}
         dy={18}
         textAnchor={textAnchor}
         fill="#999"
+        fontSize={14}
       >
-        {`(Rate ${((percent ?? 1) * 100).toFixed(2)}%)`}
+        {`(Dominance ${((percent ?? 1) * 100).toFixed(2)}%)`}
       </text>
     </g>
   );
@@ -86,44 +121,50 @@ const renderActiveShape = ({
 export default function CustomActiveShapePieChart({
   isAnimationActive = true,
   defaultIndex = undefined,
-}: {
-  isAnimationActive?: boolean;
-  defaultIndex?: any;
+  walletTotals
 }) {
+    const data = toPieData(walletTotals);
+
+      if (!data.length) return null;
+
+      const total = data.reduce((sum, d) => sum + d.value, 0);
+
+      // attach total for tooltip percentage
+      const chartData = data.map((d) => ({
+        ...d,
+        total,
+      }));
   return (
-    <ResponsiveContainer>
+    <ChartContainer
+      config={chartConfig}
+      style={{ width: "400px", height: "400px" }}
+    >
       <PieChart
         style={{
           width: "100%",
-          maxWidth: "500px",
-          maxHeight: "500px",
+          // maxWidth: "50px",
+          // maxHeight: "500px",
           aspectRatio: 1,
-          flex: 1,
-        }}
-        margin={{
-          top: 50,
-          right: 120,
-          bottom: 0,
-          left: 20,
         }}
       >
         <Pie
+          data={chartData}
+          dataKey="value"
           activeShape={renderActiveShape}
-          data={data}
+          nameKey="name"
           cx="50%"
           cy="50%"
-          innerRadius="60%"
-          outerRadius="80%"
-          fill="#8884d8"
-          dataKey="value"
-          isAnimationActive={isAnimationActive}
-        />
-        <Tooltip
-          content={() => null}
-          defaultIndex={defaultIndex}
-          label={true}
-        />
+          outerRadius={90}
+          innerRadius={50}
+          paddingAngle={3}
+        >
+          {data.map((_, index) => (
+            <Cell key={index} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+
+        <Tooltip content={() => null} defaultIndex={defaultIndex} active isAnimationActive />
       </PieChart>
-    </ResponsiveContainer>
+    </ChartContainer>
   );
 }
