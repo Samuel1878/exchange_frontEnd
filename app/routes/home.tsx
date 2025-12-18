@@ -15,35 +15,41 @@ import FAQ from "~/components/homeComponents/f&q";
 import FooterSection from "~/components/footer";
 import NumberFlow from "@number-flow/react";
 import { useEffect, useState } from "react";
-import { useAuthStore } from "~/store/useUserDataStore";
+
 import { TitleSuffix } from "~/consts";
 import { FaAngleRight, FaEye, FaEyeSlash } from "react-icons/fa";
 import { TradeButton } from "~/components/charts/components/buttons";
-import { getUserDataAPI } from "~/api/authAPI";
-import { calculateUserBalances } from "~/utils/helpers";
+import { getUserDataAPI, getUserWalletAPI } from "~/api/authAPI";
+import { useWalletStore } from "~/store/useUserWalletStore";
+import { useTotalUSDT } from "~/utils/walletSelectors";
+// import { calculateUserBalances } from "~/utils/helpers";
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Home" }, { name: "description", content: "Welcome" }];
 }
 export async function clientLoader ({params}:Route.ClientLoaderArgs){
-  const accessToken = useAuthStore.getState().accessToken;
-  const isLoggedIn = useAuthStore.getState().isLoggedIn;
-  const setUser = useAuthStore.getState().setUser;
+  // const accessToken = useAuthStore.getState().accessToken;
+  // const isLoggedIn = useAuthStore.getState().isLoggedIn;
+  // const setUser = useAuthStore.getState().setUser;
+  const updateWalletsFromWalletApi =
+    useWalletStore.getState().updateWalletsFromWalletApi;
+  const accessToken = useWalletStore.getState().accessToken;
+  const isLoggedIn = useWalletStore.getState().isLoggedIn;
   if (accessToken && isLoggedIn){
-  const response = await getUserDataAPI(accessToken);
+  const response = await getUserWalletAPI(accessToken);
     if (response && response.success) {
-      setUser(response.data)
+      updateWalletsFromWalletApi(response.data?.wallets);
     }
   }
   return {accessToken, isLoggedIn}
-
 }
 export default function Home({loaderData}:Route.ComponentProps) {
   const { t } = useTranslation();
   const {accessToken, isLoggedIn} = loaderData;
+  const totalUSDT = useTotalUSDT();
   const [number, setNumber] = useState(85290471);
   const [volume, setVolume] = useState(10760109);
-  const { wallet } = useAuthStore();
-  const {totalUSDT} = calculateUserBalances(wallet, { USDT: 1, BTC: 9400, ETH: 3220 });
+  // const { wallet } = useAuthStore();
+  // const {totalUSDT} = calculateUserBalances(wallet, { USDT: 1, BTC: 9400, ETH: 3220 });
   const [balanceShow, setBalanceShow] = useState(true);
   const navigate = useNavigate()
   useEffect(() => {
@@ -112,7 +118,7 @@ export default function Home({loaderData}:Route.ComponentProps) {
               <div className="text-gray-50 font-bold text-3xl">
                 {balanceShow ? totalUSDT : "********"} USDT
               </div>
-              <div className="text-gray-200 text-sm">≈ $ {totalUSDT}</div>
+              <div className="text-gray-200 text-sm">≈ $ {totalUSDT*.99}</div>
             </div>
           ) : (
             <div className="flex lg:justify-around justify-center gap-10 items-center w-full my-2 lg:my-6 md:justify-start md:gap-30">

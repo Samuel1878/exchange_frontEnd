@@ -129,35 +129,35 @@ export interface CoinDetail {
 }
 interface AvgPriceResponse {
   mins: number;
-  price:string;
+  price: string;
   closeTime: number;
 }
-export const getPriceAPI = async (coin_id: string): Promise<AssetData|null> => {
+export const getPriceAPI = async (
+  coin_id: string
+): Promise<AssetData | null> => {
   try {
     const response = await axios.get(`${LOCAL_URL}/price/${coin_id}`);
     if (response.status !== 200) return null;
-    console.log(response)
+    console.log(response);
     const data = await response.data;
     return data;
   } catch (error) {
     return null;
   }
 };
-export const getCoinDetailAPI = async (coin_id: string):Promise<CoinDetail|null> => {
+export const getCoinDetailAPI = async (
+  coin_id: string
+): Promise<CoinDetail | null> => {
   try {
-    const response = await axios.get(
-      `${LOCAL_URL}/info/${coin_id}`
-    );
+    const response = await axios.get(`${LOCAL_URL}/info/${coin_id}`);
     if (response.status !== 200) return null;
-    const data = await response.data
+    const data = await response.data;
     return data;
   } catch (error) {
-      console.log(error);
+    console.log(error);
     return null;
-  
   }
 };
-
 
 export const getAvgPriceAPI = async (
   symbol: string
@@ -167,6 +167,37 @@ export const getAvgPriceAPI = async (
     if (response.status !== 200) return null;
     const data = await response.data;
     return data;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
+export const getTickerPricesAPI = async (data: string[]) => {
+  try {
+    console.log(data);
+
+    const response = await axios.get(
+      `${"http://localhost:3000"}/tickerprices?symbols=${data}`
+    );
+    if (response.status !== 200) return null;
+    const json = await response.data;
+    return json;
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+export const getTickerPriceAPI = async (data: string[]) => {
+  try {
+    console.log(data);
+
+    const response = await axios.get(
+      `${"http://localhost:3000"}/tickerprice?symbol=${data}`
+    );
+    if (response.status !== 200) return null;
+    const json = await response.data;
+    return json;
   } catch (error) {
     console.log(error);
     return null;

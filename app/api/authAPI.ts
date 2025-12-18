@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ACTION_URL } from "~/consts";
-import type { UserData } from "~/utils/types";
+import type { GetWalletResponse, UserData } from "~/utils/types";
 export interface LoginResponse {
   success: boolean;
   message: string;
@@ -53,9 +53,9 @@ export const loginAPI = async (data: payloadType): Promise<LoginResponse> => {
   }
 };
 
-export const getUserDataAPI = async (accessToken) => {
+export const getUserDataAPI = async (accessToken:string) :Promise<LoginResponse | null>=> {
   try {
-     const response = await axios.get(`${ACTION_URL}/api/v1/users/get-wallet`, {
+     const response = await axios.get(`${ACTION_URL}/api/v1/auth/profile`, {
        headers: {
          "Content-Type": "application/json",
          Authorization: `Bearer ${accessToken}`,
@@ -64,6 +64,22 @@ export const getUserDataAPI = async (accessToken) => {
      if (response.status === 200) return response.data;
      return null;
   } catch (error) {
-    
+      console.log(error?.response?.data ?? error);
+        return null;
   }
+};
+export const getUserWalletAPI = async (accessToken:string):Promise<GetWalletResponse | null> => {
+   try {
+     const response = await axios.get(`${ACTION_URL}/api/v1/users/get-wallet`, {
+       headers: {
+         "Content-Type": "application/json",
+         Authorization: `Bearer ${accessToken}`,
+       },
+     });
+     if (response.status === 200) return response.data;
+     return null;
+   } catch (error) {
+     console.log(error?.response?.data ?? error);
+     return null;
+   }
 }

@@ -14,7 +14,7 @@ import HomeStart3 from "assets/images/how-step2.svg";
 import HeaderImage from "assets/images/vip-ins-dark.svg";
 import { QRCodeSVG } from "qrcode.react";
 import { useNavigate } from "react-router";
-import { useAuthStore } from "~/store/useUserDataStore";
+
 import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
 
 import { cn } from "~/lib/utils";
@@ -40,26 +40,27 @@ import {
   submitWithdrawForm,
   sumbitDepositForm,
 } from "~/api/walletAPI";
-import type { AssetBalance, Network, WalletAddressItem } from "~/utils/types";
+import type { Network, WalletAddressItem } from "~/utils/types";
 import { AllCoinNames, Networks } from "~/consts/pairs";
 import { Coins } from "~/utils";
 import { NoData } from "~/components/loading/noData";
 import FAQ from "~/components/homeComponents/f&q";
 import { GoCopy } from "react-icons/go";
-import {
-  calculateUserBalances,
-  formatNumber,
-  getSortedCoinsForWithdrawls,
-} from "~/utils/helpers";
+// import {
+//   calculateUserBalances,
+//   getSortedCoinsForWithdrawls,
+// } from "~/utils/helpers";
 import { Spinner } from "~/components/ui/spinner";
 import { toast } from "sonner";
 import moment from "moment";
+import { getSortedCoinsForWithdrawals } from "~/utils/helpers";
+import { useWalletStore } from "~/store/useUserWalletStore";
+import { useUser, useWallet } from "~/utils/walletSelectors";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const accessToken = useAuthStore.getState().accessToken;
-  const isLoggedIn = useAuthStore.getState().isLoggedIn;
 
-  return { type: params.type, isLoggedIn, accessToken };
+
+  return { type: params.type };
 }
 interface Tab {
   label: string;
@@ -72,8 +73,6 @@ const TabMenu: Tab[] = [
 const Withdraw = ({ isLoggedIn, accessToken }) => {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
-  const user = useAuthStore.getState().user;
-  const wallet = useAuthStore.getState().wallet;
   const [address, setAddress] = useState("");
   const [openN, setOpenN] = useState(false);
   const [network, setNetwork] = useState("");
@@ -83,11 +82,14 @@ const Withdraw = ({ isLoggedIn, accessToken }) => {
   const [networkFee, setNetworkFee] = useState(0);
   const [error, setError] = useState("");
   const [miniAmount, setMiniAmount] = useState(0);
-  const { walletDetails, walletTotals, totalUSDT } =
-    isLoggedIn &&
-    user &&
-    calculateUserBalances(wallet, { USDT: 1, BTC: 9400, ETH: 3220 });
-  const assetList = getSortedCoinsForWithdrawls(walletDetails) || null;
+  const user = useUser();
+  const spotWallet = useWallet("SPOT")
+  // const {wallets, user} = useWalletStore()
+  // const { walletDetails, walletTotals, totalUSDT } =
+  //   isLoggedIn &&
+  //   user &&
+  //   calculateUserBalances(wallet, { USDT: 1, BTC: 9400, ETH: 3220 });
+  const assetList = getSortedCoinsForWithdrawals(spotWallet) || null;
   useEffect(() => {
     if (value) {
       assetList
@@ -577,7 +579,8 @@ export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
   const [history, setHisory] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { type, isLoggedIn, accessToken } = loaderData;
+  const {accessToken, isLoggedIn} = useWalletStore()
+  const { type } = loaderData;
 
   const fetchDepoData = async () => {
     setLoading(true);

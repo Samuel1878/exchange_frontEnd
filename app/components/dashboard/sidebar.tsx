@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
-import { useAuthStore } from "~/store/useUserDataStore";
+import { useWalletStore } from "~/store/useUserWalletStore";
 import { Logo } from "~/utils";
 
 // Menu items.
@@ -46,7 +46,7 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const {logout} = useAuthStore();
+  const {reset} = useWalletStore();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -91,7 +91,7 @@ export function AppSidebar() {
         <button
           className="text-red-400 font-bold cursor-pointer flex items-center justify-center gap-2"
           onClick={()=>{
-            logout();
+            reset();
             navigate("/")
           }}
         >

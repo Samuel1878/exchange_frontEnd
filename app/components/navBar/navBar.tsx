@@ -33,12 +33,13 @@ import { BiDownload } from "react-icons/bi";
 import VerticalNavBar from "./verticalNavBar";
 import { LucideWallet, X } from "lucide-react";
 import { LangIcon, Logo } from "~/utils";
-import { useAuthStore } from "~/store/useUserDataStore";
+// import { useAuthStore } from "~/store/useUserDataStore";
 import { FaRegCircleUser } from "react-icons/fa6";
+import { useWalletStore } from "~/store/useUserWalletStore";
 
 export default function NavigationBar() {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
-  const {isLoggedIn} = useAuthStore()
+  const {isLoggedIn} = useWalletStore()
   const toggleMenu = () => setIsOpen((prev) => !prev);
   const navigate = useNavigate();
   const resizeHandler = () => {

@@ -36,9 +36,11 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { registerAPI } from "~/api/authAPI";
-import { useAuthStore } from "~/store/useUserDataStore";
+// import { useAuthStore } from "~/store/useUserDataStore";
 import type { LoginResponse } from "~/utils/types";
 import { emailRe, passwordRe, phoneRe, userNameRe } from "~/utils/helpers";
+import { useWallet } from "~/utils/walletSelectors";
+import { useWalletStore } from "~/store/useUserWalletStore";
 
 const LoginTab = [
   { symbol: "mobile", label: "Mobile Phone" },
@@ -218,7 +220,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 
 export default function Registration() {
   const [activeTab, setActiveTab] = useState("mobile");
-  const { login } = useAuthStore();
+  // const { login } = useAuthStore();
+  const {hydrateFromApi} = useWalletStore()
   const navigation = useNavigation();
   const navigate = useNavigate()
   const loading = navigation.state === "submitting";
@@ -242,7 +245,7 @@ export default function Registration() {
     if (userData){
         console.log(userData);
      
-         login(userData.data, userData.accessToken);
+         hydrateFromApi(userData.data, userData.accessToken);
           navigate("/")
        
     }

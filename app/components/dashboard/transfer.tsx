@@ -23,10 +23,10 @@ import { Coins } from "~/utils";
 import { AllCoinNames } from "~/consts/pairs";
 import { TradeButton } from "../charts/components/buttons";
 import { transferAPI } from "~/api/walletAPI";
-import { useAuthStore } from "~/store/useUserDataStore";
 import { redirect } from "react-router";
 import type { Spinner } from "../ui/spinner";
-import { getUserDataAPI } from "~/api/authAPI";
+import { getUserDataAPI, getUserWalletAPI } from "~/api/authAPI";
+import { useWalletStore } from "~/store/useUserWalletStore";
 const isWallet = (w:string):boolean => w === "spot" || w==="financial" || w==="funding" 
 export default function TransferDrawerDialog({
   open,
@@ -42,13 +42,12 @@ export default function TransferDrawerDialog({
   const [from, setFrom] = useState(isWallet(wallet) ? wallet:"spot");
   const [to, setTo] = useState(from === "spot" ? "financial" : "spot");
   const [availableAmount, setAvailableAmount] = useState(0);
-  const { width } = useWindowDimensions();
   const [list, setList] = useState([]);
   const [selectedCoin, setSelectedCoin] = useState("");
   const [amount, setAmout] = useState("");
   const [valid, setValid] = useState(false);
   const [loading ,setLoading] = useState(false);
-  const {accessToken, setUser} = useAuthStore();
+  const {accessToken, updateWalletsFromWalletApi} = useWalletStore();
 
   useEffect(() => {
     if (isWallet(from || wallet)) {
@@ -70,6 +69,19 @@ export default function TransferDrawerDialog({
       });
     }
   }, [selectedCoin, list]);
+  const toggleTo = () => {
+    switch (from) {
+      case "spot":
+        setTo((prev)=>prev==="financial"?"funding":"financial")
+        break;
+      case "funding":
+        setTo((prev)=>prev==="spot"?"financial":"spot");
+        break;
+      default:
+        setTo((prev)=>prev==="spot"?"funding":"spot")
+        break;
+    }
+  }
   const toggleWalletType = () => {
     let temFrom: string;
     temFrom = from;
@@ -88,13 +100,11 @@ export default function TransferDrawerDialog({
       ToCurrency:selectedCoin
     }, accessToken);
     if (response && response?.success){
-              const response = await getUserDataAPI(accessToken);
-              if (response && response?.success) {
-                console.log(response);
-                setUser(response?.data);
-              }
-        
-      
+      const response = await getUserWalletAPI(accessToken);
+        if (response && response?.success) {
+          console.log(response);
+          updateWalletsFromWalletApi(response?.data?.wallets);
+        }
     }
     setLoading(false);
     setOpen()
@@ -117,7 +127,7 @@ export default function TransferDrawerDialog({
                       {from}
                     </div>
                   </div>
-                  <div className="flex items-baseline cursor-pointer">
+                  <div className="flex items-baseline cursor-pointer" onClick={toggleTo}>
                     <div className="w-14 text-gray-600 font-semibold">To</div>
                     <div className="text-gray-100  capitalize font-semibold text-lg flex-1">
                       {to}

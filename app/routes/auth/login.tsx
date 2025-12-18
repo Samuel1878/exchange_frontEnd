@@ -31,10 +31,11 @@ import {
   usePhoneInput,
 } from "react-international-phone";
 import type { Route } from "./+types/login";
-import { useAuthStore } from "~/store/useUserDataStore";
+// import { useAuthStore } from "~/store/useUserDataStore";
 import { emailRe, passwordRe, phoneRe, userNameRe } from "~/utils/helpers";
 import { loginAPI, type payloadType } from "~/api/authAPI";
 import { toast } from "sonner";
+import { useWalletStore } from "~/store/useUserWalletStore";
 const LoginTab = [
   { symbol: "mobile", label: "Mobile Phone" },
   { symbol: "email", label: "Email" },
@@ -96,7 +97,8 @@ export async function clientAction({ request }: Route.ClientActionArgs) {
 }
 export default function Login() {
   const [activeTab, setActiveTab] = useState("mobile");
-  const { login } = useAuthStore();
+  // const { login } = useAuthStore();
+  const {hydrateFromApi} = useWalletStore();
   const navigation = useNavigation();
   const navigate = useNavigate();
   const loading = navigation.state === "submitting";
@@ -137,7 +139,7 @@ export default function Login() {
     if (userData) {
       console.log(userData);
 
-      login(userData.data, userData.accessToken);
+      hydrateFromApi(userData.data, userData?.accessToken);
       navigate("/");
     }
   }, [userData]);
