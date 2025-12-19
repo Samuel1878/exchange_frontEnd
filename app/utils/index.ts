@@ -85,10 +85,19 @@ import ETHTRX from "assets/coins/eth_trx.png";
 import BTCUSDT from "assets/coins/btc_usdt.png";
 import XRPSOL from "assets/coins/xrp_sol.png";
 import USER from "assets/images/profile.png";
+import Convert from "assets/images/convert.svg";
+import Spot from "assets/images/spot.svg";
+import Margin from "assets/images/margin.svg";
+import Future from "assets/images/futures.svg";
+
 export { BTCETH,BTCUSDT,XRPSOL,
   BTCTRX, 
   ETHTRX};
 export {
+  Convert,
+  Spot,
+  Margin,
+  Future,
   USER,
   Apple,
   BinanceCharityWallet,

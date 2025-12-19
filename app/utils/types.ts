@@ -228,18 +228,16 @@ export type NetworksMap = Record<string, Network[]>;
 
 
 // store/types.ts
-export type WalletType = "SPOT" | "FUNDING" | "FINANCIAL";
+export type WalletType = "SPOT" | "FUNDING" | "FINANCIAL" | string;
 
 
 export interface AssetBalance {
-  currency: string;
-
+  currency?: string;
+  name?:string;
   available: number;
   locked: number;
-
   availableUSDT: number;
   lockedUSDT: number;
-
   total: number;
   totalUSDT: number;
 }

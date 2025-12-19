@@ -23,7 +23,7 @@ export const useCombinedWalletAssets = () => {
   const mergedMap: Record<
     string,
     {
-      currency: string;
+      currency?: string;
       available: number;
       locked: number;
       availableUSDT: number;

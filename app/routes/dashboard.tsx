@@ -12,7 +12,7 @@ import FinancialWallet from "~/components/dashboard/financial";
 // import { calculateUserBalances, extractNonZeroSymbols, getPrices } from "~/utils/helpers";
 // import { user } from "~/consts";
 import TransferDrawerDialog from "~/components/dashboard/transfer";
-import { getUserDataAPI } from "~/api/authAPI";
+import { getUserDataAPI, getUserWalletAPI } from "~/api/authAPI";
 import { useWalletStore } from "~/store/useUserWalletStore";
 
 export async function clientLoader({
@@ -36,29 +36,25 @@ export async function clientLoader({
   // }
   // return { type, user, accessToken, wallet, prices:data};
 }
+
 export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const { type, accessToken} = loaderData;
+  const {updateWalletsFromWalletApi} = useWalletStore()
 
-  // useEffect(() => {
-  //   (async () => {
-  //     if (accessToken) {
-  //       const response = await getUserDataAPI(accessToken);
-  //       if (response && response?.success) {
-  //         console.log(response);
-  //         setUser(response?.data);
-  //       }
-  //     }
-  //   })();
-  // }, [accessToken]);
+  useEffect(() => {
+    (async () => {
+      if (accessToken) {
+        const response = await getUserWalletAPI(accessToken);
+        if (response && response?.success) {
+          console.log(response);
+          updateWalletsFromWalletApi(response?.data?.wallets);
+        }
+      }
+    })();
+  }, [accessToken]);
 
 
   const [openTransfer, setOpenTransfer] = useState(false);
-  
-  // const { walletDetails, walletTotals, totalUSDT } = calculateUserBalances(
-  //   wallet,
-  //  prices
-  // );
-
   const toggleTransfer = () => setOpenTransfer((prev) => !prev);
   return (
     <React.Fragment>
@@ -69,33 +65,24 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           <Activity mode={type === "overview" ? "visible" : "hidden"}>
             <OverView />
           </Activity>
-          {/* <Activity mode={type === "spot" ? "visible" : "hidden"}>
-            <SpotWallet
-             
-              toggleTransfer={toggleTransfer}
-            />
-          </Activity>
-          <Activity mode={type === "funding" ? "visible" : "hidden"}>
-            <FundingWallet
-           
-              toggleTransfer={toggleTransfer}
-            />
+          <Activity mode={type === "spot" ? "visible" : "hidden"}>
+            <SpotWallet toggleTransfer={toggleTransfer} />
           </Activity>
           <Activity mode={type === "financial" ? "visible" : "hidden"}>
-            <FinancialWallet
-            
-              toggleTransfer={toggleTransfer}
-            />
-          </Activity> */}
+            <FinancialWallet toggleTransfer={toggleTransfer} />
+          </Activity>
+          <Activity mode={type === "funding" ? "visible" : "hidden"}>
+            <FundingWallet toggleTransfer={toggleTransfer} />
+          </Activity>
+
           <FooterSection />
         </main>
       </SidebarProvider>
-      {/* <TransferDrawerDialog
+      <TransferDrawerDialog
         open={openTransfer}
         setOpen={toggleTransfer}
         wallet={type}
-   
-      /> */}
+      />
     </React.Fragment>
   );
 }

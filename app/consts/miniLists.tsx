@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { BTC, BTCETH, BTCTRX, BTCUSDT, ETH, ETHTRX, XRP, XRPSOL } from "~/utils";
+import { BTC, BTCETH, BTCTRX, BTCUSDT, Convert, ETH, ETHTRX, Future, Margin, Spot, XRP, XRPSOL } from "~/utils";
 
 // type coinlistTypes = {
 //   name: string;
@@ -81,5 +81,36 @@ export const miniAiList: ailistTypes[] = [
     symbol: "XRP/SOL",
     users: "61",
     icon: <img src={XRPSOL} width={36} />,
+  },
+];
+
+export const overViewCards = [
+  {
+    id: 1,
+    title: "Trade crypto with advanced tools",
+    description: "Spot Trading",
+    image: <img src={Spot} className="" />,
+    url:"spot"
+  },
+  {
+    id: 2,
+    title: "The easiest way to trade crypto at 0 fees",
+    description: "Convert",
+    image: <img src={Convert} className="" />,
+    url:"convert"
+  },
+  {
+    id: 3,
+    title: "Full range of crypto-derivative instruments",
+    description: "Futures",
+    image: <img src={Future} className="" />,
+    url:"future"
+  },
+  {
+    id: 4,
+    title: "Increase your profits with leverage",
+    description: "Margin",
+    image: <img src={Margin} className="" />,
+    url:"margin"
   },
 ];

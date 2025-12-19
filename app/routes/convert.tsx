@@ -17,16 +17,17 @@ import { Star, X } from "lucide-react";
 import { getAvgPriceAPI } from "~/api/price";
 import { AltCoins, StableCoins } from "~/consts/pairs";
 import { formatPrice, priceFormatter } from "~/components/charts/util";
-import { useAuthStore } from "~/store/useUserDataStore";
+// import { useAuthStore } from "~/store/useUserDataStore";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTrigger } from "~/components/ui/dialog";
 import { convertAPI } from "~/api/walletAPI";
 import { toast } from "sonner";
-import { getUserDataAPI } from "~/api/authAPI";
+import { getUserDataAPI, getUserWalletAPI } from "~/api/authAPI";
+import { useWalletStore } from "~/store/useUserWalletStore";
 export const clientLoader = async ({ params,request }: Route.ClientLoaderArgs) => {
   const from = params.from;
   
   const to = params.to;
-    const url = new URL(request.url);
+  const url = new URL(request.url);
   const type = url.searchParams.get("type") || "spot";
   if (!from) {
     throw new Error("No Params");
@@ -47,10 +48,10 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
   const [fromAmount, setFromAmount] = useState("");
   const [toAmount, setToAmount] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const accessToken = useAuthStore.getState().accessToken;
+  // const accessToken = useAuthStore.getState().accessToken;
   const [loading, setLoading] = useState(false);
   const [availableAmount ,setAvailableAmount] = useState("");
-  const { wallet, setUser} = useAuthStore()
+  const { wallets, updateWalletsFromWalletApi, accessToken} = useWalletStore()
   const[ openPreview, setOpenPreview] = useState(false);
   const [isFromStable, setIsFromStable] = useState<boolean>(
     Object.keys(StableCoins).includes(from.toLowerCase())
@@ -62,7 +63,7 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
   }>({ state: false, value: "" });
   const navigate = useNavigate();
   useEffect(() => {
-    console.log("False")
+  
     setReady(false);
     setRate(0);
     setToAmount("");
@@ -74,33 +75,32 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
       setToCoins(AltCoins);
       setFromCoins(StableCoins);
       setReady(true);
-      console.log("true")
+
       return;
     } else {
       setIsFromStable(false);
       setToCoins(StableCoins);
       setFromCoins(AltCoins);
       setReady(true);
-            console.log("true");
+        
     }
   }, [from, to]);
 
   const switchFnc = ({ from, to }) => {
     setFromAmount("");
     setToAmount("");
+    setAvailableAmount("")
     navigate(`/trade/convert/${from}/${to}?type=${type}`);
   };
   useEffect(()=>{
     console.log(type)
-   if (fromCoin && wallet && type) {wallet.map((e)=>{
-      if (e.WalletType === type){
-        e.UserAsset.map((i)=>{
-          if (i.Currency.toUpperCase() === fromCoin.toUpperCase()) return setAvailableAmount(i.AvailableBalance)
-        })
-      return
-      }
-    })}
-  },[fromCoin, type, wallet])
+   if (fromCoin && wallets && type) {
+    wallets[type.toUpperCase()].assets.map((e)=>{
+      if( e.currency.toUpperCase() === fromCoin.toUpperCase()) return setAvailableAmount(e.available.toString())
+    })
+
+  }
+  },[fromCoin, type])
     const fetchPrice = async () => {
       const pair = isFromStable
         ? toCoin.toUpperCase() + fromCoin.toUpperCase()
@@ -112,7 +112,6 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
       console.log("New rate:", newRate);
     };
   useEffect(() => {
-
     ready && fetchPrice();
   }, [fromCoin , toCoin]);
 
@@ -175,10 +174,10 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
     if (response){
           (async () => {
             if (accessToken) {
-              const response = await getUserDataAPI(accessToken);
+              const response = await getUserWalletAPI(accessToken);
               if (response && response?.success) {
                 console.log(response);
-                setUser(response?.data);
+                updateWalletsFromWalletApi(response?.data?.wallets);
               }
             }
           })();
@@ -231,7 +230,7 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
       },15000)
       return ()=> clearTimeout(timeOut)
     },[])
-    console.log("DIALOG")
+ 
     return (
       <Dialog open={openPreview} onOpenChange={setOpenPreview}>
         <DialogTrigger></DialogTrigger>

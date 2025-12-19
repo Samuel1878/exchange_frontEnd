@@ -15,10 +15,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { walletTypes } from "~/consts";
 import { RiArrowUpDownFill } from "react-icons/ri";
 import { getSortedCoinsNoFilter } from "~/utils/helpers";
-import type { WalletBalance } from "~/utils/types";
+import type { AssetBalance, WalletBalance } from "~/utils/types";
 import { Coins } from "~/utils";
 import { AllCoinNames } from "~/consts/pairs";
 import { TradeButton } from "../charts/components/buttons";
@@ -27,32 +26,32 @@ import { redirect } from "react-router";
 import type { Spinner } from "../ui/spinner";
 import { getUserDataAPI, getUserWalletAPI } from "~/api/authAPI";
 import { useWalletStore } from "~/store/useUserWalletStore";
+import { useWalletAssets } from "~/utils/walletSelectors";
 const isWallet = (w:string):boolean => w === "spot" || w==="financial" || w==="funding" 
 export default function TransferDrawerDialog({
   open,
   setOpen,
   wallet,
-  walletDetails,
 }: {
   open: boolean;
   setOpen: () => void;
   wallet: string;
-  walletDetails: WalletBalance[];
 }) {
+
   const [from, setFrom] = useState(isWallet(wallet) ? wallet:"spot");
   const [to, setTo] = useState(from === "spot" ? "financial" : "spot");
   const [availableAmount, setAvailableAmount] = useState(0);
-  const [list, setList] = useState([]);
+  const [list, setList] = useState<AssetBalance[]>([]);
   const [selectedCoin, setSelectedCoin] = useState("");
   const [amount, setAmout] = useState("");
   const [valid, setValid] = useState(false);
   const [loading ,setLoading] = useState(false);
-  const {accessToken, updateWalletsFromWalletApi} = useWalletStore();
+  const {accessToken, updateWalletsFromWalletApi, wallets} = useWalletStore();
 
   useEffect(() => {
     if (isWallet(from || wallet)) {
-      const assets = walletDetails?.filter((e) => e.walletType === from);
-      setList(getSortedCoinsNoFilter(assets && assets[0]?.assets));
+      const assets = wallets[from.toUpperCase()].assets
+      setList(getSortedCoinsNoFilter(assets));
     }
  
   }, [from]);
@@ -62,8 +61,8 @@ export default function TransferDrawerDialog({
   useEffect(() => {
     if (selectedCoin) {
       list?.map((e) => {
-        if (selectedCoin.toUpperCase() === e.symbol.toUpperCase()) {
-          setAvailableAmount(e.balance);
+        if (selectedCoin.toUpperCase() === e.currency?.toUpperCase()) {
+          setAvailableAmount(e.available);
           return;
         }
       });
@@ -167,19 +166,19 @@ export default function TransferDrawerDialog({
                       {list?.map((e) => {
                         return (
                           <SelectItem
-                            value={e.symbol}
-                            key={e.symbol}
+                            value={e.currency}
+                            key={e.currency}
                             className=" text-gray-50"
                           >
                             <div className="w-2xs md:w-sm flex justify-between">
                               <div className="flex gap-2 items-center flex-1 w-full">
                                 <img
                                   className="w-8 rounded-full"
-                                  src={Coins[e.symbol.toUpperCase()]}
+                                  src={Coins[e.currency.toUpperCase()]}
                                 />
                                 <div>
                                   <p className="text-lg font-bold">
-                                    {e.symbol}
+                                    {e.currency}
                                   </p>
                                   <p className="text-gray-500 font-semibold">
                                     {e.name}
@@ -188,10 +187,10 @@ export default function TransferDrawerDialog({
                               </div>
                               <div className="flex flex-col text-right">
                                 <p className="text-md font-semibold">
-                                  {e.balance}
+                                  {e.available}
                                 </p>
                                 <p className="text-gray-500 font-medium">
-                                  ${e.valueUSDT}
+                                  ${e.availableUSDT}
                                 </p>
                               </div>
                             </div>
