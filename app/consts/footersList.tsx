@@ -55,6 +55,10 @@ export const services = [
     value: "ai",
   },
   {
+    label: "Convert",
+    value: "trade/convert/usdt/btc?type=spot",
+  },
+  {
     label: "future",
     value: "trade/btcusdt?type=future",
   },
@@ -78,8 +82,16 @@ export const services = [
     label: "ICO",
     value: "ico",
   },
+  {
+    label: "Charity",
+    value: "charity",
+  },
 ];
 export const help = [
+  {
+    label: "Discover",
+    value: "trends",
+  },
   {
     label: "download",
     value: "/#download",

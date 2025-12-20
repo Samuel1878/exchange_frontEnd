@@ -311,8 +311,8 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
     );
   },[openPreview, rate])
   return (
-    <>
-      <main className="flex items-center w-full h-full flex-col  bg-gray-900 lg:bg-gray-950 overflow-x-hidden pt-10 pb-10">
+    <div className="bg-gray-900 lg:bg-gray-950 overflow-x-hidden w-full">
+      <main className="flex items-center w-full h-full flex-col  pt-10 pb-10">
         <RenderDialog/>
         <div className="w-full p-4 lg:max-w-6xl">
           <h1 className="text-lg font-bold text-gray-100 md:text-xl lg:text-4xl">
@@ -555,6 +555,6 @@ export default function Convert({ loaderData }: Route.ComponentProps) {
         </Drawer>
       </main>
       <FooterSection />
-    </>
+    </div>
   );
 }

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 48 48" height="48" width="48">
+<g id="il/unlock">
+<path fill="#F0B90B" d="M25 29V25H21V29L25 29Z" clip-rule="evenodd" fill-rule="evenodd" id="Subtract"></path>
+<path fill="#AEB4BC" d="M44.0002 31C44.0002 34.866 40.8662 38 37.0002 38C33.8292 38 31.1507 35.8915 30.2901 33L25 33V37H21V33V29L25 29H30.2901C31.1507 26.1085 33.8292 24 37.0002 24C40.8662 24 44.0002 27.134 44.0002 31ZM34.0002 31L37.0002 28L40.0002 31L37.0002 34L34.0002 31Z" clip-rule="evenodd" fill-rule="evenodd" opacity="0.5" id="Union"></path>
+<path fill="#AEB4BC" d="M40 20H6V42H40V37.3265C39.0908 37.7584 38.0737 38 37.0002 38C33.8292 38 31.1507 35.8915 30.2901 33L25 33V37H21V33V29H25H30.2901C31.1507 26.1085 33.8292 24 37.0002 24C38.0737 24 39.0908 24.2416 40 24.6735V20ZM40 30.9998L37.0002 28L34.0002 31L37.0002 34L40 31.0002V30.9998Z" clip-rule="evenodd" fill-rule="evenodd" opacity="0.2" id="Subtract_2"></path>
+<path fill="#AEB4BC" d="M29 15V16H32V15C32 10.0294 27.9706 6 23 6C18.0294 6 14 10.0294 14 15V20H17V15C17 11.6863 19.6863 9 23 9C26.3137 9 29 11.6863 29 15Z" clip-rule="evenodd" fill-rule="evenodd" opacity="0.5" id="Subtract_3"></path>
+</g>
+</svg>

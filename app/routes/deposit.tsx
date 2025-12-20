@@ -56,6 +56,7 @@ import moment from "moment";
 import { getSortedCoinsForWithdrawals } from "~/utils/helpers";
 import { useWalletStore } from "~/store/useUserWalletStore";
 import { useUser, useWallet } from "~/utils/walletSelectors";
+import { FAQList } from "~/consts/faqLists";
 
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
 
@@ -93,8 +94,8 @@ const Withdraw = ({ isLoggedIn, accessToken }) => {
   useEffect(() => {
     if (value) {
       assetList
-        .filter((e) => e.symbol === value)
-        .map((e) => setAvailableAmount(e.balance.toString()));
+        .filter((e) => e.currency.toUpperCase() === value.toUpperCase())
+        .map((e) => setAvailableAmount(e.available.toString()));
     }
   }, [value]);
   useEffect(() => {
@@ -173,9 +174,9 @@ const Withdraw = ({ isLoggedIn, accessToken }) => {
                   <CommandGroup className="bg-gray-900 lg:bg-gray-950 w-full">
                     {assetList?.map((w) => (
                       <CommandItem
-                        key={w.symbol}
+                        key={w.currency}
                         className="active:bg-gray-800 justify-between hover:bg-gray-800 flex flex-1 w-full focus:bg-gray-800 text-gray-50 text-lg font-bold"
-                        value={w.symbol}
+                        value={w.currency}
                         onSelect={(currentValue) => {
                           setValue(currentValue === value ? "" : currentValue);
                           setOpen(false);
@@ -185,25 +186,25 @@ const Withdraw = ({ isLoggedIn, accessToken }) => {
                         <CheckIcon
                           className={cn(
                             "mr-2 h-4 w-4",
-                            value === w.symbol ? "opacity-100" : "opacity-0"
+                            value === w.currency ? "opacity-100" : "opacity-0"
                           )}
                         />
                         <div className="flex gap-4 w-full items-center">
                           <img
-                            src={Coins[w.symbol.toUpperCase()]}
+                            src={Coins[w.currency.toUpperCase()]}
                             className="rounded-full w-8 max-h-8"
                           />
                           <div>
-                            <p>{w.symbol}</p>
+                            <p>{w.currency.toUpperCase()}</p>
                             <p className="text-gray-500 text-sm font-medium">
                               {w.name}
                             </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-md font-semibold">{w.balance}</p>
+                          <p className="text-md font-semibold">{w.available}</p>
                           <p className="text-sm text-gray-600">
-                            ${w.valueUSDT}
+                            ${w.availableUSDT}
                           </p>
                         </div>
                       </CommandItem>
@@ -722,9 +723,11 @@ export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
                                     AllCoinNames[e?.Currency?.toLowerCase()]
                                       .name
                                   }{" "}
-                                 ({type === "deposit"
+                                  (
+                                  {type === "deposit"
                                     ? e?.NetWork
-                                    : e?.WithdrawalMethod})
+                                    : e?.WithdrawalMethod}
+                                  )
                                 </p>
                                 <div className="flex items-center gap-2">
                                   <p className="text-sm font-bold text-gray-50">
@@ -733,7 +736,9 @@ export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
                                       : Number(e?.WithdrawalAmount).toFixed(4)}
                                   </p>
 
-                                  <p className="text-sm text-gray-500">{e?.Currency}</p>
+                                  <p className="text-sm text-gray-500">
+                                    {e?.Currency}
+                                  </p>
                                 </div>
                               </div>
                               <div className="flex flex-1 justify-between">
@@ -755,11 +760,21 @@ export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
                             </div>
                           );
                         })}
-                        <div className="w-full flex justify-end gap-2" onClick={prevHandler}>
-                          <button disabled={history?.hasPrePage} className="text-sm text-gray-400 cursor-pointer">
+                        <div
+                          className="w-full flex justify-end gap-2"
+                          onClick={prevHandler}
+                        >
+                          <button
+                            disabled={history?.hasPrePage}
+                            className="text-sm text-gray-400 cursor-pointer"
+                          >
                             Prev
                           </button>
-                          <button disabled={history?.hasNextPage} className="text-sm text-gray-400 cursor-pointer" onClick={nextHandler}>
+                          <button
+                            disabled={history?.hasNextPage}
+                            className="text-sm text-gray-400 cursor-pointer"
+                            onClick={nextHandler}
+                          >
                             Next
                           </button>
                         </div>
@@ -771,11 +786,11 @@ export default function AnnouncementPage({ loaderData }: Route.ComponentProps) {
                   </div>
                 </div>
               </div>
-              <FAQ />
             </div>
           </div>
         </article>
       </section>
+      <FAQ list={FAQList} />
       <FooterSection />
     </main>
   );

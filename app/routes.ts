@@ -31,7 +31,7 @@ export default [
           index("./routes/earn/index.tsx"),
           route(":type", "./routes/earn/subscribe/[type].tsx"),
         ]),
-        route("loans", "./routes/loan.tsx"),
+        route(":type", "./routes/loan/loan.tsx"),
       ]),
       route("trends", "./routes/news/index.tsx"),
       ...prefix("ico", [

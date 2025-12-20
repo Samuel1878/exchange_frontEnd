@@ -37,10 +37,12 @@ import { formatTotalPrice } from "~/utils/helpers";
 import { PairImage } from "~/components/coinPair";
 import { Coins } from "~/utils";
 import { getEarnProductAPI, subscribeEarnProductAPI } from "~/api/earnAPI";
-import { useAuthStore } from "~/store/useUserDataStore";
+// import { useAuthStore } from "~/store/useUserDataStore";
 import type { EarnProductsType } from "~/utils/types";
 import { Spinner } from "~/components/ui/spinner";
 import type { Route } from "./+types";
+import { useWalletStore } from "~/store/useUserWalletStore";
+import { useWalletAssets } from "~/utils/walletSelectors";
 
 
 export async function clientAction({
@@ -53,9 +55,8 @@ export async function clientAction({
     const amount = formData.get("amount") as string;
     const id = formData.get("product_id") as string;
     const coin = formData.get("coin") as string;
-    const accessToken = useAuthStore.getState().accessToken;
-    console.log(intent,amount)
-    // if (intent === "subscribe") {
+    const accessToken = useWalletStore.getState().accessToken
+    // const accessToken = useAuthStore.getState().accessToken;
       const response = await subscribeEarnProductAPI({
         Amount:Number(amount),
         EarnId:Number(id),
@@ -72,10 +73,6 @@ export async function clientAction({
         success:false,
         message: "Subscription failed",
       }
-   
-    // }
-
-    // return { success: false, error: "Unknown action" };
   } catch (error) {
     console.error("Error in subscription:", error);
     return {
@@ -85,7 +82,7 @@ export async function clientAction({
   }
 }
 export async function clientLoader({ params }: Route.ClientLoaderArgs) {
-  const isLoggedIn = useAuthStore.getState().isLoggedIn;
+  const isLoggedIn = useWalletStore.getState().isLoggedIn;
   const response = await getEarnProductAPI();
   if (response) {
     return { products: response?.data || null, isLoggedIn };
@@ -103,43 +100,34 @@ const SubcribeModal =
   }) => {
     const fetcher = useFetcher()
       const [loading, setLoading] = useState(false);
-      const wallet = useAuthStore.getState().wallet
-      const [availableAmount, setAvailableAmount] = useState("");
+      const isLoggedIn = useWalletStore.getState().isLoggedIn;
+      const financialWallet = useWalletAssets("FINANCIAL");
+      const [availableAmount, setAvailableAmount] = useState(0);
       const [subscriptionAmount, setSubscriptionAmount] = useState("");
       const [isProductRules, setIsProductRules] = useState(false);
       const [useAutoSubscribe, setUseAutoSubscribe] = useState(true);
+
       let isSubmitting = fetcher.state === "submitting";
-    useEffect(() => {
-      console.log("SubcribeModal mounted");
-       
-      return () => console.log("SubcribeModal unmounted");
-    }, []);
    const handleSubmit = (e: React.FormEvent) => {
      e.preventDefault();
      fetcher.submit(e.currentTarget as HTMLFormElement);
    };
     useEffect(() => {
-        if (product) {
-            console.log(product, wallet);
-          const fin = wallet?.filter((e) => e.WalletType === "financial");
-          for (let index = 0; index < fin?.length; index++) {
-            const element = fin[index];
-            const data = element?.UserAsset?.find(
-              (e) => e?.Currency?.toUpperCase() === product?.FromCoin.toUpperCase()
-            );
-            setAvailableAmount(data?.AvailableBalance || "0");
-            return
-          }
+    
+        if (product && isLoggedIn) {
+          financialWallet.forEach((e)=>{
+            if (e.currency.toUpperCase() === product?.FromCoin.toUpperCase())return setAvailableAmount(e.available)
+          })
         }
-      }, [product]);
+      }, [isLoggedIn, product]);
     
       let hasZeroBalance = useMemo(
-        () => Number(availableAmount) === 0,
+        () => availableAmount === 0,
         [availableAmount]
       );
     
       const handleMaxAmount = () => {
-        setSubscriptionAmount(availableAmount);
+        setSubscriptionAmount(availableAmount.toString());
       };
       const handleAmountChange = (e) => {
         const value = e.target.value;
@@ -387,7 +375,7 @@ const SubcribeModal =
                       value="subscribe"
                       type="submit"
                       disabled={
-                        hasZeroBalance || isSubmitting || !subscriptionAmount
+                        hasZeroBalance || isSubmitting || !subscriptionAmount ||!isLoggedIn
                       }
                       className={`w-full py-3 px-4 rounded-lg font-semibold transition disabled:opacity-50 duration-200 cursor-pointer ${
                         hasZeroBalance
@@ -475,13 +463,13 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                   <h1 className="text-2xl md:text-5xl font-bold text-white">
                     Advanced Earn
                   </h1>
-                  <p className="text-sm md:text-lg mt-4 text-gray-300">
+                  <p className="text-sm md:text-lg mt-4 text-gray-200">
                     Benefit from our innovative products that are designed to
                     help navigate the various market scenarios.
                   </p>
-                  <p className="text-sm font-thin md:text-sm mt-2 text-gray-400">
+                  <p className="text-xs font-light md:text-sm mt-2 text-gray-600">
                     *Advanced Earn products involve higher risks. See our
-                    <span className="text-amber-400"> FAQ </span>
+                    <span className="text-amber-400 mx-2"> FAQ </span>
                     for more information.
                   </p>
                 </div>
@@ -520,11 +508,6 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                                         open: true,
                                         product: item,
                                       })
-                                    // navigate(`${item.FromCoin}?product_id=${item.Id}`, {
-                                    //   state: {
-                                    //     product: item,
-                                    //   },
-                                    // })
                                   }
                                 >
                                   <CardContent className="p-4 flex flex-col justify-between h-32">
@@ -623,7 +606,7 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold mb-4">Flexible Earn</h2>
-                    <p className="text-sm md:text-sm font-thin">
+                    <p className="text-sm md:text-md text-gray-500">
                       Enjoy the freedom to deposit and withdraw your assets at
                       any time while earning competitive interest rates. Perfect
                       for those who value liquidity and flexibility in their
@@ -634,7 +617,7 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                 <div className="grid lg:grid-cols-2 gap-4 items-center">
                   <div className="order-2 lg:order-1">
                     <h2 className="text-2xl font-bold mb-4">Locked Earn</h2>
-                    <p className="text-sm md:text-sm font-thin">
+                    <p className="text-sm md:text-md text-gray-500">
                       Maximize your returns by committing your assets for a
                       fixed period. Our Locked Earn products offer higher
                       interest rates in exchange for locking your funds, making
@@ -771,7 +754,7 @@ export default function EarnIndex({ loaderData }: Route.ComponentProps) {
                         </div>
                         <div className="col-span-2 lg:col-span-1 flex justify-end lg:justify-center">
                           <button
-                            disabled={!isLoggedIn}
+                            
                             className="w-full lg:w-auto bg-amber-300 hover:bg-amber-300 text-gray-900 font-medium py-2 px-6 rounded-lg transition-colors cursor-pointer"
                             onClick={
                               () =>

@@ -89,11 +89,29 @@ import Convert from "assets/images/convert.svg";
 import Spot from "assets/images/spot.svg";
 import Margin from "assets/images/margin.svg";
 import Future from "assets/images/futures.svg";
-
+import stableAndPre from "assets/images/stableAndPredictable.svg";
+import attractiveFixed from "assets/images/attractiveFixedAPR.svg";
+import efficient from "assets/images/efficient.svg";
+import multiAsset from "assets/images/multi-Asset.svg";
+import trustedManage from "assets/images/trustedManagement.svg";
+import orderPlacing from "assets/images/orderPlacing.svg";
+import selectCollateral from "assets/images/selectCollateral.svg";
+import confirmOrder from "assets/images/confirmOrder.svg";
+import orderMatched from "assets/images/ordermatched.svg";
+import repayment from "assets/images/repayment.svg";
 export { BTCETH,BTCUSDT,XRPSOL,
   BTCTRX, 
   ETHTRX};
 export {
+  stableAndPre,
+  attractiveFixed,
+  efficient,
+  multiAsset,orderMatched,repayment,
+
+  trustedManage,
+  orderPlacing,
+  selectCollateral,
+  confirmOrder,
   Convert,
   Spot,
   Margin,

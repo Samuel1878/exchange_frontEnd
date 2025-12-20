@@ -57,10 +57,10 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
   const [openTransfer, setOpenTransfer] = useState(false);
   const toggleTransfer = () => setOpenTransfer((prev) => !prev);
   return (
-    <React.Fragment>
+    <main className="bg-gray-900 lg:bg-gray-950 overflow-x-hidden">
       <SidebarProvider className="bg-gray-900 lg:bg-gray-950 relative">
         <AppSidebar />
-        <main className="w-full bg-gray-900 lg:bg-gray-950 h-full relative">
+        <section className="w-full bg-gray-900 lg:bg-gray-950 h-full relative">
           <SidebarTrigger className="text-gray-100 m-4"></SidebarTrigger>
           <Activity mode={type === "overview" ? "visible" : "hidden"}>
             <OverView />
@@ -76,13 +76,13 @@ export default function Dashboard({ loaderData }: Route.ComponentProps) {
           </Activity>
 
           <FooterSection />
-        </main>
+        </section>
       </SidebarProvider>
       <TransferDrawerDialog
         open={openTransfer}
         setOpen={toggleTransfer}
         wallet={type}
       />
-    </React.Fragment>
+    </main>
   );
 }

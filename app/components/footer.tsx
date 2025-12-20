@@ -11,8 +11,8 @@ const FooterSection = () => {
       <div className="flex flex-col lg:flex-row-reverse w-full md:p-4 mt-10 lg:max-w-6xl">
         <div id="footer" className="flex flex-row justify-between lg:flex-2/3">
           <div className="flex flex-col pl-5 py-4">
-            <h5 className="text-lg lg:text-2xl text-neutral-200 font-bold mb-2">
-              Services
+            <h5 className="text-lg lg:text-2xl text-gray-200 font-bold mb-2">
+              Products
             </h5>
             {services.map((service, index) => {
               let value;
@@ -30,7 +30,7 @@ const FooterSection = () => {
               return (
                 <Link to={value} key={index}>
                   <div className="my-2">
-                    <p className="text-sm text-neutral-500 capitalize hover:text-amber-400 sm:text-md md:text-lg lg:text-2xl">
+                    <p className="text-sm text-gray-500 capitalize hover:text-amber-400 sm:text-md md:text-lg lg:text-lg">
                       {service.label}
                     </p>
                   </div>
@@ -39,13 +39,13 @@ const FooterSection = () => {
             })}
           </div>
           <div className="flex flex-col py-4">
-            <h5 className="text-lg text-neutral-200 font-bold mb-2 lg:text-2xl">
-              Company
+            <h5 className="text-lg text-gray-200 font-bold mb-2 lg:text-2xl">
+              About Us
             </h5>
             {company.map((company, index) => (
               <Link to={`/${company.value}`} key={index}>
                 <div className="my-2">
-                  <p className="text-sm text-neutral-500 hover:text-amber-400 sm:text-md md:text-lg lg:text-2xl">
+                  <p className="text-sm text-gray-500 hover:text-amber-400 sm:text-md md:text-lg lg:text-lg">
                     {company.label}
                   </p>
                 </div>
@@ -53,13 +53,13 @@ const FooterSection = () => {
             ))}
           </div>
           <div className="flex flex-col pr-5 py-4">
-            <h5 className="text-lg text-neutral-200 font-bold lg:text-2xl mb-2">
-              Help
+            <h5 className="text-lg text-gray-200 font-bold lg:text-2xl mb-2">
+              Support
             </h5>
             {help.map((e, i) => (
               <Link to={e.value} key={i}>
                 <div className="my-2">
-                  <p className="text-sm text-neutral-500 capitalize hover:text-amber-400 sm:text-md md:text-lg lg:text-2xl">
+                  <p className="text-sm text-gray-500 capitalize hover:text-amber-400 sm:text-md md:text-lg lg:text-lg">
                     {e.label}
                   </p>
                 </div>
@@ -71,7 +71,7 @@ const FooterSection = () => {
           id="community"
           className="p-5 flex flex-1 flex-col justify-center lg:mr-10 lg:self-start"
         >
-          <p className="text-lg text-neutral-200 font-bold lg:text-2xl">
+          <p className="text-lg text-gray-200 font-bold lg:text-2xl">
             Community
           </p>
           <div className="flex flex-0.5 h-auto flex-row flex-wrap  gap-6 mt-6 lg:grid lg:grid-cols-3 lg:gap-8">
@@ -91,9 +91,9 @@ const FooterSection = () => {
           </div>
         </aside>
       </div>
-      <div className="mx-2 w-full flex flex-col lg:flex-row gap-2 lg:gap-4 items-center justify-center py-5 border-t-1 border-neutral-800">
-        <p className="text-sm text-neutral-400">Trademark@ 2025</p>
-        <p className="text-sm text-neutral-400">Cookie Preferences</p>
+      <div className="mx-2 w-full flex flex-col lg:flex-row gap-2 lg:gap-4 items-center justify-center py-5 border-t-1 border-gray-800">
+        <p className="text-sm text-gray-400">Trademark@ 2025</p>
+        <p className="text-sm text-gray-400">Cookie Preferences</p>
       </div>
     </footer>
   );

@@ -22,6 +22,7 @@ import { TradeButton } from "~/components/charts/components/buttons";
 import { getUserDataAPI, getUserWalletAPI } from "~/api/authAPI";
 import { useWalletStore } from "~/store/useUserWalletStore";
 import { useTotalUSDT } from "~/utils/walletSelectors";
+import { FAQList } from "~/consts/faqLists";
 // import { calculateUserBalances } from "~/utils/helpers";
 export function meta({}: Route.MetaArgs) {
   return [{ title: "Home" }, { name: "description", content: "Welcome" }];
@@ -48,8 +49,6 @@ export default function Home({loaderData}:Route.ComponentProps) {
   const totalUSDT = useTotalUSDT();
   const [number, setNumber] = useState(85290471);
   const [volume, setVolume] = useState(10760109);
-  // const { wallet } = useAuthStore();
-  // const {totalUSDT} = calculateUserBalances(wallet, { USDT: 1, BTC: 9400, ETH: 3220 });
   const [balanceShow, setBalanceShow] = useState(true);
   const navigate = useNavigate()
   useEffect(() => {
@@ -329,7 +328,7 @@ export default function Home({loaderData}:Route.ComponentProps) {
       <NewsScreen />
 
       <DownloadSections />
-      <FAQ />
+      <FAQ list={FAQList}/>
       <aside className="flex flex-col gap-4 w-full py-6 lg:bg-gray-900 bg-gray-800 items-center justify-center lg:py-10 lg:gap-6">
         <p className="text-lg font-extrabold text-neutral-50 lg:text-3xl">
         { isLoggedIn? "Start trading now":" Start earning today"}

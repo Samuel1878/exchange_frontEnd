@@ -16,6 +16,7 @@ import i18n from "./config/i18n";
 import React from "react";
 import GlobalLoader from "./components/loading/globalLoading";
 import { Toaster } from "./components/ui/sonner";
+import { BiSupport } from "react-icons/bi";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -72,6 +73,10 @@ export default function App() {
     <React.StrictMode>
       <I18nextProvider i18n={i18n}>
         {isLoading && <GlobalLoader />}
+        <div className="z-50 cursor-pointer fixed bottom-4 right-6 p-2 md:p-3 md:bottom-6 md:right-12 rounded-xl md:rounded-2xl bg-amber-300">
+          <BiSupport className="w-6 h-6 md:w-7 md:h-7" color="#111" strokeWidth={1}/>
+        </div>
+
         <Outlet />
       </I18nextProvider>
     </React.StrictMode>
